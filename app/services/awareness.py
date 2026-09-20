@@ -188,8 +188,8 @@ def get_topic_by_id(topic_id: str) -> Optional[AwarenessTopicOut]:
     return None
 
 
-def 
-query_awareness(query_text: str, category: Optional[str] = None) -> AwarenessQueryResponse:
+
+def query_awareness(query_text: str, category: Optional[str] = None) -> AwarenessQueryResponse:
     """
     Intelligent keyword and semantic matching against Indian legal rights,
     returning plain-English explanations, applicable law citations, and step-by-step action plans.
