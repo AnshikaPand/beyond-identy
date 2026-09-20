@@ -1,0 +1,22 @@
+[
+  "tests/test_api.py::test_awareness_query_police_harassment",
+  "tests/test_api.py::test_awareness_query_workplace",
+  "tests/test_api.py::test_awareness_topics_list_and_detail",
+  "tests/test_api.py::test_create_and_verify_listing",
+  "tests/test_api.py::test_health_assistant_initial_tree",
+  "tests/test_api.py::test_health_assistant_traversal_to_crisis_sos",
+  "tests/test_api.py::test_health_assistant_traversal_to_hrt_protocol",
+  "tests/test_api.py::test_health_assistant_traversal_to_surgery_ayushman",
+  "tests/test_api.py::test_list_and_update_incidents_rbac",
+  "tests/test_api.py::test_listings_public_browsing",
+  "tests/test_api.py::test_login_invalid_password",
+  "tests/test_api.py::test_login_json_success",
+  "tests/test_api.py::test_registration_password_length",
+  "tests/test_api.py::test_registration_rejects_admin_role",
+  "tests/test_api.py::test_registration_with_verifier_role",
+  "tests/test_api.py::test_report_discrimination_incident_anonymous",
+  "tests/test_api.py::test_report_discrimination_incident_authenticated",
+  "tests/test_api.py::test_root_endpoint",
+  "tests/test_api.py::test_static_frontend_and_assets",
+  "tests/test_api.py::test_user_registration_and_login"
+]

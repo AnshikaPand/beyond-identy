@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beyond Identity — India Transgender Rights, Welfare & Clinical Health Triage</title>
+  <meta name="description" content="Empowering transgender and gender-diverse individuals across India with verified listings, discrimination incident reporting, AI legal rights awareness, and clinically guided health triage." />
+
+  <!-- Google Fonts: Inter and Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Application Styles -->
+  <link rel="stylesheet" href="/static/css/styles.css" />
+
+  <!-- Immediate Zero-Flicker Theme Initializer -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem("bi_theme") || "system";
+      let active = savedTheme;
+      if (savedTheme === "system") {
+        active = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.setAttribute("data-theme", active);
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="navbar">
+    <div class="container nav-content">
+      <a href="#" class="brand">
+        <div class="brand-icon">🏳️‍⚧️</div>
+        <div class="brand-text">
+          <h1>Beyond Identity</h1>
+          <span>India Rights & Welfare Redressal</span>
+        </div>
+      </a>
+
+      <!-- SDG Badges -->
+      <div class="sdg-badges">
+        <span class="sdg-pill sdg-10">⚖️ SDG 10: Reduced Inequalities</span>
+        <span class="sdg-pill sdg-16">🏛️ SDG 16: Peace & Justice</span>
+        <span class="sdg-pill sdg-3">🩺 SDG 3: Good Health</span>
+      </div>
+
+      <!-- Right Header Actions: Theme Switcher + Auth -->
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <!-- Theme Switcher Segmented Control (Day / Night / System) -->
+        <div class="theme-switch-group" id="theme-switch-container" title="Select Theme: Day, Night, or System">
+          <button type="button" class="theme-switch-btn" data-theme-val="light" title="Day Theme (Light)" aria-label="Day Theme">☀️ Day</button>
+          <button type="button" class="theme-switch-btn" data-theme-val="dark" title="Night Theme (Dark)" aria-label="Night Theme">🌙 Night</button>
+          <button type="button" class="theme-switch-btn active" data-theme-val="system" title="System Auto Theme" aria-label="System Theme">💻 Auto</button>
+        </div>
+
+        <!-- User Auth Profile / Actions -->
+        <div class="nav-actions" id="auth-actions-container">
+          <button class="btn btn-primary" id="open-login-btn">Sign In / Register</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-tag">🇮🇳 National Transgender Rights & Triage Portal</div>
+      <h2>Empowering Transgender & Gender-Diverse Communities in India</h2>
+      <p>Direct access to verified inclusive opportunities, Indian statutory legal rights awareness, transparent discrimination redressal, and clinically-guided health navigation.</p>
+
+      <!-- Quick Stats Bar -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="stat-listings-count">10+</div>
+          <div class="stat-label">Verified Opportunities</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">6+</div>
+          <div class="stat-label">Partner NGO Cells</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">₹5,00,000</div>
+          <div class="stat-label">PM-JAY Health Coverage</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">24x7</div>
+          <div class="stat-label">Tele-MANAS & Kiran Triage</div>
+        </div>
+      </div>
+
+      <!-- Guest Hero CTA Action Row (Hidden when logged in) -->
+      <div class="guest-cta-group" id="guest-hero-cta">
+        <button class="btn btn-primary guest-open-signup-btn" id="guest-hero-register-btn" style="padding: 12px 24px; font-size: 14.5px;">
+          🚀 Join Free — Create Account
+        </button>
+        <button class="btn btn-secondary guest-open-login-btn" id="guest-hero-login-btn" style="padding: 12px 22px; font-size: 14.5px;">
+          🔐 Sign In to Portal
+        </button>
+        <a href="/login" class="btn btn-secondary" style="padding: 12px 20px; font-size: 14px;">
+          Dedicated Auth Page →
+        </a>
+      </div>
+
+      <!-- Quick 1-Click Evaluation Strip for Guests -->
+      <div id="guest-demo-strip" class="guest-demo-strip">
+        <div class="demo-strip-label">
+          ⚡ Instant 1-Click Evaluation Tour:
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-secondary demo-login-btn" data-email="ngo@shreetrust.org" data-password="verifier123" style="padding: 7px 12px; font-size: 12px;">
+            🛡️ <strong>NGO Verifier</strong> (Case Triage Desk)
+          </button>
+          <button type="button" class="btn btn-secondary demo-login-btn" data-email="admin@beyondidentity.org" data-password="admin123" style="padding: 7px 12px; font-size: 12px;">
+            ⚡ <strong>System Admin</strong> (Full Access)
+          </button>
+          <button type="button" class="btn btn-secondary demo-login-btn" data-email="user@example.com" data-password="user123" style="padding: 7px 12px; font-size: 12px;">
+            👤 <strong>Community Seeker</strong> (Standard Access)
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs (Active only when authenticated!) -->
+      <nav class="tabs-nav" id="authenticated-tabs-nav" aria-label="Portal Modules" style="display: none; margin-top: 28px;">
+        <button class="tab-btn active" data-tab="tab-listings">
+          <span>📂</span> Opportunities Directory
+        </button>
+        <button class="tab-btn" data-tab="tab-report">
+          <span>🚨</span> Report Discrimination
+        </button>
+        <button class="tab-btn" data-tab="tab-awareness">
+          <span>⚖️</span> AI Rights Awareness
+        </button>
+        <button class="tab-btn" data-tab="tab-health">
+          <span>🩺</span> AI Health Assistant
+        </button>
+        <button class="tab-btn" id="tab-btn-cases" data-tab="tab-cases" style="display: none;">
+          <span>📋</span> Case Triage Desk
+        </button>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Main Content Container -->
+  <main class="container" style="padding-bottom: 80px;">
+
+    <!-- ============================================== -->
+    <!-- 1. GUEST LANDING VIEW (Pre-Login State)        -->
+    <!-- ============================================== -->
+    <div id="guest-landing-view" class="guest-landing">
+      
+      <div class="preview-grid-header">
+        <div class="guest-hero-badge">🏛️ Statutory Legal Rights & Community Protection</div>
+        <h3>Explore Our Comprehensive Rights & Redressal Ecosystem</h3>
+        <p>A safe, encrypted platform built for transgender and gender-diverse Indians. Preview core services below and sign in to unlock interactive access.</p>
+      </div>
+
+      <!-- 4 Pillars Preview Grid -->
+      <div class="pillars-preview-grid">
+        
+        <!-- Pillar 1: Verified Opportunities -->
+        <div class="pillar-preview-card">
+          <div>
+            <div class="pillar-icon-box">📂</div>
+            <div class="pillar-title">Verified Opportunities Directory</div>
+            <div class="pillar-desc">
+              Browse vetted education programs, affirmative workplaces, secure housing shelters, and healthcare providers physically audited by NGO partners.
+            </div>
+            <div class="pillar-preview-items">
+              <div class="pillar-preview-row">
+                <span>🎓 Shree Education Trust (Distance Learning)</span>
+                <span class="pillar-preview-badge badge-success">Verified NGO</span>
+              </div>
+              <div class="pillar-preview-row">
+                <span>💼 Nazariya Inclusive Workplace Jobs</span>
+                <span class="pillar-preview-badge badge-info">Inclusive</span>
+              </div>
+              <div class="pillar-preview-row">
+                <span>🏠 Garima Greh Safe Shelter Network</span>
+                <span class="pillar-preview-badge badge-purple">Govt Scheme</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="lock-cta-btn guest-open-login-btn">
+            <span>🔒</span> Sign In to Unlock Direct Contacts & Apply
+          </button>
+        </div>
+
+        <!-- Pillar 2: Discrimination Incident Redressal -->
+        <div class="pillar-preview-card">
+          <div>
+            <div class="pillar-icon-box">🚨</div>
+            <div class="pillar-title">Confidential Discrimination Redressal</div>
+            <div class="pillar-desc">
+              Submit confidential or anonymous reports for workplace bias, hospital refusal, or unlawful eviction. Our AI automatically matches statutory welfare schemes.
+            </div>
+            <div class="pillar-preview-items">
+              <div class="pillar-preview-row">
+                <span>🏛️ SMILE Scheme Legal Redressal</span>
+                <span class="pillar-preview-badge badge-primary">Govt Scheme</span>
+              </div>
+              <div class="pillar-preview-row">
+                <span>⚖️ NALSA Free Legal Aid Assignment</span>
+                <span class="pillar-preview-badge badge-success">Statutory</span>
+              </div>
+              <div class="pillar-preview-row">
+                <span>🛡️ Partner NGO Crisis Escrow Desk</span>
+                <span class="pillar-preview-badge badge-danger">Crisis Triage</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="lock-cta-btn guest-open-login-btn">
+            <span>🔒</span> Sign In to File Confidential Report
+          </button>
+        </div>
+
+        <!-- Pillar 3: AI Legal Rights Awareness -->
+        <div class="pillar-preview-card">
+          <div>
+            <div class="pillar-icon-box">⚖️</div>
+            <div class="pillar-title">AI Legal Rights Awareness Engine</div>
+            <div class="pillar-desc">
+              Contextual guidance on the Transgender Persons Act 2019, Supreme Court NALSA landmark judgment, police arrest procedures, and workplace protection.
+            </div>
+            <div class="pillar-preview-items">
+              <div class="pillar-preview-row">
+                <span>📖 Right to Self-Perceived Gender Identity</span>
+                <span class="pillar-preview-badge badge-info">NALSA 2014</span>
+              </div>
+              <div class="pillar-preview-row">
+                <span>🛡️ Protection against Harassment & Extortion</span>
+                <span class="pillar-preview-badge badge-purple">Act Sec 18</span>
+              </div>
+              <div class="pillar-preview-row">
+                <span>📜 District Magistrate Certificate Procedure</span>
+                <span class="pillar-preview-badge badge-success">Statutory</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="lock-cta-btn guest-open-login-btn">
+            <span>🔒</span> Sign In to Ask AI Custom Legal Questions
+          </button>
+        </div>
+
+        <!-- Pillar 4: AI Health Assistant & Triage -->
+        <div class="pillar-preview-card">
+          <div>
+            <div class="pillar-icon-box">🩺</div>
+            <div class="pillar-title">AI Clinical Health Assistant</div>
+            <div class="pillar-desc">
+              Confidential clinical decision tree guidance for gender-affirming healthcare, mental wellness crisis triage, and direct Indian emergency helpline connections.
+            </div>
+            <div class="pillar-preview-items">
+              <div class="pillar-preview-row">
+                <span>📞 Tele-MANAS (14416) & Kiran (1800-599-0019)</span>
+                <span class="pillar-preview-badge badge-danger">24x7 SOS</span>
+              </div>
+              <div class="pillar-preview-row">
+                <span>💳 PM-JAY ₹5,00,000 Transgender Health Package</span>
+                <span class="pillar-preview-badge badge-success">National</span>
+              </div>
+              <div class="pillar-preview-row">
+                <span>🏥 Hormone Therapy (HRT) Safety Protocol</span>
+                <span class="pillar-preview-badge badge-primary">Clinical</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="lock-cta-btn guest-open-login-btn">
+            <span>🔒</span> Sign In to Start Clinical Triage
+          </button>
+        </div>
+
+      </div>
+
+      <!-- How Redressal Works Pipeline -->
+      <div class="pipeline-section">
+        <div style="text-align: center; max-width: 650px; margin: 0 auto;">
+          <h3 class="pipeline-heading" style="font-size: 22px; margin-bottom: 6px;">How the Beyond Identity Redressal Pipeline Works</h3>
+          <p class="pipeline-subheading" style="font-size: 13.5px;">A safe, end-to-end bridge from reporting an incident to statutory legal aid and rehabilitation.</p>
+        </div>
+        <div class="pipeline-grid">
+          <div class="pipeline-step">
+            <div class="pipeline-step-num">1</div>
+            <h4>Confidential Intake</h4>
+            <p>File a report with exact incident details, location, and severity. Anonymous reporting is fully supported.</p>
+          </div>
+          <div class="pipeline-step">
+            <div class="pipeline-step-num">2</div>
+            <h4>Automated Scheme Match</h4>
+            <p>Our intelligent engine instantly maps statutory Indian schemes (SMILE, PM-JAY, Garima Greh, NALSA Legal Aid).</p>
+          </div>
+          <div class="pipeline-step">
+            <div class="pipeline-step-num">3</div>
+            <h4>NGO Partner Triage</h4>
+            <p>Verified NGO partners review the case in their moderation desk, assign caseworkers, and escalate to legal aid.</p>
+          </div>
+          <div class="pipeline-step">
+            <div class="pipeline-step-num">4</div>
+            <h4>Redressal & Follow-up</h4>
+            <p>Transparent status tracking ensures the complaint does not fall through the cracks and receives real support.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust Guarantees Grid -->
+      <div class="trust-grid">
+        <div class="trust-item">
+          <div class="trust-icon">🔒</div>
+          <div>
+            <h4>Statutory Privacy Protection</h4>
+            <p>Built strictly according to Indian data protection and Transgender Persons Act 2019 safeguards. Your identity is never revealed without consent.</p>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">⚖️</div>
+          <div>
+            <h4>NALSA Legal Services Integration</h4>
+            <p>Direct alignment with State Legal Services Authorities ensuring zero-cost legal representation for discrimination victims.</p>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">🛡️</div>
+          <div>
+            <h4>Physically Verified Partners</h4>
+            <p>Every listed job, shelter, and school is independently inspected and certified safe by regional transgender-led NGOs.</p>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">🩺</div>
+          <div>
+            <h4>Evidence-Based Healthcare</h4>
+            <p>Clinical decision trees reviewed against WPATH standards and Ministry of Health Tele-MANAS guidelines.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Final Call to Action Box -->
+      <div class="guest-cta-banner">
+        <h3 class="cta-banner-heading" style="font-size: 24px; margin-bottom: 8px;">Ready to Access Beyond Identity?</h3>
+        <p class="cta-banner-subheading" style="font-size: 14px; max-width: 540px; margin: 0 auto 24px;">
+          Create your account in under 30 seconds or sign in with an instant 1-click demo to test the platform.
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <button type="button" class="btn btn-primary guest-open-signup-btn" style="padding: 12px 26px; font-size: 14px;">
+            Create Free Account
+          </button>
+          <button type="button" class="btn btn-secondary guest-open-login-btn" style="padding: 12px 24px; font-size: 14px;">
+            Sign In with Password
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================== -->
+    <!-- 2. AUTHENTICATED PORTAL VIEW (Unlocked App)    -->
+    <!-- ============================================== -->
+    <div id="authenticated-portal-view" style="display: none;">
+
+      <!-- Authenticated Member Welcome Banner -->
+      <div class="auth-member-banner" id="auth-member-banner">
+        <div class="auth-member-left">
+          <div class="user-avatar" id="member-banner-avatar">👤</div>
+          <div>
+            <div class="auth-member-title" id="member-banner-greeting">Welcome to Beyond Identity!</div>
+            <div class="auth-member-subtitle" id="member-banner-sub">Your authenticated session is active with encrypted statutory safeguards.</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="user-role-badge" id="member-banner-role-badge" style="padding: 6px 14px; background: rgba(99, 102, 241, 0.18); border: 1px solid var(--border-glow); border-radius: var(--radius-full); font-size: 11px;">MEMBER</span>
+        </div>
+      </div>
+
+      <!-- TAB 1: Verified Opportunities Directory -->
+      <section class="tab-panel active" id="tab-listings">
+      <div style="margin-bottom: 24px;">
+        <h3 style="font-size: 22px; margin-bottom: 6px;">Verified Community Opportunities</h3>
+        <p style="color: var(--text-muted); font-size: 14px;">Browse trusted education programs, inclusive jobs, safe housing shelters, and healthcare providers vetted by partner NGOs.</p>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="filter-bar" style="display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap;">
+        <button class="btn btn-secondary filter-pill active" data-cat="">All Categories</button>
+        <button class="btn btn-secondary filter-pill" data-cat="education">🎓 Education</button>
+        <button class="btn btn-secondary filter-pill" data-cat="employment">💼 Employment</button>
+        <button class="btn btn-secondary filter-pill" data-cat="housing">🏠 Housing & Shelter</button>
+        <button class="btn btn-secondary filter-pill" data-cat="healthcare">🏥 Healthcare</button>
+        <button class="btn btn-secondary filter-pill" data-cat="government_scheme">🏛️ Govt Schemes</button>
+        <button class="btn btn-secondary filter-pill" data-cat="scholarship">📜 Scholarships</button>
+        <button class="btn btn-secondary filter-pill" data-cat="community">🤝 Community</button>
+      </div>
+
+      <!-- Listings Grid Container (Populated by app.js) -->
+      <div class="cards-grid" id="listings-container">
+        <!-- Injected via app.js -->
+      </div>
+    </section>
+
+    <!-- TAB 2: Discrimination Incident Reporting -->
+    <section class="tab-panel" id="tab-report">
+      <div style="text-align: center; max-width: 700px; margin: 0 auto 32px;">
+        <h3 style="font-size: 24px; margin-bottom: 8px;">Confidential Discrimination Incident Reporting</h3>
+        <p style="color: var(--text-muted); font-size: 14px;">
+          Report discrimination in workplaces, hospitals, educational institutions, or housing.
+          Our automated matcher will instantly link your case with statutory Indian welfare schemes (SMILE, Garima Greh, NALSA Legal Aid) and verified partner NGO crisis desks.
+        </p>
+      </div>
+
+      <form class="glass-form" id="incident-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inc-type">Type of Discrimination *</label>
+            <select id="inc-type" required>
+              <option value="workplace">Workplace (Wrongful Termination, Harassment, Wage Disparity)</option>
+              <option value="healthcare_denial">Healthcare Denial (Refusal of Care, Lack of Trans Ward, Doctor Harassment)</option>
+              <option value="housing_eviction">Housing & Eviction (Arbitrary Eviction, Refusal to Rent)</option>
+              <option value="education">Education (Ragging, Denied Admission, Hostel Denial)</option>
+              <option value="public_harassment">Public Harassment (Street Harassment, Denied Public Spaces)</option>
+              <option value="police_harassment">Police Harassment (Extortion, Unlawful Detention, Abuse)</option>
+              <option value="legal_documentation">Legal Documentation (Name/Gender Certificate Rejection)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inc-urgency">Urgency Level *</label>
+            <select id="inc-urgency" required>
+              <option value="low">Low — General inquiry / Record keeping</option>
+              <option value="medium" selected>Medium — Requires NGO review & guidance</option>
+              <option value="high">High — Imminent threat of eviction or loss of livelihood</option>
+              <option value="immediate_sos">Immediate SOS — Physical safety danger / Police detention</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inc-title">Incident Title *</label>
+          <input type="text" id="inc-title" placeholder="e.g., Unlawful termination after gender transition disclosure" required />
+        </div>
+
+        <div class="form-group">
+          <label for="inc-desc">Detailed Description of Incident *</label>
+          <textarea id="inc-desc" placeholder="Please describe what transpired, dates, names of involved parties, and any actions already attempted..." required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inc-city">City *</label>
+            <input type="text" id="inc-city" placeholder="e.g., Mumbai, Bengaluru, Delhi" required />
+          </div>
+
+          <div class="form-group">
+            <label for="inc-state">State / UT *</label>
+            <input type="text" id="inc-state" placeholder="e.g., Maharashtra, Karnataka, Delhi" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inc-perpetrator">Perpetrator / Entity (Optional)</label>
+            <input type="text" id="inc-perpetrator" placeholder="e.g., ABC Tech Pvt Ltd, Landlord Mr. Sharma" />
+          </div>
+
+          <div class="form-group">
+            <label for="inc-date">Date of Incident (Optional)</label>
+            <input type="date" id="inc-date" />
+          </div>
+        </div>
+
+        <div class="form-row" style="align-items: center; margin-top: 10px;">
+          <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
+            <input type="checkbox" id="inc-anon" style="width: 20px; height: 20px;" />
+            <label for="inc-anon" style="margin-bottom: 0; cursor: pointer;">
+              <strong>Submit Anonymously</strong> (Do not attach my account identity)
+            </label>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="inc-email">Contact Email for Confidential Updates</label>
+            <input type="email" id="inc-email" placeholder="Optional contact email" />
+          </div>
+        </div>
+
+        <div style="margin-top: 28px;">
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 15px;">
+            Submit Incident Report & Auto-Match Indian Welfare Schemes
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- TAB 3: AI Legal Rights Awareness -->
+    <section class="tab-panel" id="tab-awareness">
+      <div class="ai-box">
+        <div style="margin-bottom: 20px;">
+          <span class="decision-badge">⚖️ Statutory Knowledge Base</span>
+          <h3 style="font-size: 24px; margin: 8px 0 6px;">AI Legal Rights & Remedies Engine</h3>
+          <p style="color: var(--text-muted); font-size: 14.5px;">
+            Ask questions regarding your rights under the <strong>Transgender Persons (Protection of Rights) Act 2019</strong>, the landmark <strong>NALSA (2014)</strong> Supreme Court judgment, Section 12 NALSA Free Legal Aid, and workplace non-discrimination mandates.
+          </p>
+        </div>
+
+        <div class="query-input-wrap">
+          <input type="text" id="awareness-query-input" placeholder="e.g., My landlord is forcing me out without notice because of my gender identity. What can I do?" />
+          <button class="btn btn-primary" id="awareness-query-btn">Consult Legal Rights</button>
+        </div>
+
+        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Try these common legal topics:</div>
+        <div class="prompt-chips">
+          <span class="chip">Workplace Equal Opportunity Policy</span>
+          <span class="chip">Arbitrary Housing Eviction & Garima Greh</span>
+          <span class="chip">Police Extortion & Illegal Custody</span>
+          <span class="chip">Healthcare Denial & Ayushman Bharat</span>
+          <span class="chip">Name and Gender Change on Aadhaar</span>
+          <span class="chip">Free Legal Aid Helpline 15100</span>
+        </div>
+
+        <!-- Result Card (Populated by app.js) -->
+        <div id="awareness-result-card" class="awareness-result-card" style="display: none;">
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: AI Health Assistant Decision Tree -->
+    <section class="tab-panel" id="tab-health">
+      <div style="text-align: center; max-width: 700px; margin: 0 auto 32px;">
+        <span class="decision-badge">🩺 WPATH SOC v8 & PM-JAY Integrated</span>
+        <h3 style="font-size: 24px; margin: 8px 0;">AI Health Assistant & Clinical Roadmap</h3>
+        <p style="color: var(--text-muted); font-size: 14.5px;">
+          Interactive decision-tree guidance for safe gender-affirming care, baseline hormone therapy blood panels, crisis mental health helplines, and government surgery subsidies.
+        </p>
+      </div>
+
+      <!-- Health Wizard Dynamic Container -->
+      <div id="health-wizard-container">
+        <!-- Injected via app.js -->
+      </div>
+    </section>
+
+    <!-- TAB 5: Incident Case Management (For Verifiers & Admins) -->
+    <section class="tab-panel" id="tab-cases">
+      <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <span class="decision-badge">🛡️ NGO Moderation & Legal Escalation</span>
+          <h3 style="font-size: 24px; margin: 6px 0;">Discrimination Case Triage Desk</h3>
+          <p style="color: var(--text-muted); font-size: 14px;">Review reported incidents, examine matched government schemes, assign NGO cases, and manage legal aid escalations.</p>
+        </div>
+      </div>
+
+      <div id="cases-container">
+        <!-- Injected via app.js -->
+      </div>
+    </section>
+
+    </div><!-- End #authenticated-portal-view -->
+
+  </main>
+
+  <!-- Toast Notifications Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Dynamic Login / Register Modal -->
+  <div class="modal-overlay" id="login-modal">
+    <div class="modal-content" style="max-width: 480px;">
+      <button class="close-modal" id="close-login-btn" aria-label="Close Modal">✕</button>
+      
+      <div style="text-align: center; margin-bottom: 16px;">
+        <div style="font-size: 28px; margin-bottom: 4px;">🔐</div>
+        <h3 style="font-size: 20px;" id="modal-auth-title">Welcome to Beyond Identity</h3>
+        <p style="color: var(--text-muted); font-size: 13px;" id="modal-auth-subtitle">Sign in to your account or join our community portal</p>
+      </div>
+
+      <!-- In-Modal Switcher Tabs -->
+      <div class="modal-auth-tabs">
+        <button type="button" class="modal-tab-btn active" id="modal-tab-signin-btn">Sign In</button>
+        <button type="button" class="modal-tab-btn" id="modal-tab-register-btn">Create Account</button>
+      </div>
+
+      <!-- In-Modal Alert Box -->
+      <div id="modal-auth-alert" style="display: none; padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-bottom: 14px;"></div>
+
+      <!-- 1. Modal Sign In Form -->
+      <form id="modal-login-form" style="margin-bottom: 16px;">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="modal-login-email" style="font-size: 12.5px;">Email Address</label>
+          <input type="email" id="modal-login-email" placeholder="name@example.org" required style="padding: 10px 12px; font-size: 13.5px;" />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="modal-login-password" style="font-size: 12.5px;">Password</label>
+          <div style="position: relative;">
+            <input type="password" id="modal-login-password" placeholder="Enter your password" required style="padding: 10px 12px; font-size: 13.5px; padding-right: 36px;" />
+            <button type="button" id="modal-pass-toggle" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px;">👁️</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="modal-login-submit-btn" style="width: 100%; padding: 12px; font-size: 14px; margin-bottom: 10px;">
+          Sign In
+        </button>
+      </form>
+
+      <!-- 2. Modal Register Form -->
+      <form id="modal-register-form" style="display: none; margin-bottom: 16px;">
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label for="modal-reg-name" style="font-size: 12px;">Full / Preferred Name</label>
+          <input type="text" id="modal-reg-name" placeholder="Your Name" required style="padding: 9px 12px; font-size: 13px;" />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label for="modal-reg-email" style="font-size: 12px;">Email Address</label>
+          <input type="email" id="modal-reg-email" placeholder="name@example.org" required style="padding: 9px 12px; font-size: 13px;" />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label style="font-size: 12px;">Account Role</label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <label class="btn btn-secondary" style="font-size: 12px; padding: 8px; text-align: center; cursor: pointer; border: 1px solid var(--border-glow); display: flex; align-items: center; justify-content: center; gap: 6px;">
+              <input type="radio" name="modal-reg-role" value="user" checked style="margin: 0;" />
+              <span>👤 Seeker</span>
+            </label>
+            <label class="btn btn-secondary" style="font-size: 12px; padding: 8px; text-align: center; cursor: pointer; border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center; gap: 6px;">
+              <input type="radio" name="modal-reg-role" value="verifier" style="margin: 0;" />
+              <span>🛡️ NGO Partner</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label for="modal-reg-password" style="font-size: 12px;">Password (min 6 chars)</label>
+          <div style="position: relative;">
+            <input type="password" id="modal-reg-password" placeholder="Min 6 chars" required style="padding: 9px 12px; font-size: 13px; padding-right: 36px;" />
+            <button type="button" id="modal-reg-pass-toggle" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px;">👁️</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="modal-reg-submit-btn" style="width: 100%; padding: 12px; font-size: 14px; margin-bottom: 10px;">
+          Create Account & Sign In
+        </button>
+      </form>
+
+      <div style="text-align: center; font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
+        Need the full experience? <a href="/login" style="color: var(--accent-cyan); text-decoration: underline; font-weight: 600;">Open dedicated Auth Portal →</a>
+      </div>
+
+      <!-- Quick 1-Click Demo Accounts -->
+      <div style="border-top: 1px solid var(--border-subtle); padding-top: 14px;">
+        <div style="font-size: 11px; text-transform: uppercase; color: var(--accent-cyan); font-weight: 700; letter-spacing: 0.05em; margin-bottom: 8px;">Instant 1-click demo access:</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button type="button" class="btn btn-secondary demo-login-btn" data-email="ngo@shreetrust.org" data-password="verifier123" style="justify-content: space-between; text-align: left; padding: 9px 12px; font-size: 12.5px;">
+            <span>🛡️ <strong>NGO Verifier</strong> (Shree Trust)</span>
+            <span style="font-size: 11px; color: var(--accent-emerald);">Triage Desk →</span>
+          </button>
+          <button type="button" class="btn btn-secondary demo-login-btn" data-email="admin@beyondidentity.org" data-password="admin123" style="justify-content: space-between; text-align: left; padding: 9px 12px; font-size: 12.5px;">
+            <span>⚡ <strong>System Admin</strong></span>
+            <span style="font-size: 11px; color: var(--accent-violet);">Full Access →</span>
+          </button>
+          <button type="button" class="btn btn-secondary demo-login-btn" data-email="user@example.com" data-password="user123" style="justify-content: space-between; text-align: left; padding: 9px 12px; font-size: 12.5px;">
+            <span>👤 <strong>Community User</strong></span>
+            <span style="font-size: 11px; color: var(--accent-cyan);">Standard Role →</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Incident Result Modal (Scheme & NGO Match Display) -->
+  <div class="modal-overlay" id="incident-result-modal">
+    <div class="modal-content" style="max-width: 720px;">
+      <button class="close-modal" id="close-inc-modal" aria-label="Close Modal">✕</button>
+      <div id="incident-result-content">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
