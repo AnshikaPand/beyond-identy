@@ -131,6 +131,43 @@ def test_login_invalid_password():
     assert "Incorrect email or password" in res.json()["detail"]
 
 
+def test_forgot_password_flow():
+    # 1. Non-existent email fails
+    bad_res = client.post("/auth/forgot-password", json={"email": "nonexistent@nowhere.org"})
+    assert bad_res.status_code == 404
+
+    # 2. Existing user succeeds and receives token
+    res = client.post("/auth/forgot-password", json={"email": "user@example.com"})
+    assert res.status_code == 200
+    data = res.json()
+    assert "reset_token" in data
+    assert data["email"] == "user@example.com"
+    token = data["reset_token"]
+
+    # 3. Reset password with short password fails
+    short_res = client.post("/auth/reset-password", json={"token": token, "new_password": "123"})
+    assert short_res.status_code == 400
+    assert "at least 6 characters" in short_res.json()["detail"]
+
+    # 4. Reset with invalid token fails
+    invalid_res = client.post("/auth/reset-password", json={"token": "invalid.jwt.token", "new_password": "NewValidPassword123!"})
+    assert invalid_res.status_code == 400
+
+    # 5. Reset with valid token succeeds
+    reset_res = client.post("/auth/reset-password", json={"token": token, "new_password": "NewUserPassword456!"})
+    assert reset_res.status_code == 200
+    assert "successfully updated" in reset_res.json()["message"]
+
+    # 6. Verify login with new password succeeds
+    login_new = client.post("/auth/login-json", json={"email": "user@example.com", "password": "NewUserPassword456!"})
+    assert login_new.status_code == 200
+
+    # 7. Restore original password for subsequent tests
+    tok2 = client.post("/auth/forgot-password", json={"email": "user@example.com"}).json()["reset_token"]
+    client.post("/auth/reset-password", json={"token": tok2, "new_password": "user123"})
+
+
+
 # Helper function to get token for demo users
 def get_auth_token(email: str, password: str) -> str:
     res = client.post("/auth/login", data={"username": email, "password": password})
@@ -340,6 +377,38 @@ def test_awareness_query_police_harassment():
     assert "15100" in data["legal_aid_contact"]
 
 
+def test_awareness_chat_form():
+    payload = {
+        "messages": [
+            {"role": "user", "content": "What are my rights if my landlord forces me out?"}
+        ],
+        "voice_mode": False,
+    }
+    res = client.post("/awareness/chat", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert "reply" in data
+    assert "speech_text" in data
+    assert len(data["reply"]) > 0
+    assert len(data["speech_text"]) > 0
+    assert len(data["actionable_steps"]) > 0
+
+
+def test_awareness_talking_form():
+    payload = {
+        "messages": [
+            {"role": "user", "content": "Can an employer discriminate in salary?"}
+        ],
+        "voice_mode": True,
+    }
+    res = client.post("/awareness/chat", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert "reply" in data
+    assert "speech_text" in data
+    assert "15100" in data["speech_text"] or "14566" in data["speech_text"] or "protected" in data["speech_text"]
+
+
 # ==========================================
 # 6. AI Health Assistant Decision Tree Tests
 # ==========================================
@@ -431,4 +500,124 @@ def test_static_frontend_and_assets():
     js_res = client.get("/static/js/app.js")
     assert js_res.status_code == 200
     assert "setupTabs" in js_res.text
+
+
+# ==========================================
+# 7. Transgender Parents Domain & Q&A Manager Tests
+# ==========================================
+
+def test_transgender_parents_qa_domain():
+    from app.data import PARENTS_QA, ALL_QA
+
+    # Exactly 20 questions in domain 5
+    assert len(PARENTS_QA) == 20
+    assert len(ALL_QA) >= 220
+
+    # IDs strictly 201 to 220
+    parent_ids = [q["id"] for q in PARENTS_QA]
+    assert parent_ids == list(range(201, 221))
+
+    # Validate structure and completeness
+    for q in PARENTS_QA:
+        assert q["category"] == "Transgender Parents & Family Protections"
+        assert len(q["question"]) > 10
+        assert len(q["answer"]) > 25
+        assert len(q["applicable_law"]) > 5
+        assert len(q["keywords"]) >= 3
+
+
+def test_qa_manager_aggregation_and_search():
+    from app.data import get_all_qa, search_qa, get_qa_by_id, get_categories
+
+    # Total questions
+    all_items = get_all_qa()
+    assert len(all_items) >= 220
+
+    # Filter by category
+    parent_items = get_all_qa(category="Transgender Parents")
+    assert len(parent_items) == 20
+
+    # Categories list
+    cats = get_categories()
+    assert "Transgender Parents & Family Protections" in cats
+
+    # Search for adoption
+    adopt_res = search_qa("adopt child cara")
+    assert len(adopt_res) > 0
+    assert any("CARA" in item["applicable_law"] or "adopt" in item["question"].lower() for item in adopt_res)
+
+    # Search for custody
+    custody_res = search_qa("custody family court")
+    assert len(custody_res) > 0
+
+    # Get by ID
+    qa_201 = get_qa_by_id(201)
+    assert qa_201 is not None
+    assert "adopt" in qa_201["question"].lower()
+
+    # Non-existent ID
+    assert get_qa_by_id(99999) is None
+
+
+def test_awareness_transgender_parents_topic():
+    res = client.get("/awareness/topics/transgender_parents_and_family")
+    assert res.status_code == 200
+    topic = res.json()
+    assert topic["id"] == "transgender_parents_and_family"
+    assert "Transgender Parents" in topic["title"]
+    assert "CARA" in topic["act_or_ruling"] or "TG Act" in topic["act_or_ruling"]
+    assert len(topic["key_rights"]) >= 5
+    assert len(topic["remedies"]) >= 4
+
+
+def test_awareness_query_parents_adoption():
+    query_payload = {
+        "query": "Can a transgender parent legally adopt a child under Indian law through CARA?",
+    }
+    res = client.post("/awareness/query", json=query_payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert "Parents" in data["matched_topic"] or "Transgender" in data["matched_topic"]
+    assert len(data["actionable_steps"]) > 0
+    assert "cara" in " ".join(data["official_portals"]).lower() or "nalsa" in " ".join(data["official_portals"]).lower()
+
+
+def test_qa_api_endpoints():
+    # 1. List all categories
+    cats_res = client.get("/awareness/qa/categories")
+    assert cats_res.status_code == 200
+    categories = cats_res.json()
+    assert "Transgender Parents & Family Protections" in categories
+
+    # 2. Browse QA items (paginated)
+    qa_res = client.get("/awareness/qa?limit=10&page=1")
+    assert qa_res.status_code == 200
+    qa_data = qa_res.json()
+    assert qa_data["total"] >= 220
+    assert len(qa_data["items"]) == 10
+    assert qa_data["page"] == 1
+
+    # 3. Filter QA items by parent category
+    parent_qa_res = client.get("/awareness/qa?category=Transgender+Parents")
+    assert parent_qa_res.status_code == 200
+    parent_qa_data = parent_qa_res.json()
+    assert parent_qa_data["total"] == 20
+
+    # 4. Search QA items
+    search_res = client.get("/awareness/qa?q=cryopreservation")
+    assert search_res.status_code == 200
+    search_data = search_res.json()
+    assert search_data["total"] > 0
+    assert any("fertility" in item["answer"].lower() or "cryopreservation" in item["question"].lower() for item in search_data["items"])
+
+    # 5. Get single QA item by ID
+    single_res = client.get("/awareness/qa/201")
+    assert single_res.status_code == 200
+    item_201 = single_res.json()
+    assert item_201["id"] == 201
+    assert "adopt" in item_201["question"].lower()
+
+    # 6. Not found
+    nf_res = client.get("/awareness/qa/99999")
+    assert nf_res.status_code == 404
 

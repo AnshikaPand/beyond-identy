@@ -66,3 +66,63 @@ def login_json(credentials: schemas.UserLoginJSON, db: Session = Depends(get_db)
 @router.get("/me", response_model=schemas.UserOut)
 def read_current_user(current_user: models.User = Depends(auth.get_current_user)):
     return current_user
+
+
+@router.post("/forgot-password", response_model=schemas.PasswordResetResponse)
+def forgot_password(req: schemas.ForgotPasswordRequest, db: Session = Depends(get_db)):
+    """
+    Initiates password recovery.
+    Verifies user registration and generates a time-limited 30-minute password reset token.
+    """
+    clean_email = req.email.strip().lower()
+    user = db.query(models.User).filter(models.User.email == clean_email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No account registered with this email address",
+        )
+
+    token = auth.create_password_reset_token(clean_email)
+    return schemas.PasswordResetResponse(
+        message="Password reset token generated successfully. Please use this token to set a new password.",
+        reset_token=token,
+        email=clean_email,
+    )
+
+
+@router.post("/reset-password", response_model=schemas.PasswordResetResponse)
+def reset_password(req: schemas.ResetPasswordRequest, db: Session = Depends(get_db)):
+    """
+    Completes password recovery.
+    Validates reset token authenticity, checks password length (min 6 characters),
+    and updates the user's hashed password securely.
+    """
+    new_pw = req.new_password.strip()
+    if len(new_pw) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be at least 6 characters long",
+        )
+
+    email = auth.verify_password_reset_token(req.token.strip())
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid, expired, or malformed password reset token",
+        )
+
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The account associated with this token no longer exists",
+        )
+
+    user.hashed_password = auth.hash_password(new_pw)
+    db.commit()
+
+    return schemas.PasswordResetResponse(
+        message="Your password has been successfully updated. You can now sign in with your new password.",
+        email=email,
+    )
+

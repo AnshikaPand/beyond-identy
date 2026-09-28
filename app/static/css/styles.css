@@ -1338,6 +1338,203 @@ textarea {
   background: rgba(56, 189, 248, 0.1);
 }
 
+/* AI Awareness Modal & Cards (Chat & Talking Forms) */
+.awareness-mode-card {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.awareness-mode-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-cyan) !important;
+  box-shadow: 0 10px 24px rgba(56, 189, 248, 0.12);
+}
+#open-awareness-talk-btn:hover {
+  border-color: var(--accent-violet) !important;
+  box-shadow: 0 10px 24px rgba(168, 85, 247, 0.14);
+}
+
+.chat-prompt-chip {
+  display: inline-block;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.chat-prompt-chip:hover {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.12);
+}
+
+.awareness-msg {
+  display: flex;
+  gap: 12px;
+  max-width: 88%;
+}
+.awareness-msg.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+.awareness-msg.ai {
+  align-self: flex-start;
+}
+
+.awareness-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+}
+.awareness-msg.ai .awareness-avatar {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2));
+  border-color: var(--accent-cyan);
+}
+
+.awareness-bubble {
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  word-break: break-word;
+}
+.awareness-msg.user .awareness-bubble {
+  background: linear-gradient(135deg, var(--accent-cyan), #0284c7);
+  color: #000;
+  font-weight: 500;
+  border-bottom-right-radius: 3px;
+  border: none;
+}
+.awareness-msg.ai .awareness-bubble {
+  border-bottom-left-radius: 3px;
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+}
+
+.awareness-bubble-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-subtle);
+}
+.awareness-bubble-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.awareness-bubble-btn:hover {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+}
+
+/* Talking Orb Animation */
+.talk-orb-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  border: 2px solid rgba(56, 189, 248, 0.3);
+  opacity: 0;
+}
+.talk-orb-ring.ring-1 {
+  width: 100px;
+  height: 100px;
+}
+.talk-orb-ring.ring-2 {
+  width: 125px;
+  height: 125px;
+}
+.talk-orb-container.listening .talk-orb-ring {
+  border-color: rgba(244, 63, 94, 0.5);
+  animation: waveRing 1.8s infinite cubic-bezier(0.2, 0.8, 0.4, 1);
+}
+.talk-orb-container.listening .talk-orb-ring.ring-2 {
+  animation-delay: 0.5s;
+}
+.talk-orb-container.speaking .talk-orb-ring {
+  border-color: rgba(56, 189, 248, 0.6);
+  animation: waveRing 1.4s infinite cubic-bezier(0.2, 0.8, 0.4, 1);
+}
+.talk-orb-container.speaking .talk-orb-ring.ring-2 {
+  animation-delay: 0.4s;
+}
+
+@keyframes waveRing {
+  0% {
+    width: 90px;
+    height: 90px;
+    opacity: 0.8;
+  }
+  100% {
+    width: 160px;
+    height: 160px;
+    opacity: 0;
+  }
+}
+
+.talk-mic-core.listening {
+  background: linear-gradient(135deg, #f43f5e, #e11d48) !important;
+  box-shadow: 0 0 35px rgba(244, 63, 94, 0.7) !important;
+  transform: scale(1.08);
+}
+.talk-mic-core.speaking {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet)) !important;
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.7) !important;
+  animation: micPulse 1.2s infinite ease-in-out alternate;
+}
+@keyframes micPulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.06); }
+}
+
+[data-theme="light"] .awareness-mode-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+[data-theme="light"] .awareness-modal-container {
+  background: #ffffff !important;
+}
+[data-theme="light"] .awareness-modal-header {
+  background: #f8fafc !important;
+}
+[data-theme="light"] .awareness-msg.ai .awareness-bubble {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+[data-theme="light"] #awareness-chat-view,
+[data-theme="light"] #awareness-talk-view {
+  background: #ffffff !important;
+}
+[data-theme="light"] .chat-prompt-chip {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border-color: #cbd5e1 !important;
+}
+
 /* Health Assistant Decision Tree Wizard */
 .decision-card {
   background: var(--bg-card);

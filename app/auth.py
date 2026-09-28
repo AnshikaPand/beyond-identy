@@ -93,3 +93,30 @@ def get_optional_current_user(
     except JWTError:
         return None
 
+
+RESET_TOKEN_EXPIRE_MINUTES = 30
+
+
+def create_password_reset_token(email: str) -> str:
+    """Generates a secure, time-limited JWT reset token valid for 30 minutes."""
+    expire = datetime.utcnow() + timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES)
+    to_encode = {
+        "sub": email.strip().lower(),
+        "purpose": "password_reset",
+        "exp": expire,
+    }
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def verify_password_reset_token(token: str) -> Optional[str]:
+    """Decodes and validates a password reset token, returning the user's email if valid."""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("purpose") != "password_reset":
+            return None
+        email: str = payload.get("sub")
+        return email.lower().strip() if email else None
+    except JWTError:
+        return None
+
+

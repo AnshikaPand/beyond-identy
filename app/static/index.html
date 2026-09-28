@@ -28,6 +28,15 @@
 </head>
 <body>
 
+  <!-- Emergency Crisis Helpline Top Banner -->
+  <aside class="emergency-helpline-bar" style="background: linear-gradient(90deg, #be123c, #e11d48, #9f1239); color: #ffffff; padding: 7px 16px; font-size: 13px; font-weight: 500; text-align: center; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; box-shadow: 0 2px 8px rgba(190, 18, 60, 0.25); position: sticky; top: 0; z-index: 1000;">
+    <span>🚨 <strong>24/7 Crisis & Support Helpline:</strong></span>
+    <a href="tel:868989330" style="background: #ffffff; color: #be123c; padding: 3px 12px; border-radius: 999px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.2); transition: transform 0.15s ease;">
+      📞 868989330
+    </a>
+    <span style="opacity: 0.9; font-size: 12px;">| Tele-MANAS: 14416 | Free Legal Aid (NALSA): 15100</span>
+  </aside>
+
   <!-- Top Navigation -->
   <header class="navbar">
     <div class="container nav-content">
@@ -46,8 +55,13 @@
         <span class="sdg-pill sdg-3">🩺 SDG 3: Good Health</span>
       </div>
 
-      <!-- Right Header Actions: Theme Switcher + Auth -->
-      <div style="display: flex; align-items: center; gap: 14px;">
+      <!-- Right Header Actions: Helpline + Theme Switcher + Auth -->
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <!-- Direct Helpline Button -->
+        <a href="tel:868989330" class="btn btn-secondary" style="color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.35); padding: 7px 12px; font-size: 12.5px; text-decoration: none; display: flex; align-items: center; gap: 5px; font-weight: 600;" title="Call 24/7 Helpline">
+          <span>📞</span> 868989330
+        </a>
+
         <!-- Theme Switcher Segmented Control (Day / Night / System) -->
         <div class="theme-switch-group" id="theme-switch-container" title="Select Theme: Day, Night, or System">
           <button type="button" class="theme-switch-btn" data-theme-val="light" title="Day Theme (Light)" aria-label="Day Theme">☀️ Day</button>
@@ -85,8 +99,8 @@
           <div class="stat-label">PM-JAY Health Coverage</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">24x7</div>
-          <div class="stat-label">Tele-MANAS & Kiran Triage</div>
+          <div class="stat-number" style="font-size: 20px;"><a href="tel:868989330" style="color: inherit; text-decoration: none;">📞 868989330</a></div>
+          <div class="stat-label">24x7 Community Helpline</div>
         </div>
       </div>
 
@@ -253,7 +267,7 @@
             </div>
             <div class="pillar-preview-items">
               <div class="pillar-preview-row">
-                <span>📞 Tele-MANAS (14416) & Kiran (1800-599-0019)</span>
+                <span>📞 Helpline: 868989330 & Tele-MANAS (14416)</span>
                 <span class="pillar-preview-badge badge-danger">24x7 SOS</span>
               </div>
               <div class="pillar-preview-row">
@@ -500,6 +514,48 @@
           </p>
         </div>
 
+        <div class="awareness-modal-launchers" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 20px 0 24px;">
+          <!-- Chat Form Card -->
+          <div class="awareness-mode-card" id="open-awareness-chat-btn" style="cursor: pointer; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px; transition: transform 0.2s, border-color 0.2s;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+              <span style="font-size: 26px; background: rgba(56, 189, 248, 0.15); width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">💬</span>
+              <div>
+                <h4 style="margin: 0; font-size: 15.5px; color: var(--text-primary); font-weight: 700;">Chat Form Assistant</h4>
+                <span style="font-size: 11.5px; color: var(--accent-cyan); font-weight: 600;">Text AI Consultation</span>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 14px; line-height: 1.45;">
+              Interactive chat modal with multi-turn conversation, statutory citations, remedies, and copyable legal advice.
+            </p>
+            <button type="button" class="btn btn-secondary" style="width: 100%; font-size: 12.5px; pointer-events: none; justify-content: center;">
+              Launch Chat Modal →
+            </button>
+          </div>
+
+          <!-- Talking Form Card -->
+          <div class="awareness-mode-card" id="open-awareness-talk-btn" style="cursor: pointer; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px; transition: transform 0.2s, border-color 0.2s;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+              <span style="font-size: 26px; background: rgba(168, 85, 247, 0.15); width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">🎙️</span>
+              <div>
+                <h4 style="margin: 0; font-size: 15.5px; color: var(--text-primary); font-weight: 700;">Talking Form Assistant</h4>
+                <span style="font-size: 11.5px; color: var(--accent-violet); font-weight: 600;">Voice & Speech AI</span>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 14px; line-height: 1.45;">
+              Speak your question directly using your microphone and hear the AI speak affirmative legal guidance aloud.
+            </p>
+            <button type="button" class="btn btn-primary" style="width: 100%; font-size: 12.5px; pointer-events: none; justify-content: center;">
+              Launch Talking Modal 🎙️
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="flex: 1; height: 1px; background: var(--border-subtle);"></div>
+          <span style="font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Or Instant Quick Query</span>
+          <div style="flex: 1; height: 1px; background: var(--border-subtle);"></div>
+        </div>
+
         <div class="query-input-wrap">
           <input type="text" id="awareness-query-input" placeholder="e.g., My landlord is forcing me out without notice because of my gender identity. What can I do?" />
           <button class="btn btn-primary" id="awareness-query-btn">Consult Legal Rights</button>
@@ -509,6 +565,8 @@
         <div class="prompt-chips">
           <span class="chip">Workplace Equal Opportunity Policy</span>
           <span class="chip">Arbitrary Housing Eviction & Garima Greh</span>
+          <span class="chip">Transgender Parents & Adoption Rights</span>
+          <span class="chip">Child Custody & Family Protections</span>
           <span class="chip">Police Extortion & Illegal Custody</span>
           <span class="chip">Healthcare Denial & Ayushman Bharat</span>
           <span class="chip">Name and Gender Change on Aadhaar</span>
@@ -586,12 +644,18 @@
           <input type="email" id="modal-login-email" placeholder="name@example.org" required style="padding: 10px 12px; font-size: 13.5px;" />
         </div>
 
-        <div class="form-group" style="margin-bottom: 16px;">
+        <div class="form-group" style="margin-bottom: 8px;">
           <label for="modal-login-password" style="font-size: 12.5px;">Password</label>
           <div style="position: relative;">
             <input type="password" id="modal-login-password" placeholder="Enter your password" required style="padding: 10px 12px; font-size: 13.5px; padding-right: 36px;" />
             <button type="button" id="modal-pass-toggle" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px;">👁️</button>
           </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 14px;">
+          <button type="button" id="modal-forgot-pass-btn" style="background: none; border: none; color: var(--accent-cyan); font-size: 12px; cursor: pointer; text-decoration: underline; padding: 0;">
+            Forgot Password?
+          </button>
         </div>
 
         <button type="submit" class="btn btn-primary" id="modal-login-submit-btn" style="width: 100%; padding: 12px; font-size: 14px; margin-bottom: 10px;">
@@ -638,6 +702,45 @@
         </button>
       </form>
 
+      <!-- 3. Modal Forgot Password Form -->
+      <form id="modal-forgot-form" style="display: none; margin-bottom: 16px;">
+        <div style="text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+          Enter your registered email to request a reset token.
+        </div>
+        <div id="modal-forgot-step1">
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label for="modal-forgot-email" style="font-size: 12px;">Registered Email</label>
+            <input type="email" id="modal-forgot-email" placeholder="name@example.org" required style="padding: 10px 12px; font-size: 13.5px;" />
+          </div>
+          <button type="submit" class="btn btn-primary" id="modal-forgot-req-btn" style="width: 100%; padding: 11px; font-size: 13.5px;">
+            Request Reset Token
+          </button>
+        </div>
+
+        <div id="modal-forgot-step2" style="display: none; margin-top: 10px;">
+          <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 8px 10px; font-size: 12px; color: #a7f3d0; margin-bottom: 10px;">
+            Token generated! Set your new password:
+          </div>
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label for="modal-reset-token-input" style="font-size: 11.5px;">Reset Token</label>
+            <input type="text" id="modal-reset-token-input" required style="padding: 8px 10px; font-size: 12px;" />
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label for="modal-reset-newpass" style="font-size: 11.5px;">New Password (min 6 chars)</label>
+            <input type="password" id="modal-reset-newpass" placeholder="Min 6 chars" required minlength="6" style="padding: 8px 10px; font-size: 12.5px;" />
+          </div>
+          <button type="button" class="btn btn-primary" id="modal-reset-confirm-btn" style="width: 100%; padding: 11px; font-size: 13.5px;">
+            Confirm & Save Password
+          </button>
+        </div>
+
+        <div style="text-align: center; margin-top: 12px;">
+          <button type="button" id="modal-back-to-signin-btn" style="background: none; border: none; color: var(--text-muted); font-size: 12.5px; cursor: pointer;">
+            ← Return to Sign In
+          </button>
+        </div>
+      </form>
+
       <div style="text-align: center; font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
         Need the full experience? <a href="/login" style="color: var(--accent-cyan); text-decoration: underline; font-weight: 600;">Open dedicated Auth Portal →</a>
       </div>
@@ -670,6 +773,114 @@
       <div id="incident-result-content">
         <!-- Injected via app.js -->
       </div>
+    </div>
+  <!-- AI Awareness Assistant Modal (Chat Form & Talking Form) -->
+  <div class="modal-overlay" id="awareness-ai-modal">
+    <div class="modal-content awareness-modal-container" style="max-width: 800px; width: 100%; padding: 0; overflow: hidden; display: flex; flex-direction: column; max-height: 88vh; height: 750px;">
+      <!-- Modal Header -->
+      <div class="awareness-modal-header" style="padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: var(--bg-tertiary);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet)); display: flex; align-items: center; justify-content: center; font-size: 20px;">⚖️</div>
+          <div>
+            <h3 style="margin: 0; font-size: 16.5px; font-weight: 700; color: var(--text-primary);">AI Legal Rights Awareness Assistant</h3>
+            <span style="font-size: 12px; color: var(--text-muted);">TG Act 2019 • NALSA 2014 • Free Legal Aid 15100</span>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <!-- Mode Switch Tabs -->
+          <div class="awareness-tab-switch" style="display: flex; background: var(--bg-primary); padding: 3px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+            <button type="button" class="awareness-switch-btn active" id="switch-to-chat-btn" style="padding: 6px 14px; border: none; background: var(--accent-cyan); color: #000; font-weight: 700; font-size: 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
+              💬 Chat Form
+            </button>
+            <button type="button" class="awareness-switch-btn" id="switch-to-talk-btn" style="padding: 6px 14px; border: none; background: transparent; color: var(--text-muted); font-weight: 600; font-size: 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
+              🎙️ Talking Form
+            </button>
+          </div>
+          <button class="close-modal" id="close-awareness-modal" style="position: static; font-size: 20px; padding: 4px 8px; color: var(--text-muted); cursor: pointer;" aria-label="Close Modal">✕</button>
+        </div>
+      </div>
+
+      <!-- VIEW 1: Chat Form Body -->
+      <div id="awareness-chat-view" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;">
+        <!-- Chat Messages Container -->
+        <div id="awareness-chat-messages" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+          <!-- Injected via app.js -->
+        </div>
+
+        <!-- Quick Prompts in Chat -->
+        <div style="padding: 8px 16px; border-top: 1px solid var(--border-subtle); background: var(--bg-tertiary); overflow-x: auto; white-space: nowrap; display: flex; gap: 8px;" id="awareness-modal-chips">
+          <span class="chat-prompt-chip" data-prompt="Can a transgender parent legally adopt a child under CARA in India?">👨‍👩‍👧 Trans Parents & Adoption</span>
+          <span class="chat-prompt-chip" data-prompt="What are my rights if my landlord forces me to leave?">🏠 Landlord Eviction</span>
+          <span class="chat-prompt-chip" data-prompt="How do I get my TG Certificate & ID card from District Magistrate?">🪪 ID Card & Certificate</span>
+          <span class="chat-prompt-chip" data-prompt="Can a company refuse to hire or fire a trans person?">💼 Workplace Rights</span>
+          <span class="chat-prompt-chip" data-prompt="How do I get free legal counsel under NALSA Section 12?">⚖️ Free Legal Aid</span>
+          <span class="chat-prompt-chip" data-prompt="What punishment does the law provide under Section 18 for abuse?">🛡️ Section 18 Penalties</span>
+        </div>
+
+        <!-- Chat Input Footer -->
+        <div style="padding: 12px 18px; border-top: 1px solid var(--border-subtle); display: flex; gap: 10px; align-items: center; background: var(--bg-secondary);">
+          <button type="button" id="chat-input-mic-btn" class="btn btn-secondary" title="Speak into microphone" style="padding: 10px 14px; border-radius: 8px; font-size: 16px;">
+            🎙️
+          </button>
+          <input type="text" id="awareness-chat-input" placeholder="Type your legal question or click 🎙️ to talk..." style="flex: 1; padding: 11px 14px; border-radius: 8px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 14px;" />
+          <button type="button" id="awareness-chat-send-btn" class="btn btn-primary" style="padding: 10px 20px; font-size: 13.5px;">
+            Send
+          </button>
+        </div>
+      </div>
+
+      <!-- VIEW 2: Talking Form Body -->
+      <div id="awareness-talk-view" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; text-align: center; overflow-y: auto; flex: 1;">
+        
+        <!-- Animated Voice Orb & Mic -->
+        <div class="talk-orb-container" style="position: relative; width: 140px; height: 140px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+          <div class="talk-orb-ring ring-1" id="talk-ring-1"></div>
+          <div class="talk-orb-ring ring-2" id="talk-ring-2"></div>
+          <button type="button" id="talk-main-mic-btn" class="talk-mic-core" style="width: 90px; height: 90px; border-radius: 50%; border: none; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet)); color: #fff; font-size: 34px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(56, 189, 248, 0.4); transition: transform 0.2s, box-shadow 0.2s; position: relative; z-index: 2;">
+            🎙️
+          </button>
+        </div>
+
+        <div id="talk-status-text" style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">
+          Click the Microphone to Talk
+        </div>
+        <p id="talk-substatus" style="font-size: 13.5px; color: var(--text-muted); max-width: 480px; margin: 0 auto 18px;">
+          Ask any question aloud about Indian laws, workplace rights, or free legal aid.
+        </p>
+
+        <!-- Live transcript box -->
+        <div id="talk-transcript-box" style="display: none; width: 100%; max-width: 580px; background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; text-align: left;">
+          <div style="font-size: 11px; text-transform: uppercase; color: var(--accent-cyan); font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px;">You Asked:</div>
+          <div id="talk-user-transcript" style="font-size: 14px; color: var(--text-primary); font-weight: 500;">...</div>
+        </div>
+
+        <!-- AI Voice Output Box -->
+        <div id="talk-response-box" style="display: none; width: 100%; max-width: 580px; background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 16px 18px; text-align: left;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="font-size: 11.5px; text-transform: uppercase; color: var(--accent-violet); font-weight: 700; letter-spacing: 0.05em;">⚖️ AI Spoken Guidance</div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" id="talk-replay-btn" class="btn btn-secondary" style="font-size: 11.5px; padding: 4px 10px;">🔊 Replay</button>
+              <button type="button" id="talk-stop-btn" class="btn btn-secondary" style="font-size: 11.5px; padding: 4px 10px; color: var(--accent-rose);">⏹️ Stop</button>
+            </div>
+          </div>
+          <div id="talk-ai-text" style="font-size: 14px; color: var(--text-primary); line-height: 1.55; margin-bottom: 10px;"></div>
+          <div id="talk-ai-meta" style="font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 8px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+            <span id="talk-law-cite" style="color: var(--accent-cyan); font-weight: 600;"></span>
+            <span>Helpline: <strong style="color: var(--accent-rose);"><a href="tel:868989330" style="color: var(--accent-rose); text-decoration: none;">868989330</a></strong> | NALSA: 15100</span>
+          </div>
+        </div>
+
+        <!-- Auto-speak toggle -->
+        <div style="margin-top: 18px; display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--text-muted);">
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="checkbox" id="talk-auto-speak-toggle" checked />
+            <span>Speak AI answer aloud automatically</span>
+          </label>
+        </div>
+
+      </div>
+
     </div>
   </div>
 

@@ -30,6 +30,7 @@ DECISION_NODES: Dict[str, Dict[str, Any]] = {
         "warnings": None,
         "recommended_actions": None,
         "helpline_contacts": [
+            "Community Crisis Helpline: 868989330",
             "Tele-MANAS: 14416 (24x7 Free Mental Health)",
             "Kiran Mental Health Helpline: 1800-599-0019",
             "National Emergency: 112",
@@ -77,11 +78,13 @@ DECISION_NODES: Dict[str, Dict[str, Any]] = {
             "If you are in immediate physical danger, call 112 immediately or reach the nearest hospital emergency room.",
         ],
         "recommended_actions": [
+            "Call Community Crisis Helpline (868989330) for immediate confidential guidance and emergency triage.",
             "Dial Tele-MANAS (14416) — Govt of India's 24x7 multi-lingual tele-mental health service.",
             "Dial Kiran Helpline (1800-599-0019) for psychiatric triage and distress relief.",
             "If you are facing domestic violence or homelessness, contact Tweet Foundation emergency transit shelter at +91-9810012345.",
         ],
         "helpline_contacts": [
+            "Community Crisis Helpline: 868989330",
             "Tele-MANAS: 14416 (Toll-Free, 24x7)",
             "Kiran Mental Health: 1800-599-0019 (24x7)",
             "Vandrevala Foundation: +91-9999666555",

@@ -50,6 +50,21 @@ class Token(BaseModel):
     user: Optional[UserOut] = None
 
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
+class PasswordResetResponse(BaseModel):
+    message: str
+    reset_token: Optional[str] = None
+    email: Optional[str] = None
+
+
 # ==========================================
 # 2. Listing Schemas
 # ==========================================
@@ -175,6 +190,7 @@ class AwarenessTopicOut(BaseModel):
 class AwarenessQueryRequest(BaseModel):
     query: str
     category: Optional[str] = None
+    language: Optional[str] = "en"
 
 
 class AwarenessQueryResponse(BaseModel):
@@ -186,6 +202,46 @@ class AwarenessQueryResponse(BaseModel):
     actionable_steps: List[str]
     legal_aid_contact: str
     official_portals: List[str]
+    language: Optional[str] = "en"
+
+
+class AwarenessChatMessage(BaseModel):
+    role: str  # "user" | "assistant" | "system"
+    content: str
+
+
+class AwarenessChatRequest(BaseModel):
+    messages: List[AwarenessChatMessage]
+    voice_mode: bool = False
+    category: Optional[str] = None
+    language: Optional[str] = "en"
+
+
+class AwarenessChatResponse(BaseModel):
+    reply: str
+    speech_text: str
+    matched_topic: Optional[str] = None
+    applicable_law: Optional[str] = None
+    actionable_steps: List[str] = []
+    legal_aid_contact: Optional[str] = None
+    official_portals: List[str] = []
+    language: Optional[str] = "en"
+
+
+class QAKnowledgeItem(BaseModel):
+    id: int
+    category: str
+    question: str
+    answer: str
+    applicable_law: str
+    keywords: List[str]
+
+
+class QAListResponse(BaseModel):
+    total: int
+    page: int
+    limit: int
+    items: List[QAKnowledgeItem]
 
 
 # ==========================================

@@ -122,6 +122,12 @@ function setupAuthUI() {
     });
   }
 
+  const modalForgotForm = document.getElementById("modal-forgot-form");
+  const modalForgotPassBtn = document.getElementById("modal-forgot-pass-btn");
+  const modalBackToSigninBtn = document.getElementById("modal-back-to-signin-btn");
+  const modalForgotReqBtn = document.getElementById("modal-forgot-req-btn");
+  const modalResetConfirmBtn = document.getElementById("modal-reset-confirm-btn");
+
   // Modal Tab Switching
   function switchModalTab(tab) {
     if (modalAuthAlert) modalAuthAlert.style.display = "none";
@@ -130,13 +136,29 @@ function setupAuthUI() {
       modalTabSignin.classList.remove("active");
       modalRegisterForm.style.display = "block";
       modalLoginForm.style.display = "none";
+      if (modalForgotForm) modalForgotForm.style.display = "none";
       if (modalAuthTitle) modalAuthTitle.innerText = "Join Beyond Identity";
       if (modalAuthSubtitle) modalAuthSubtitle.innerText = "Create an account for community or partner access";
+    } else if (tab === "forgot") {
+      modalTabSignin.classList.remove("active");
+      modalTabRegister.classList.remove("active");
+      modalLoginForm.style.display = "none";
+      modalRegisterForm.style.display = "none";
+      if (modalForgotForm) {
+        modalForgotForm.style.display = "block";
+        const step1 = document.getElementById("modal-forgot-step1");
+        const step2 = document.getElementById("modal-forgot-step2");
+        if (step1) step1.style.display = "block";
+        if (step2) step2.style.display = "none";
+      }
+      if (modalAuthTitle) modalAuthTitle.innerText = "Reset Password";
+      if (modalAuthSubtitle) modalAuthSubtitle.innerText = "Enter your registered email to request a reset token";
     } else {
       modalTabSignin.classList.add("active");
       modalTabRegister.classList.remove("active");
       modalLoginForm.style.display = "block";
       modalRegisterForm.style.display = "none";
+      if (modalForgotForm) modalForgotForm.style.display = "none";
       if (modalAuthTitle) modalAuthTitle.innerText = "Welcome to Beyond Identity";
       if (modalAuthSubtitle) modalAuthSubtitle.innerText = "Sign in to your account or use 1-click access";
     }
@@ -144,6 +166,8 @@ function setupAuthUI() {
 
   if (modalTabSignin) modalTabSignin.addEventListener("click", () => switchModalTab("signin"));
   if (modalTabRegister) modalTabRegister.addEventListener("click", () => switchModalTab("register"));
+  if (modalForgotPassBtn) modalForgotPassBtn.addEventListener("click", () => switchModalTab("forgot"));
+  if (modalBackToSigninBtn) modalBackToSigninBtn.addEventListener("click", () => switchModalTab("signin"));
 
   // Password Toggles in Modal
   const modalPassToggle = document.getElementById("modal-pass-toggle");
@@ -225,6 +249,90 @@ function setupAuthUI() {
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = "Create Account & Sign In";
+      }
+    });
+  }
+
+  // Handle Modal Forgot Password Request
+  let modalResetEmail = "";
+  if (modalForgotForm) {
+    modalForgotForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("modal-forgot-email").value.trim();
+      if (!email) return;
+
+      if (modalForgotReqBtn) {
+        modalForgotReqBtn.disabled = true;
+        modalForgotReqBtn.innerText = "Generating Reset Token...";
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/forgot-password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Unable to request password reset");
+
+        modalResetEmail = email;
+        const tokenInput = document.getElementById("modal-reset-token-input");
+        if (tokenInput) tokenInput.value = data.reset_token || "";
+
+        document.getElementById("modal-forgot-step1").style.display = "none";
+        document.getElementById("modal-forgot-step2").style.display = "block";
+        showModalAlert("Reset token generated! Enter your new password below.", false);
+      } catch (err) {
+        showModalAlert(err.message, true);
+      } finally {
+        if (modalForgotReqBtn) {
+          modalForgotReqBtn.disabled = false;
+          modalForgotReqBtn.innerText = "Request Reset Token";
+        }
+      }
+    });
+  }
+
+  // Handle Modal Password Reset Confirm
+  if (modalResetConfirmBtn) {
+    modalResetConfirmBtn.addEventListener("click", async () => {
+      const token = document.getElementById("modal-reset-token-input").value.trim();
+      const newPassword = document.getElementById("modal-reset-newpass").value;
+
+      if (!token) {
+        showModalAlert("Please enter your reset token.", true);
+        return;
+      }
+      if (newPassword.length < 6) {
+        showModalAlert("Password must be at least 6 characters long.", true);
+        return;
+      }
+
+      modalResetConfirmBtn.disabled = true;
+      modalResetConfirmBtn.innerText = "Updating...";
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/reset-password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, new_password: newPassword }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Failed to update password");
+
+        switchModalTab("signin");
+        if (modalResetEmail) {
+          document.getElementById("modal-login-email").value = modalResetEmail;
+        }
+        document.getElementById("modal-login-password").value = "";
+        showModalAlert("✅ Password reset successfully! Please sign in with your new password.", false);
+      } catch (err) {
+        showModalAlert(err.message, true);
+      } finally {
+        modalResetConfirmBtn.disabled = false;
+        modalResetConfirmBtn.innerText = "Confirm & Save Password";
       }
     });
   }
@@ -622,6 +730,455 @@ function setupAwarenessUI() {
   const queryBtn = document.getElementById("awareness-query-btn");
   const resultCard = document.getElementById("awareness-result-card");
 
+  // Modal elements
+  const modal = document.getElementById("awareness-ai-modal");
+  const openChatBtn = document.getElementById("open-awareness-chat-btn");
+  const openTalkBtn = document.getElementById("open-awareness-talk-btn");
+  const closeModalBtn = document.getElementById("close-awareness-modal");
+  const switchToChatBtn = document.getElementById("switch-to-chat-btn");
+  const switchToTalkBtn = document.getElementById("switch-to-talk-btn");
+  const chatView = document.getElementById("awareness-chat-view");
+  const talkView = document.getElementById("awareness-talk-view");
+
+  // Chat view elements
+  const chatMessages = document.getElementById("awareness-chat-messages");
+  const chatInput = document.getElementById("awareness-chat-input");
+  const chatSendBtn = document.getElementById("awareness-chat-send-btn");
+  const chatMicBtn = document.getElementById("chat-input-mic-btn");
+
+  // Talking view elements
+  const talkOrb = document.querySelector(".talk-orb-container");
+  const talkMicBtn = document.getElementById("talk-main-mic-btn");
+  const talkStatusText = document.getElementById("talk-status-text");
+  const talkSubstatus = document.getElementById("talk-substatus");
+  const talkTranscriptBox = document.getElementById("talk-transcript-box");
+  const talkUserTranscript = document.getElementById("talk-user-transcript");
+  const talkResponseBox = document.getElementById("talk-response-box");
+  const talkAiText = document.getElementById("talk-ai-text");
+  const talkLawCite = document.getElementById("talk-law-cite");
+  const talkReplayBtn = document.getElementById("talk-replay-btn");
+  const talkStopBtn = document.getElementById("talk-stop-btn");
+  const talkAutoSpeakToggle = document.getElementById("talk-auto-speak-toggle");
+
+  // Conversation history state
+  let awarenessChatHistory = [
+    {
+      role: "assistant",
+      content:
+        "Welcome! I am your AI Legal Rights Awareness Assistant. Ask me anything about your rights under the **Transgender Persons (Protection of Rights) Act 2019**, **NALSA (2014)** Supreme Court judgment, Section 12 Free Legal Aid, workplace non-discrimination, or housing protections.",
+      speech_text:
+        "Welcome to the AI Legal Rights Awareness Assistant. Ask me anything about your rights under Indian law, workplace non-discrimination, or how to get free legal aid under Section 12.",
+    },
+  ];
+
+  let isSpeechListening = false;
+  let activeSpeechRecognition = null;
+  let lastSpokenText = "";
+
+  // Speech Synthesis Helper
+  function speakText(text) {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    if (!text) return;
+
+    lastSpokenText = text;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.lang = "en-IN";
+
+    if (talkOrb && talkMicBtn) {
+      utterance.onstart = () => {
+        talkOrb.classList.add("speaking");
+        talkOrb.classList.remove("listening");
+        talkMicBtn.classList.add("speaking");
+        talkMicBtn.classList.remove("listening");
+        if (talkStatusText) talkStatusText.innerText = "Speaking Answer Aloud...";
+      };
+      utterance.onend = () => {
+        talkOrb.classList.remove("speaking");
+        talkMicBtn.classList.remove("speaking");
+        if (talkStatusText) talkStatusText.innerText = "Click Microphone to Talk";
+      };
+      utterance.onerror = () => {
+        talkOrb.classList.remove("speaking");
+        talkMicBtn.classList.remove("speaking");
+        if (talkStatusText) talkStatusText.innerText = "Click Microphone to Talk";
+      };
+    }
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function stopSpeech() {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    if (talkOrb && talkMicBtn) {
+      talkOrb.classList.remove("speaking");
+      talkMicBtn.classList.remove("speaking");
+      if (talkStatusText) talkStatusText.innerText = "Click Microphone to Talk";
+    }
+  }
+
+  // Markdown-to-HTML parser for chat bubbles
+  function formatReply(text) {
+    let html = escapeHtml(text);
+    // Bold
+    html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    // Headers
+    html = html.replace(/### (.*?)\n/g, "<h4 style='margin:6px 0; color:var(--accent-cyan);'>$1</h4>");
+    html = html.replace(/#### (.*?)\n/g, "<h5 style='margin:4px 0; color:var(--text-primary); font-weight:700;'>$1</h5>");
+    // Line breaks
+    html = html.replace(/\n/g, "<br/>");
+    return html;
+  }
+
+  // Render chat messages
+  function renderChat() {
+    if (!chatMessages) return;
+    chatMessages.innerHTML = "";
+
+    awarenessChatHistory.forEach((msg) => {
+      const isUser = msg.role === "user";
+      const row = document.createElement("div");
+      row.className = `awareness-msg ${isUser ? "user" : "ai"}`;
+
+      const avatar = document.createElement("div");
+      avatar.className = "awareness-avatar";
+      avatar.innerText = isUser ? "👤" : "⚖️";
+
+      const bubbleWrap = document.createElement("div");
+      bubbleWrap.style.display = "flex";
+      bubbleWrap.style.flexDirection = "column";
+      bubbleWrap.style.maxWidth = "100%";
+
+      const bubble = document.createElement("div");
+      bubble.className = "awareness-bubble";
+      bubble.innerHTML = isUser ? escapeHtml(msg.content) : formatReply(msg.content);
+      bubbleWrap.appendChild(bubble);
+
+      // Actions row for AI messages
+      if (!isUser && msg.speech_text) {
+        const actions = document.createElement("div");
+        actions.className = "awareness-bubble-actions";
+
+        const listenBtn = document.createElement("button");
+        listenBtn.className = "awareness-bubble-btn";
+        listenBtn.innerHTML = "<span>🔊</span> Listen";
+        listenBtn.onclick = () => speakText(msg.speech_text);
+        actions.appendChild(listenBtn);
+
+        const copyBtn = document.createElement("button");
+        copyBtn.className = "awareness-bubble-btn";
+        copyBtn.innerHTML = "<span>📋</span> Copy";
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(msg.content);
+          copyBtn.innerText = "✓ Copied";
+          setTimeout(() => (copyBtn.innerHTML = "<span>📋</span> Copy"), 1500);
+        };
+        actions.appendChild(copyBtn);
+
+        bubbleWrap.appendChild(actions);
+      }
+
+      row.appendChild(avatar);
+      row.appendChild(bubbleWrap);
+      chatMessages.appendChild(row);
+    });
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  // Send message in Chat Form
+  async function sendChatMessage(text) {
+    if (!text || !text.trim()) return;
+    const cleanText = text.trim();
+    if (chatInput) chatInput.value = "";
+
+    awarenessChatHistory.push({ role: "user", content: cleanText });
+    renderChat();
+
+    // Add temporary loading indicator
+    const loadingRow = document.createElement("div");
+    loadingRow.className = "awareness-msg ai";
+    loadingRow.id = "chat-loading-indicator";
+    loadingRow.innerHTML = `
+      <div class="awareness-avatar">⚖️</div>
+      <div class="awareness-bubble" style="color:var(--text-muted); font-style:italic;">
+        Consulting Indian statutory knowledge base...
+      </div>
+    `;
+    chatMessages.appendChild(loadingRow);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    try {
+      const messagesPayload = awarenessChatHistory
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .map((m) => ({ role: m.role, content: m.content }));
+
+      const res = await fetch(`${API_BASE}/awareness/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: messagesPayload, voice_mode: false }),
+      });
+
+      if (!res.ok) throw new Error("Failed to consult AI awareness");
+      const data = await res.json();
+
+      const loader = document.getElementById("chat-loading-indicator");
+      if (loader) loader.remove();
+
+      awarenessChatHistory.push({
+        role: "assistant",
+        content: data.reply,
+        speech_text: data.speech_text,
+        matched_topic: data.matched_topic,
+        actionable_steps: data.actionable_steps,
+      });
+
+      renderChat();
+    } catch (err) {
+      const loader = document.getElementById("chat-loading-indicator");
+      if (loader) loader.remove();
+
+      awarenessChatHistory.push({
+        role: "assistant",
+        content: `Error: Unable to complete legal query (${escapeHtml(err.message)}). Please check connection or try again.`,
+        speech_text: "Sorry, I encountered an issue processing your legal request.",
+      });
+      renderChat();
+    }
+  }
+
+  // Modal Open & Mode Switchers
+  function openModal(mode = "chat") {
+    if (!modal) return;
+    modal.classList.add("active");
+    setModalMode(mode);
+    renderChat();
+  }
+
+  function closeModal() {
+    if (!modal) return;
+    modal.classList.remove("active");
+    stopSpeech();
+    if (activeSpeechRecognition) {
+      try {
+        activeSpeechRecognition.stop();
+      } catch (e) {}
+    }
+  }
+
+  function setModalMode(mode) {
+    stopSpeech();
+    if (mode === "chat") {
+      switchToChatBtn.classList.add("active");
+      switchToChatBtn.style.background = "var(--accent-cyan)";
+      switchToChatBtn.style.color = "#000";
+      switchToTalkBtn.classList.remove("active");
+      switchToTalkBtn.style.background = "transparent";
+      switchToTalkBtn.style.color = "var(--text-muted)";
+      if (chatView) chatView.style.display = "flex";
+      if (talkView) talkView.style.display = "none";
+      if (chatInput) chatInput.focus();
+    } else {
+      switchToTalkBtn.classList.add("active");
+      switchToTalkBtn.style.background = "var(--accent-violet)";
+      switchToTalkBtn.style.color = "#fff";
+      switchToChatBtn.classList.remove("active");
+      switchToChatBtn.style.background = "transparent";
+      switchToChatBtn.style.color = "var(--text-muted)";
+      if (chatView) chatView.style.display = "none";
+      if (talkView) talkView.style.display = "flex";
+    }
+  }
+
+  if (openChatBtn) openChatBtn.addEventListener("click", () => openModal("chat"));
+  if (openTalkBtn) openTalkBtn.addEventListener("click", () => openModal("talk"));
+  if (closeModalBtn) closeModalBtn.addEventListener("click", closeModal);
+  if (switchToChatBtn) switchToChatBtn.addEventListener("click", () => setModalMode("chat"));
+  if (switchToTalkBtn) switchToTalkBtn.addEventListener("click", () => setModalMode("talk"));
+
+  // Close modal when clicking outside
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
+
+  // Chat send listeners
+  if (chatSendBtn) {
+    chatSendBtn.addEventListener("click", () => sendChatMessage(chatInput.value));
+  }
+  if (chatInput) {
+    chatInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendChatMessage(chatInput.value);
+    });
+  }
+
+  // Chat Prompt Chips
+  document.querySelectorAll(".chat-prompt-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const prompt = chip.getAttribute("data-prompt") || chip.innerText;
+      sendChatMessage(prompt);
+    });
+  });
+
+  // Speech Recognition Initializer
+  function createSpeechRecognition() {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) return null;
+    const rec = new SpeechRec();
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.lang = "en-IN";
+    return rec;
+  }
+
+  // Chat Mic button (Quick Speech-to-Text)
+  if (chatMicBtn) {
+    chatMicBtn.addEventListener("click", () => {
+      const rec = createSpeechRecognition();
+      if (!rec) {
+        alert("Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.");
+        return;
+      }
+      chatMicBtn.innerText = "🔴";
+      chatInput.placeholder = "Listening... Speak your legal question now";
+
+      rec.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        chatInput.value = transcript;
+        chatMicBtn.innerText = "🎙️";
+        chatInput.placeholder = "Type your legal question or click 🎙️ to talk...";
+        sendChatMessage(transcript);
+      };
+      rec.onerror = () => {
+        chatMicBtn.innerText = "🎙️";
+        chatInput.placeholder = "Type your legal question or click 🎙️ to talk...";
+      };
+      rec.onend = () => {
+        chatMicBtn.innerText = "🎙️";
+        chatInput.placeholder = "Type your legal question or click 🎙️ to talk...";
+      };
+      rec.start();
+    });
+  }
+
+  // Talking Form Mic Handler
+  if (talkMicBtn) {
+    talkMicBtn.addEventListener("click", () => {
+      stopSpeech();
+      const rec = createSpeechRecognition();
+      if (!rec) {
+        alert("Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.");
+        return;
+      }
+
+      if (isSpeechListening && activeSpeechRecognition) {
+        activeSpeechRecognition.stop();
+        isSpeechListening = false;
+        talkOrb.classList.remove("listening");
+        talkMicBtn.classList.remove("listening");
+        talkStatusText.innerText = "Click the Microphone to Talk";
+        return;
+      }
+
+      activeSpeechRecognition = rec;
+      isSpeechListening = true;
+      talkOrb.classList.add("listening");
+      talkMicBtn.classList.add("listening");
+      talkStatusText.innerText = "Listening... (Speak your question)";
+      talkSubstatus.innerText = "Go ahead, we are listening to your legal question...";
+
+      rec.onresult = async (e) => {
+        isSpeechListening = false;
+        talkOrb.classList.remove("listening");
+        talkMicBtn.classList.remove("listening");
+        const transcript = e.results[0][0].transcript;
+
+        // Show transcript
+        if (talkTranscriptBox && talkUserTranscript) {
+          talkTranscriptBox.style.display = "block";
+          talkUserTranscript.innerText = `"${transcript}"`;
+        }
+
+        talkStatusText.innerText = "Analyzing Indian Legal Rights...";
+        talkSubstatus.innerText = "Formulating plain-language guidance and statutory provisions...";
+
+        try {
+          const res = await fetch(`${API_BASE}/awareness/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              messages: [{ role: "user", content: transcript }],
+              voice_mode: true,
+            }),
+          });
+
+          if (!res.ok) throw new Error("Failed to process question");
+          const data = await res.json();
+
+          // Also record into conversation history
+          awarenessChatHistory.push({ role: "user", content: transcript });
+          awarenessChatHistory.push({
+            role: "assistant",
+            content: data.reply,
+            speech_text: data.speech_text,
+            matched_topic: data.matched_topic,
+            actionable_steps: data.actionable_steps,
+          });
+
+          // Display talking response box
+          if (talkResponseBox && talkAiText) {
+            talkResponseBox.style.display = "block";
+            talkAiText.innerText = data.speech_text || data.reply;
+            if (talkLawCite) talkLawCite.innerText = data.applicable_law || "Statutory Protection";
+          }
+
+          talkStatusText.innerText = "Click Microphone to Ask Another Question";
+          talkSubstatus.innerText = "Your rights are protected under Indian Law.";
+
+          // Auto-speak out loud
+          if (talkAutoSpeakToggle && talkAutoSpeakToggle.checked) {
+            speakText(data.speech_text);
+          }
+        } catch (err) {
+          talkStatusText.innerText = "Error analyzing question";
+          talkSubstatus.innerText = err.message;
+        }
+      };
+
+      rec.onerror = (e) => {
+        isSpeechListening = false;
+        talkOrb.classList.remove("listening");
+        talkMicBtn.classList.remove("listening");
+        talkStatusText.innerText = "Click the Microphone to Talk";
+        talkSubstatus.innerText = "Could not detect audio clearly. Please try again.";
+      };
+
+      rec.onend = () => {
+        isSpeechListening = false;
+        talkOrb.classList.remove("listening");
+        talkMicBtn.classList.remove("listening");
+      };
+
+      rec.start();
+    });
+  }
+
+  // Talking replay and stop buttons
+  if (talkReplayBtn) {
+    talkReplayBtn.addEventListener("click", () => {
+      if (lastSpokenText) speakText(lastSpokenText);
+    });
+  }
+  if (talkStopBtn) {
+    talkStopBtn.addEventListener("click", stopSpeech);
+  }
+
+  // Original single-query in tab
   async function performQuery(text) {
     if (!text.trim()) return;
     queryBtn.disabled = true;
@@ -644,6 +1201,9 @@ function setupAwarenessUI() {
             <span class="decision-badge">⚖️ ${escapeHtml(data.matched_topic)}</span>
             <h3 class="awareness-law-title">${escapeHtml(data.applicable_law)}</h3>
           </div>
+          <button type="button" class="btn btn-secondary" id="speak-query-result-btn" style="font-size:12px; padding:6px 12px; display:flex; align-items:center; gap:6px;">
+            <span>🔊</span> Read Aloud
+          </button>
         </div>
 
         <div class="awareness-explanation">
@@ -685,6 +1245,14 @@ function setupAwarenessUI() {
           </div>
         </div>
       `;
+
+      const speakResultBtn = document.getElementById("speak-query-result-btn");
+      if (speakResultBtn) {
+        speakResultBtn.addEventListener("click", () => {
+          speakText(`Under ${data.applicable_law}, your rights are legally protected. ${data.explanation} For free legal support, contact NALSA Helpline at 15100.`);
+        });
+      }
+
       resultCard.scrollIntoView({ behavior: "smooth" });
     } catch (err) {
       alert("Error: " + err.message);
@@ -703,7 +1271,7 @@ function setupAwarenessUI() {
     });
   }
 
-  // Chips
+  // Chips in Tab 3
   document.querySelectorAll(".chip").forEach((chip) => {
     chip.addEventListener("click", () => {
       queryInput.value = chip.innerText;
