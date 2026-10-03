@@ -7,6 +7,36 @@ const API_BASE = ""; // Relative to current host
 let currentAuthToken = localStorage.getItem("bi_token") || "";
 let currentUser = JSON.parse(localStorage.getItem("bi_user") || "null");
 
+// Core Sanitization & Markdown Helpers
+function escapeHtml(str) {
+  if (typeof str !== "string") return str || "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function parseMarkdown(text) {
+  if (!text) return "";
+  let html = escapeHtml(text);
+  // Headers
+  html = html.replace(/^### (.*$)/gim, '<h4 style="margin: 8px 0 4px 0; font-size: 14.5px; color: var(--accent-cyan);">$1</h4>');
+  html = html.replace(/^## (.*$)/gim, '<h3 style="margin: 10px 0 6px 0; font-size: 16px; color: var(--text-main);">$1</h3>');
+  // Bold
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // Links
+  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: underline;">$1</a>');
+  // Bullet points
+  html = html.replace(/^\s*[-•]\s+(.*$)/gim, '<li style="margin-left: 18px; margin-bottom: 4px;">$1</li>');
+  // Convert newlines to breaks
+  html = html.replace(/\n/g, '<br />');
+  return html;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   setupTabs();
@@ -19,9 +49,14 @@ document.addEventListener("DOMContentLoaded", () => {
   initAIChatbox();
   initTabAIChatbox();
 
-  // Always initialize user status and activate the Talking AI Chat tab by default
+  // Initialize guest vs member presentation
   renderUserStatus();
-  switchToTab("tab-chat");
+  initGuestDemo();
+
+  // If already authenticated, jump straight to the 24/7 Voice AI Chat tab
+  if (currentUser && currentAuthToken) {
+    switchToTab("tab-chat");
+  }
 
   const params = new URLSearchParams(window.location.search);
   const isAuth = !!(currentAuthToken && currentUser);
@@ -81,19 +116,27 @@ function applyTheme(theme) {
 // Tabs Navigation
 // ==========================================
 function switchToTab(targetId) {
+  // Gate portal tabs: Guests must sign in to access full modules
+  if (!currentUser || !currentAuthToken) {
+    showToast("🔒 Please sign in to access full portal features.", "info");
+    const loginModal = document.getElementById("login-modal");
+    if (loginModal) loginModal.classList.add("active");
+    return;
+  }
+
   const guestHero = document.getElementById("landing-hero-section");
+  const guestLanding = document.getElementById("guest-landing-view");
   const authPortal = document.getElementById("authenticated-portal-view");
   const authTabsNav = document.getElementById("authenticated-tabs-nav");
   const floatingWin = document.getElementById("bi-chatbox-window");
 
-  // Portal and navigation tabs are ALWAYS visible — never empty!
+  // Portal and navigation tabs are active for authenticated members
   if (authPortal) authPortal.style.display = "block";
   if (authTabsNav) authTabsNav.style.display = "flex";
 
-  // Hide the landing hero when on the AI chat tab so the chat is right at the top
-  if (guestHero) {
-    guestHero.style.display = (targetId === "tab-chat" || (currentUser && currentAuthToken)) ? "none" : "block";
-  }
+  // Hide guest hero & landing sections
+  if (guestHero) guestHero.style.display = "none";
+  if (guestLanding) guestLanding.style.display = "none";
 
   // Strictly toggle tab-chat-active to hide floating widgets when on the chat tab
   document.body.classList.toggle("tab-chat-active", targetId === "tab-chat");
@@ -489,23 +532,31 @@ async function executeLogin(email, password, notify = true) {
 
 function renderUserStatus() {
   const guestHero = document.getElementById("landing-hero-section");
+  const guestLanding = document.getElementById("guest-landing-view");
   const authPortal = document.getElementById("authenticated-portal-view");
   const guestHeroCta = document.getElementById("guest-hero-cta");
   const guestDemoStrip = document.getElementById("guest-demo-strip");
   const authTabsNav = document.getElementById("authenticated-tabs-nav");
   const container = document.getElementById("auth-actions-container");
-
-  // Portal and navigation tabs are ALWAYS visible!
-  if (authPortal) authPortal.style.display = "block";
-  if (authTabsNav) authTabsNav.style.display = "flex";
+  const navChatBtn = document.getElementById("nav-open-chat-btn");
 
   if (currentUser && currentAuthToken) {
-    // Mark document as authenticated for compact layout & instant portal visibility
+    // Authenticated state
     document.body.classList.add("user-logged-in");
+    document.documentElement.classList.add("user-logged-in");
 
     if (guestHero) guestHero.style.display = "none";
-    if (guestHeroCta) guestHeroCta.style.display = "none";
-    if (guestDemoStrip) guestDemoStrip.style.display = "none";
+    if (guestLanding) guestLanding.style.display = "none";
+    if (authPortal) authPortal.style.display = "block";
+    if (authTabsNav) authTabsNav.style.display = "flex";
+
+    // Nav chat button directly switches to the AI chat tab
+    if (navChatBtn) {
+      navChatBtn.onclick = (e) => {
+        e.preventDefault();
+        switchToTab("tab-chat");
+      };
+    }
 
     // Update Welcome Banner
     const bannerGreeting = document.getElementById("member-banner-greeting");
@@ -565,8 +616,9 @@ function renderUserStatus() {
         localStorage.removeItem("bi_token");
         localStorage.removeItem("bi_user");
         document.body.classList.remove("user-logged-in");
+        document.documentElement.classList.remove("user-logged-in");
         renderUserStatus();
-        showToast("Signed out successfully.", "info");
+        showToast("Signed out successfully. Guest demo mode active.", "info");
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     }
@@ -576,28 +628,51 @@ function renderUserStatus() {
     if (verifierTab) {
       verifierTab.style.display = (currentUser.role === "verifier" || currentUser.role === "admin") ? "flex" : "none";
     }
+
+    // Show floating launcher for authenticated users if not on chat tab
+    const launcher = document.getElementById("bi-chat-launcher");
+    if (launcher && !document.body.classList.contains("tab-chat-active")) {
+      launcher.style.display = "flex";
+    }
   } else {
     // ==========================================
     // GUEST STATE: Clean Presentation
     // ==========================================
     document.body.classList.remove("user-logged-in");
+    document.documentElement.classList.remove("user-logged-in");
+
+    if (guestHero) guestHero.style.display = "block";
+    if (guestLanding) guestLanding.style.display = "block";
     if (guestHeroCta) guestHeroCta.style.display = "flex";
     if (guestDemoStrip) guestDemoStrip.style.display = "block";
+    if (authPortal) authPortal.style.display = "none";
+    if (authTabsNav) authTabsNav.style.display = "none";
 
-    const bannerGreeting = document.getElementById("member-banner-greeting");
-    const bannerSub = document.getElementById("member-banner-sub");
-    const bannerRole = document.getElementById("member-banner-role-badge");
-    const bannerAvatar = document.getElementById("member-banner-avatar");
-
-    if (bannerGreeting) bannerGreeting.innerText = "Beyond Identity 24/7 AI Rights & Healthcare Workspace";
-    if (bannerSub) bannerSub.innerText = "Empowering transgender and gender-diverse Indians with statutory legal rights, verified housing, safe HRT protocols & crisis helplines. Anonymous, safe & free.";
-    if (bannerRole) {
-      bannerRole.innerText = "24/7 LIVE";
-      bannerRole.className = "user-role-badge";
+    // Strictly hide floating launcher and window for unauthenticated guests
+    const launcher = document.getElementById("bi-chat-launcher");
+    const teaser = document.getElementById("bi-chat-teaser");
+    const floatingWin = document.getElementById("bi-chatbox-window");
+    if (launcher) launcher.style.display = "none";
+    if (teaser) teaser.style.display = "none";
+    if (floatingWin) {
+      floatingWin.style.display = "none";
+      floatingWin.classList.remove("active");
     }
-    if (bannerAvatar) {
-      bannerAvatar.innerText = "🤖";
-      bannerAvatar.className = "user-avatar";
+
+    // Nav chat button smoothly scrolls to guest demo AI section
+    if (navChatBtn) {
+      navChatBtn.onclick = (e) => {
+        e.preventDefault();
+        const demoSection = document.getElementById("guest-demo-ai-section");
+        if (demoSection) {
+          demoSection.scrollIntoView({ behavior: "smooth" });
+          const demoInput = document.getElementById("guest-demo-input");
+          if (demoInput) demoInput.focus();
+        } else {
+          const loginModal = document.getElementById("login-modal");
+          if (loginModal) loginModal.classList.add("active");
+        }
+      };
     }
 
     if (container) {
@@ -612,6 +687,188 @@ function renderUserStatus() {
       });
     }
   }
+}
+
+// ==========================================================================
+// Guest Limited Demo Controller (AI Sandbox & Opportunities Preview)
+// ==========================================================================
+function initGuestDemo() {
+  const form = document.getElementById("guest-demo-form");
+  const input = document.getElementById("guest-demo-input");
+  const messagesBox = document.getElementById("guest-demo-chat-messages");
+  const counterText = document.getElementById("guest-demo-counter-text");
+  const lockedNotice = document.getElementById("guest-demo-locked-notice");
+  const micBtn = document.getElementById("guest-demo-mic-btn");
+
+  let demoQueryCount = parseInt(sessionStorage.getItem("bi_demo_queries_count") || "0", 10);
+  const maxQueries = 2;
+
+  function updateLimitUI() {
+    const remaining = Math.max(0, maxQueries - demoQueryCount);
+    if (counterText) {
+      counterText.innerText = remaining > 0 ? `${remaining} Trial ${remaining === 1 ? 'Query' : 'Queries'} Left` : "Demo Limit Reached";
+    }
+    if (demoQueryCount >= maxQueries) {
+      if (lockedNotice) lockedNotice.style.display = "flex";
+      if (input) {
+        input.placeholder = "🔒 Demo limit reached (2/2). Sign in to unlock unlimited voice AI...";
+        input.disabled = true;
+      }
+      const sendBtn = document.getElementById("guest-demo-send-btn");
+      if (sendBtn) sendBtn.disabled = true;
+    }
+  }
+
+  updateLimitUI();
+
+  // Handle starter prompt chips
+  document.querySelectorAll(".guest-demo-chip-btn").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const q = chip.getAttribute("data-query");
+      if (!q) return;
+      if (demoQueryCount >= maxQueries) {
+        showToast("🔒 Demo limit reached. Sign in for unlimited AI Assistant access!", "info");
+        const modal = document.getElementById("login-modal");
+        if (modal) modal.classList.add("active");
+        return;
+      }
+      if (input) {
+        input.value = q;
+        handleDemoSubmit(q);
+      }
+    });
+  });
+
+  // Handle Mic locked button
+  if (micBtn) {
+    micBtn.addEventListener("click", () => {
+      showToast("🎙️ Voice Speech Input & Audio Playback is unlocked after login!", "info");
+      const modal = document.getElementById("login-modal");
+      if (modal) modal.classList.add("active");
+    });
+  }
+
+  // Handle Form Submit
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const q = input?.value.trim();
+      if (!q) return;
+      handleDemoSubmit(q);
+    });
+  }
+
+  async function handleDemoSubmit(queryText) {
+    if (demoQueryCount >= maxQueries) {
+      updateLimitUI();
+      return;
+    }
+
+    if (!messagesBox) return;
+
+    // Append User Message
+    const userMsg = document.createElement("div");
+    userMsg.className = "guest-demo-msg user";
+    userMsg.innerHTML = `
+      <div class="guest-demo-avatar">👤</div>
+      <div class="guest-demo-bubble">${escapeHtml(queryText)}</div>
+    `;
+    messagesBox.appendChild(userMsg);
+
+    if (input) input.value = "";
+
+    // Append Loading Indicator
+    const loadingMsg = document.createElement("div");
+    loadingMsg.className = "guest-demo-msg ai demo-loading-msg";
+    loadingMsg.innerHTML = `
+      <div class="guest-demo-avatar">🤖</div>
+      <div class="guest-demo-bubble" style="color: var(--text-muted);">
+        <span class="btn-spinner" style="display:inline-block; vertical-align: middle; margin-right: 6px;"></span>
+        Consulting India Transgender Rights & Healthcare Knowledge Base...
+      </div>
+    `;
+    messagesBox.appendChild(loadingMsg);
+    messagesBox.scrollTop = messagesBox.scrollHeight;
+
+    try {
+      const res = await fetch(`${API_BASE}/chatbot/query`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: queryText, conversation_history: [] }),
+      });
+
+      loadingMsg.remove();
+
+      let answer = "";
+      if (res.ok) {
+        const data = await res.json();
+        answer = data.reply || data.answer || "Thank you for asking. Our full AI system contains complete case guidance.";
+      } else {
+        answer = "I am currently running in limited guest demo mode. Please sign in or use 1-click evaluation to unlock live database matching and continuous voice consultation.";
+      }
+
+      const formattedHtml = parseMarkdown(answer);
+
+      const aiMsg = document.createElement("div");
+      aiMsg.className = "guest-demo-msg ai";
+      aiMsg.innerHTML = `
+        <div class="guest-demo-avatar">🤖</div>
+        <div class="guest-demo-bubble">
+          ${formattedHtml}
+          <div style="margin-top: 8px; font-size: 11px; color: var(--text-muted); border-top: 1px dashed var(--border-subtle); padding-top: 5px;">
+            🔒 <em>Demo Response: Sign in to unlock full voice audio synthesis, direct schemes application & caseworker triage.</em>
+          </div>
+        </div>
+      `;
+      messagesBox.appendChild(aiMsg);
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+
+      demoQueryCount++;
+      sessionStorage.setItem("bi_demo_queries_count", demoQueryCount.toString());
+      updateLimitUI();
+
+    } catch (err) {
+      loadingMsg.remove();
+      const errMsg = document.createElement("div");
+      errMsg.className = "guest-demo-msg ai";
+      errMsg.innerHTML = `
+        <div class="guest-demo-avatar">🤖</div>
+        <div class="guest-demo-bubble" style="color: var(--accent-rose);">
+          Service temporarily busy. Please sign in to connect directly to the 24/7 AI Rights Assistant.
+        </div>
+      `;
+      messagesBox.appendChild(errMsg);
+    }
+  }
+
+  // Opportunities Demo Filtering
+  document.querySelectorAll(".guest-opp-filter-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".guest-opp-filter-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const cat = btn.getAttribute("data-cat");
+
+      document.querySelectorAll(".guest-demo-opp-card").forEach((card) => {
+        const cardCat = card.getAttribute("data-cat");
+        if (cat === "all" || cardCat === cat) {
+          card.style.display = "flex";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+  });
+
+  // Re-bind demo login buttons in demo section
+  document.querySelectorAll(".demo-login-btn").forEach((btn) => {
+    btn.onclick = async () => {
+      const email = btn.getAttribute("data-email");
+      const password = btn.getAttribute("data-password");
+      if (email && password) {
+        await executeLogin(email, password, false);
+      }
+    };
+  });
 }
 
 
@@ -2700,7 +2957,7 @@ function initTabAIChatbox() {
   if (badgeStopBtn) badgeStopBtn.addEventListener("click", stopSpeech);
   if (stopSpeakingBtn) stopSpeakingBtn.addEventListener("click", stopSpeech);
 
-  // Buttons that navigate to the tab chat
+  // Buttons that navigate to the tab chat or demo
   const navBtn = document.getElementById("nav-open-chat-btn");
   const heroBtn = document.getElementById("hero-open-chat-btn");
   const landingBtn = document.getElementById("landing-launch-chat-btn");
@@ -2710,7 +2967,19 @@ function initTabAIChatbox() {
     if (btn) {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
-        switchToTab("tab-chat");
+        if (currentUser && currentAuthToken) {
+          switchToTab("tab-chat");
+        } else {
+          const demoSection = document.getElementById("guest-demo-ai-section");
+          if (demoSection) {
+            demoSection.scrollIntoView({ behavior: "smooth" });
+            const inputEl = document.getElementById("guest-demo-input");
+            if (inputEl) inputEl.focus();
+          } else {
+            const loginModal = document.getElementById("login-modal");
+            if (loginModal) loginModal.classList.add("active");
+          }
+        }
       });
     }
   });

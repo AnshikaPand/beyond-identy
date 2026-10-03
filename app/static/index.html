@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Application Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css?v=3.2" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=5.0" />
 
   <!-- Immediate Zero-Flicker Theme & Auth Layout Initializer -->
   <script>
@@ -24,12 +24,25 @@
       }
       document.documentElement.setAttribute("data-theme", active);
 
-      // Pre-check authentication to prevent layout flicker or landing jump
-      if (localStorage.getItem("bi_token") && localStorage.getItem("bi_user")) {
+      // Pre-check authentication to prevent layout flicker
+      const hasAuth = !!(localStorage.getItem("bi_token") && localStorage.getItem("bi_user"));
+      if (hasAuth) {
         document.documentElement.classList.add("user-logged-in");
         document.addEventListener("DOMContentLoaded", function() {
           document.body.classList.add("user-logged-in");
-          document.body.classList.add("tab-chat-active");
+          const portal = document.getElementById("authenticated-portal-view");
+          const tabsNav = document.getElementById("authenticated-tabs-nav");
+          if (portal) portal.style.display = "block";
+          if (tabsNav) tabsNav.style.display = "flex";
+        });
+      } else {
+        document.documentElement.classList.remove("user-logged-in");
+        document.addEventListener("DOMContentLoaded", function() {
+          document.body.classList.remove("user-logged-in");
+          const portal = document.getElementById("authenticated-portal-view");
+          const tabsNav = document.getElementById("authenticated-tabs-nav");
+          if (portal) portal.style.display = "none";
+          if (tabsNav) tabsNav.style.display = "none";
         });
       }
     })();
@@ -157,9 +170,253 @@
     <!-- ============================================== -->
     <!-- 1. GUEST LANDING VIEW (Pre-Login State)        -->
     <!-- ============================================== -->
-    <div id="guest-landing-view" class="guest-landing" style="display: none;">
+    <div id="guest-landing-view" class="guest-landing">
       
-      <div class="preview-grid-header">
+      <!-- Quick Navigation Anchor Bar for Guests -->
+      <div class="guest-subnav-bar">
+        <div class="guest-subnav-links">
+          <a href="#guest-demo-ai-section" class="guest-subnav-link"><span>🤖</span> AI Assistant Demo</a>
+          <a href="#guest-demo-opp-section" class="guest-subnav-link"><span>📂</span> Opportunities Preview</a>
+          <a href="#guest-pipeline-section" class="guest-subnav-link"><span>⚖️</span> Redressal Pipeline</a>
+          <a href="#guest-trust-section" class="guest-subnav-link"><span>🛡️</span> Trust & Privacy</a>
+        </div>
+        <div class="guest-subnav-badge">
+          <span>🔒 Limited Guest Demo Mode</span>
+        </div>
+      </div>
+
+      <!-- ======================================================= -->
+      <!-- LIMITED DEMO FEATURE 1: INTERACTIVE AI ASSISTANT SANDBOX -->
+      <!-- ======================================================= -->
+      <section id="guest-demo-ai-section" class="guest-demo-section guest-demo-ai-card">
+        <div class="guest-demo-header">
+          <div class="guest-demo-header-info">
+            <span class="guest-demo-badge badge-cyan">🤖 Interactive AI Assistant — Limited Demo Sandbox</span>
+            <h3 class="guest-demo-title">Test 24/7 Transgender Rights & Healthcare AI</h3>
+            <p class="guest-demo-desc">
+              Experience our AI rights engine with <strong>2 trial questions</strong>. Full continuous two-way voice chat, microphone speech input, and caseworker triage are unlocked after login.
+            </p>
+          </div>
+          <div class="guest-demo-limit-pill" id="guest-demo-limit-pill">
+            <span class="pulse-dot-cyan"></span>
+            <span id="guest-demo-counter-text">2 Trial Queries Left</span>
+          </div>
+        </div>
+
+        <!-- Sample Starter Question Chips -->
+        <div class="guest-demo-chips-row">
+          <span style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; align-self: center;">Try Asking:</span>
+          <button type="button" class="guest-demo-chip-btn" data-query="What are my fundamental legal rights under Supreme Court NALSA 2014 judgment?">
+            ⚖️ Rights under NALSA 2014
+          </button>
+          <button type="button" class="guest-demo-chip-btn" data-query="How can I get safe accommodation at a Garima Greh shelter home?">
+            🏠 Garima Greh Shelter Access
+          </button>
+          <button type="button" class="guest-demo-chip-btn" data-query="Is HRT and gender-affirming healthcare covered under PM-JAY Ayushman Bharat?">
+            🩺 Ayushman Bharat ₹5L HRT Coverage
+          </button>
+          <button type="button" class="guest-demo-chip-btn" data-query="How do I file a confidential report if discriminated against at my workplace?">
+            🚨 Report Workplace Discrimination
+          </button>
+        </div>
+
+        <!-- Demo Chat Messages Box -->
+        <div class="guest-demo-chat-box" id="guest-demo-chat-messages">
+          <div class="guest-demo-msg ai">
+            <div class="guest-demo-avatar">🤖</div>
+            <div class="guest-demo-bubble">
+              <strong>Beyond Identity AI (Guest Preview):</strong>
+              <p style="margin: 4px 0 0 0;">
+                Namaste! I am your 24/7 AI Assistant in <strong>Limited Demo Mode</strong>. Ask me anything about Indian statutory transgender rights, healthcare schemes (PM-JAY, HRT), or discrimination redressal.
+              </p>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+                💡 <em>Note: Voice speech playback, audio output, and direct caseworker assignment are reserved for authenticated members.</em>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Demo Locked Notice (Hidden until limit reached) -->
+        <div id="guest-demo-locked-notice" class="guest-demo-locked-notice" style="display: none;">
+          <div class="guest-demo-locked-content">
+            <div class="guest-demo-locked-icon">🔒</div>
+            <div>
+              <div style="font-weight: 700; font-size: 14px; color: var(--text-main); margin-bottom: 3px;">
+                Demo Limit Reached — Unlock Full 24/7 AI Voice Assistant
+              </div>
+              <div style="font-size: 12.5px; color: var(--text-muted); line-height: 1.45;">
+                Sign in to enjoy <strong>unlimited queries</strong>, two-way vocal speech synthesis, microphone input, live directory matching, and confidential incident triage!
+              </div>
+            </div>
+          </div>
+          <div class="guest-demo-locked-actions">
+            <button type="button" class="btn btn-primary demo-login-btn" data-email="user@example.com" data-password="user123" style="padding: 7px 14px; font-size: 12.5px;">
+              👤 1-Click Seeker Login
+            </button>
+            <button type="button" class="btn btn-secondary guest-open-login-btn" style="padding: 7px 14px; font-size: 12.5px;">
+              🔐 Sign In / Register
+            </button>
+          </div>
+        </div>
+
+        <!-- Demo Chat Input Form -->
+        <form id="guest-demo-form" class="guest-demo-input-bar">
+          <input type="text" id="guest-demo-input" class="guest-demo-text-field" placeholder="Ask a question about transgender rights, health, or welfare schemes..." autocomplete="off" />
+          <button type="button" class="guest-demo-mic-locked-btn" id="guest-demo-mic-btn" title="Talking Mic Locked in Demo Mode — Click to Unlock">
+            <span>🎙️</span>
+            <span class="mic-lock-badge">🔒</span>
+          </button>
+          <button type="submit" id="guest-demo-send-btn" class="btn btn-primary guest-demo-send-btn">
+            <span>Send</span> ➔
+          </button>
+        </form>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- LIMITED DEMO FEATURE 2: OPPORTUNITIES DIRECTORY PREVIEW -->
+      <!-- ======================================================= -->
+      <section id="guest-demo-opp-section" class="guest-demo-section" style="margin-top: 36px;">
+        <div class="guest-demo-header">
+          <div class="guest-demo-header-info">
+            <span class="guest-demo-badge badge-purple">📂 Verified Opportunities Directory — Limited Demo Preview</span>
+            <h3 class="guest-demo-title">Curated Inclusive Opportunities Preview</h3>
+            <p class="guest-demo-desc">
+              Physical partner NGOs independently audit every shelter, inclusive employer, and affirmative clinic. Direct phone numbers, emails, and application links are <strong>locked for guests</strong>.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-secondary guest-open-login-btn" style="padding: 7px 14px; font-size: 12px;">
+              <span>🔒</span> Unlock All 99+ Listings
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Teaser Pills -->
+        <div class="guest-opp-filter-strip">
+          <button type="button" class="guest-opp-filter-btn active" data-cat="all">All Previews (3)</button>
+          <button type="button" class="guest-opp-filter-btn" data-cat="housing">🏠 Safe Housing (1)</button>
+          <button type="button" class="guest-opp-filter-btn" data-cat="jobs">💼 Inclusive Jobs (1)</button>
+          <button type="button" class="guest-opp-filter-btn" data-cat="healthcare">🩺 Healthcare & HRT (1)</button>
+        </div>
+
+        <!-- 3 Curated Demo Cards Grid -->
+        <div class="guest-demo-opp-grid">
+
+          <!-- Card 1: Safe Housing -->
+          <div class="guest-demo-opp-card" data-cat="housing">
+            <div class="guest-demo-opp-top">
+              <span class="pillar-preview-badge badge-purple">🏠 Housing & Shelter</span>
+              <span class="pillar-preview-badge badge-success">✓ NGO Verified</span>
+            </div>
+            <h4 class="guest-demo-opp-title">Garima Greh Transgender Safe Shelter Network</h4>
+            <div class="guest-demo-opp-org">🏛️ Ministry of Social Justice & Empowerment / Shree Trust</div>
+            <div class="guest-demo-opp-loc">📍 New Delhi, Delhi NCR</div>
+            <p class="guest-demo-opp-summary">
+              24/7 emergency and long-term accommodation, nutritional food, medical care, and skill training for transgender persons facing familial eviction or violence.
+            </p>
+            <div class="guest-demo-opp-masked-contact">
+              <div class="masked-row">
+                <span class="masked-icon">📞</span>
+                <span class="masked-text">+91 98765 •••••</span>
+                <span class="masked-pill">🔒 Locked</span>
+              </div>
+              <div class="masked-row">
+                <span class="masked-icon">✉️</span>
+                <span class="masked-text">garimagreh@••••••••••.gov.in</span>
+                <span class="masked-pill">🔒 Locked</span>
+              </div>
+            </div>
+            <button type="button" class="guest-opp-lock-btn guest-open-login-btn">
+              <span>🔒</span> Sign In to View Direct Contacts & Apply
+            </button>
+          </div>
+
+          <!-- Card 2: Inclusive Jobs -->
+          <div class="guest-demo-opp-card" data-cat="jobs">
+            <div class="guest-demo-opp-top">
+              <span class="pillar-preview-badge badge-info">💼 Inclusive Employment</span>
+              <span class="pillar-preview-badge badge-success">✓ NGO Verified</span>
+            </div>
+            <h4 class="guest-demo-opp-title">Nazariya Affirmative Workplace Careers</h4>
+            <div class="guest-demo-opp-org">🏢 Nazariya Corporate Diversity Cell</div>
+            <div class="guest-demo-opp-loc">📍 Bengaluru, Karnataka (Hybrid)</div>
+            <p class="guest-demo-opp-summary">
+              Affirmative full-time and apprenticeship roles in software operations, customer support, and administrative management with gender-neutral facilities & affirmative health cover.
+            </p>
+            <div class="guest-demo-opp-masked-contact">
+              <div class="masked-row">
+                <span class="masked-icon">📞</span>
+                <span class="masked-text">+91 80 4123 •••••</span>
+                <span class="masked-pill">🔒 Locked</span>
+              </div>
+              <div class="masked-row">
+                <span class="masked-icon">✉️</span>
+                <span class="masked-text">careers@••••••••••.org</span>
+                <span class="masked-pill">🔒 Locked</span>
+              </div>
+            </div>
+            <button type="button" class="guest-opp-lock-btn guest-open-login-btn">
+              <span>🔒</span> Sign In to View Direct Contacts & Apply
+            </button>
+          </div>
+
+          <!-- Card 3: Healthcare -->
+          <div class="guest-demo-opp-card" data-cat="healthcare">
+            <div class="guest-demo-opp-top">
+              <span class="pillar-preview-badge badge-danger">🩺 Healthcare & HRT</span>
+              <span class="pillar-preview-badge badge-success">✓ NGO Verified</span>
+            </div>
+            <h4 class="guest-demo-opp-title">Mitra Gender-Affirming Healthcare Clinic</h4>
+            <div class="guest-demo-opp-org">🏥 Mitra Clinical Health Network</div>
+            <div class="guest-demo-opp-loc">📍 Hyderabad, Telangana</div>
+            <p class="guest-demo-opp-summary">
+              Clinical endocrinology consultation, safe Hormone Replacement Therapy (HRT) protocols, mental health triage, and PM-JAY ₹5,00,000 Ayushman package claim desk.
+            </p>
+            <div class="guest-demo-opp-masked-contact">
+              <div class="masked-row">
+                <span class="masked-icon">📞</span>
+                <span class="masked-text">+91 40 2345 •••••</span>
+                <span class="masked-pill">🔒 Locked</span>
+              </div>
+              <div class="masked-row">
+                <span class="masked-icon">✉️</span>
+                <span class="masked-text">clinical@••••••••••.in</span>
+                <span class="masked-pill">🔒 Locked</span>
+              </div>
+            </div>
+            <button type="button" class="guest-opp-lock-btn guest-open-login-btn">
+              <span>🔒</span> Sign In to Book Clinical Consultation
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Unlock All 99+ Listings Teaser Strip -->
+        <div class="guest-demo-unlock-strip">
+          <div class="guest-demo-unlock-left">
+            <span class="unlock-star-icon">✨</span>
+            <div>
+              <strong>95+ More Verified Opportunities Across 18 Indian States</strong>
+              <div style="font-size: 12.5px; opacity: 0.9; margin-top: 2px;">
+                Sign in or use 1-Click Evaluation to search by state, filter by category, view unmasked telephone & email contacts, and apply directly.
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary demo-login-btn" data-email="user@example.com" data-password="user123" style="padding: 7px 14px; font-size: 12px; background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.3);">
+              👤 1-Click Seeker Demo
+            </button>
+            <button type="button" class="btn btn-primary guest-open-login-btn" style="padding: 7px 16px; font-size: 12px;">
+              Sign In to Unlock Directory →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- 4 PILLARS STATUTORY ECOSYSTEM PREVIEW                   -->
+      <!-- ======================================================= -->
+      <div class="preview-grid-header" style="margin-top: 50px;">
         <div class="guest-hero-badge">🏛️ Statutory Legal Rights & Community Protection</div>
         <h3>Explore Our Comprehensive Rights & Redressal Ecosystem</h3>
         <p>A safe, encrypted platform built for transgender and gender-diverse Indians. Preview core services below and sign in to unlock interactive access.</p>
@@ -280,38 +537,10 @@
           </button>
         </div>
 
-        <!-- Pillar 5: 24/7 AI Conversational Assistant -->
-        <div class="pillar-preview-card" style="border-color: rgba(56, 189, 248, 0.35); background: linear-gradient(180deg, rgba(56, 189, 248, 0.05), rgba(99, 102, 241, 0.04));">
-          <div>
-            <div class="pillar-icon-box" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">🤖</div>
-            <div class="pillar-title">24/7 AI Chat Assistant</div>
-            <div class="pillar-desc">
-              Immediate multi-turn AI consultation across statutory legal rights, verified housing shelters, inclusive jobs, safe HRT protocols, and 24/7 emergency crisis hotlines.
-            </div>
-            <div class="pillar-preview-items">
-              <div class="pillar-preview-row">
-                <span>💬 Natural Language Legal & Welfare Q&A</span>
-                <span class="pillar-preview-badge badge-info">24/7 AI</span>
-              </div>
-              <div class="pillar-preview-row">
-                <span>🔍 Live Database Listing Matching</span>
-                <span class="pillar-preview-badge badge-success">Verified DB</span>
-              </div>
-              <div class="pillar-preview-row">
-                <span>🎙️ Voice In / Speech Out Support</span>
-                <span class="pillar-preview-badge badge-purple">Voice Enabled</span>
-              </div>
-            </div>
-          </div>
-          <button type="button" class="btn btn-primary" id="landing-launch-chat-btn" style="width: 100%; margin-top: 14px; justify-content: center; padding: 11px; font-weight: 600;">
-            <span>💬</span> Open AI Chat Box Now
-          </button>
-        </div>
-
       </div>
 
       <!-- How Redressal Works Pipeline -->
-      <div class="pipeline-section">
+      <div class="pipeline-section" id="guest-pipeline-section">
         <div style="text-align: center; max-width: 650px; margin: 0 auto;">
           <h3 class="pipeline-heading" style="font-size: 22px; margin-bottom: 6px;">How the Beyond Identity Redressal Pipeline Works</h3>
           <p class="pipeline-subheading" style="font-size: 13.5px;">A safe, end-to-end bridge from reporting an incident to statutory legal aid and rehabilitation.</p>
@@ -341,7 +570,7 @@
       </div>
 
       <!-- Trust Guarantees Grid -->
-      <div class="trust-grid">
+      <div class="trust-grid" id="guest-trust-section">
         <div class="trust-item">
           <div class="trust-icon">🔒</div>
           <div>
@@ -393,7 +622,7 @@
     <!-- ============================================== -->
     <!-- 2. PORTAL MODULES VIEW (Interactive Portal)    -->
     <!-- ============================================== -->
-    <div id="authenticated-portal-view">
+    <div id="authenticated-portal-view" style="display: none;">
 
       <!-- Member Welcome Top Bar -->
       <div class="auth-member-banner" id="auth-member-banner">
@@ -411,7 +640,7 @@
       </div>
 
       <!-- Navigation Tabs (Only for Authenticated Portal!) -->
-      <nav class="tabs-nav" id="authenticated-tabs-nav" aria-label="Portal Modules">
+      <nav class="tabs-nav" id="authenticated-tabs-nav" aria-label="Portal Modules" style="display: none;">
         <button class="tab-btn active" data-tab="tab-chat" id="tab-btn-chat">
           <span>🤖</span> 24/7 AI Voice Assistant
         </button>
@@ -1081,21 +1310,21 @@
   <!-- FLOATING 24/7 AI CHATBOX WIDGET -->
   <!-- ========================================================================= -->
 
-  <!-- Floating Launcher Button -->
-  <button type="button" class="bi-chat-launcher" id="bi-chat-launcher" aria-label="Open Beyond Identity AI Assistant Chatbox">
+  <!-- Floating Launcher Button (Member-Only) -->
+  <button type="button" class="bi-chat-launcher" id="bi-chat-launcher" aria-label="Open Beyond Identity AI Assistant Chatbox" style="display: none;">
     <div class="bi-chat-online-dot"></div>
     <span class="bi-chat-launcher-icon">🤖</span>
     <span>AI Assistant</span>
   </button>
 
-  <!-- Floating Teaser Tooltip -->
-  <div class="bi-chat-teaser" id="bi-chat-teaser">
+  <!-- Floating Teaser Tooltip (Member-Only) -->
+  <div class="bi-chat-teaser" id="bi-chat-teaser" style="display: none;">
     <span>👋 <strong>Need guidance?</strong> Ask about legal rights, verified jobs, or healthcare!</span>
     <button type="button" class="bi-chat-teaser-close" id="bi-chat-teaser-close" aria-label="Dismiss Teaser">&times;</button>
   </div>
 
-  <!-- Floating Chatbox Window -->
-  <aside class="bi-chatbox-window" id="bi-chatbox-window" role="dialog" aria-label="Beyond Identity AI Assistant Chatbox">
+  <!-- Floating Chatbox Window (Member-Only) -->
+  <aside class="bi-chatbox-window" id="bi-chatbox-window" role="dialog" aria-label="Beyond Identity AI Assistant Chatbox" style="display: none;">
     <!-- Header -->
     <div class="bi-chatbox-header">
       <div class="bi-chat-header-profile">
@@ -1144,6 +1373,6 @@
   </aside>
 
   <!-- Application Logic -->
-  <script src="/static/js/app.js?v=3.2"></script>
+  <script src="/static/js/app.js?v=5.0"></script>
 </body>
 </html>
