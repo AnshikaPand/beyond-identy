@@ -275,3 +275,50 @@ class HealthTraverseRequest(BaseModel):
 class HealthTraverseResponse(BaseModel):
     node: DecisionNode
     disclaimer: str
+
+
+# ==========================================
+# 6. Live Database AI Chatbot Schemas
+# ==========================================
+
+class ChatbotItemOut(BaseModel):
+    id: int
+    category: str
+    title: str
+    organization_name: Optional[str] = None
+    location: Optional[str] = None
+    contact_info: Optional[str] = None
+    description: Optional[str] = None
+    status: str = "verified"
+    verification_notes: Optional[str] = None
+    badge: Optional[str] = None
+
+
+class ChatbotCaseOut(BaseModel):
+    id: int
+    title: str
+    incident_type: str
+    status: str
+    urgency_level: str
+    location_city: str
+    location_state: str
+    assigned_ngo: Optional[str] = None
+    case_notes: Optional[str] = None
+    created_at: str
+
+
+class ChatbotQueryRequest(BaseModel):
+    query: str
+    history: Optional[List[dict]] = []
+    category_filter: Optional[str] = None
+    location_filter: Optional[str] = None
+
+
+class ChatbotQueryResponse(BaseModel):
+    reply: str
+    intent: str
+    suggestions: List[ChatbotItemOut] = []
+    user_cases: List[ChatbotCaseOut] = []
+    suggested_prompts: List[str] = []
+    total_database_records: int = 0
+

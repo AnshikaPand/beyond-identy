@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Application Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=3.2" />
 
   <!-- Immediate Zero-Flicker Theme Initializer -->
   <script>
@@ -701,9 +701,9 @@
           localStorage.setItem("bi_user", JSON.stringify(data.user));
         }
 
-        showAlert("Login successful! Redirecting to portal...", false);
+        showAlert("Login successful! Launching Talking AI Chat Assistant...", false);
         setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = "/?tab=chat&talk=1&login=success";
         }, 800);
 
       } catch (err) {
@@ -768,7 +768,7 @@
           localStorage.setItem("bi_token", tokenData.access_token);
           localStorage.setItem("bi_user", JSON.stringify(tokenData.user || newUser));
           setTimeout(() => {
-            window.location.href = "/";
+            window.location.href = "/?tab=chat&talk=1&login=success";
           }, 900);
         } else {
           switchTab("login");

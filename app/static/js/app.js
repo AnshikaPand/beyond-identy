@@ -16,6 +16,25 @@ document.addEventListener("DOMContentLoaded", () => {
   setupIncidentForm();
   setupAwarenessUI();
   setupHealthAssistantUI();
+  initAIChatbox();
+  initTabAIChatbox();
+
+  // Always initialize user status and activate the Talking AI Chat tab by default
+  renderUserStatus();
+  switchToTab("tab-chat");
+
+  const params = new URLSearchParams(window.location.search);
+  const isAuth = !!(currentAuthToken && currentUser);
+  const isPostLoginRedirect = params.get("talk") === "1" || params.get("login") === "success";
+
+  if (isAuth && isPostLoginRedirect) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    setTimeout(() => {
+      if (typeof window.triggerPostLoginAIChatGreeting === "function") {
+        window.triggerPostLoginAIChatGreeting(currentUser);
+      }
+    }, 550);
+  }
 });
 
 // ==========================================
@@ -61,20 +80,62 @@ function applyTheme(theme) {
 // ==========================================
 // Tabs Navigation
 // ==========================================
+function switchToTab(targetId) {
+  const guestHero = document.getElementById("landing-hero-section");
+  const authPortal = document.getElementById("authenticated-portal-view");
+  const authTabsNav = document.getElementById("authenticated-tabs-nav");
+  const floatingWin = document.getElementById("bi-chatbox-window");
+
+  // Portal and navigation tabs are ALWAYS visible — never empty!
+  if (authPortal) authPortal.style.display = "block";
+  if (authTabsNav) authTabsNav.style.display = "flex";
+
+  // Hide the landing hero when on the AI chat tab so the chat is right at the top
+  if (guestHero) {
+    guestHero.style.display = (targetId === "tab-chat" || (currentUser && currentAuthToken)) ? "none" : "block";
+  }
+
+  // Strictly toggle tab-chat-active to hide floating widgets when on the chat tab
+  document.body.classList.toggle("tab-chat-active", targetId === "tab-chat");
+  if (targetId === "tab-chat" && floatingWin) {
+    floatingWin.classList.remove("active");
+  }
+
+  const tabBtns = document.querySelectorAll(".tab-btn");
+  tabBtns.forEach((b) => {
+    if (b.getAttribute("data-tab") === targetId) {
+      b.classList.add("active");
+    } else {
+      b.classList.remove("active");
+    }
+  });
+
+  document.querySelectorAll(".tab-panel").forEach((p) => {
+    if (p.id === targetId) {
+      p.classList.add("active");
+    } else {
+      p.classList.remove("active");
+    }
+  });
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  // Trigger refreshes if necessary
+  if (targetId === "tab-cases") loadIncidents();
+  if (targetId === "tab-chat") {
+    setTimeout(() => {
+      const input = document.getElementById("tab-chat-text-input");
+      if (input) input.focus();
+    }, 150);
+  }
+}
+
 function setupTabs() {
   const tabBtns = document.querySelectorAll(".tab-btn");
   tabBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
-      tabBtns.forEach((b) => b.classList.remove("active"));
-      document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
-
-      btn.classList.add("active");
       const targetId = btn.getAttribute("data-tab");
-      const targetPanel = document.getElementById(targetId);
-      if (targetPanel) targetPanel.classList.add("active");
-
-      // Trigger refreshes if necessary
-      if (targetId === "tab-cases") loadIncidents();
+      switchToTab(targetId);
     });
   });
 }
@@ -402,9 +463,15 @@ async function executeLogin(email, password, notify = true) {
     localStorage.setItem("bi_user", JSON.stringify(currentUser));
 
     renderUserStatus();
-    showToast(`Welcome, ${currentUser?.name}! Signed in as ${currentUser?.role.toUpperCase()}.`, "success");
+    switchToTab("tab-chat");
+    showToast(`Welcome, ${currentUser?.name}! AI Chat Assistant is ready.`, "success");
     loadIncidents();
     loadListings();
+
+    // Trigger Talking AI Chat Box Vocal Greeting right after login!
+    if (typeof window.triggerPostLoginAIChatGreeting === "function") {
+      window.triggerPostLoginAIChatGreeting(currentUser);
+    }
     return true;
   } catch (err) {
     showToast("Sign in failed: " + err.message, "error");
@@ -421,22 +488,24 @@ async function executeLogin(email, password, notify = true) {
 }
 
 function renderUserStatus() {
-  const guestLanding = document.getElementById("guest-landing-view");
+  const guestHero = document.getElementById("landing-hero-section");
   const authPortal = document.getElementById("authenticated-portal-view");
   const guestHeroCta = document.getElementById("guest-hero-cta");
   const guestDemoStrip = document.getElementById("guest-demo-strip");
   const authTabsNav = document.getElementById("authenticated-tabs-nav");
   const container = document.getElementById("auth-actions-container");
 
+  // Portal and navigation tabs are ALWAYS visible!
+  if (authPortal) authPortal.style.display = "block";
+  if (authTabsNav) authTabsNav.style.display = "flex";
+
   if (currentUser && currentAuthToken) {
-    // ==========================================
-    // AUTHENTICATED STATE: Unlock Full App
-    // ==========================================
-    if (guestLanding) guestLanding.style.display = "none";
+    // Mark document as authenticated for compact layout & instant portal visibility
+    document.body.classList.add("user-logged-in");
+
+    if (guestHero) guestHero.style.display = "none";
     if (guestHeroCta) guestHeroCta.style.display = "none";
     if (guestDemoStrip) guestDemoStrip.style.display = "none";
-    if (authTabsNav) authTabsNav.style.display = "flex";
-    if (authPortal) authPortal.style.display = "block";
 
     // Update Welcome Banner
     const bannerGreeting = document.getElementById("member-banner-greeting");
@@ -444,16 +513,17 @@ function renderUserStatus() {
     const bannerRole = document.getElementById("member-banner-role-badge");
     const bannerAvatar = document.getElementById("member-banner-avatar");
 
+    const userName = currentUser.name || currentUser.email || "Community User";
     const roleUpper = (currentUser.role || "user").toUpperCase();
     const roleClass = currentUser.role === "verifier" ? "role-verifier" : currentUser.role === "admin" ? "role-admin" : "";
-    const initials = currentUser.name
+    const initials = userName
       .split(" ")
       .map((part) => part[0])
       .join("")
       .slice(0, 2)
-      .toUpperCase();
+      .toUpperCase() || "CU";
 
-    if (bannerGreeting) bannerGreeting.innerText = `Welcome back, ${currentUser.name}!`;
+    if (bannerGreeting) bannerGreeting.innerText = `Welcome back, ${userName}!`;
     if (bannerSub) {
       bannerSub.innerText = currentUser.role === "verifier"
         ? "🛡️ NGO Partner Moderation Console: Access verified listings and confidential incident cases."
@@ -476,20 +546,28 @@ function renderUserStatus() {
         <div class="nav-user-chip">
           <div class="user-avatar ${roleClass}">${initials}</div>
           <div class="user-info-text">
-            <span class="user-display-name">${currentUser.name}</span>
+            <span class="user-display-name">${escapeHtml(userName)}</span>
             <span class="user-role-badge ${roleClass}">${roleUpper}</span>
           </div>
         </div>
+        <button type="button" class="btn btn-primary" id="nav-direct-chat-btn" style="padding: 6px 12px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px;"><span>🤖</span> AI Chat</button>
         <button class="btn btn-outline-danger" id="logout-btn" style="padding: 6px 12px; font-size: 12.5px;">Sign Out</button>
       `;
+
+      const directChatBtn = document.getElementById("nav-direct-chat-btn");
+      if (directChatBtn) {
+        directChatBtn.addEventListener("click", () => switchToTab("tab-chat"));
+      }
 
       document.getElementById("logout-btn").addEventListener("click", () => {
         currentAuthToken = "";
         currentUser = null;
         localStorage.removeItem("bi_token");
         localStorage.removeItem("bi_user");
+        document.body.classList.remove("user-logged-in");
         renderUserStatus();
         showToast("Signed out successfully.", "info");
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
     }
 
@@ -500,13 +578,27 @@ function renderUserStatus() {
     }
   } else {
     // ==========================================
-    // GUEST STATE: Show Attractive Landing Page
+    // GUEST STATE: Clean Presentation
     // ==========================================
-    if (guestLanding) guestLanding.style.display = "block";
+    document.body.classList.remove("user-logged-in");
     if (guestHeroCta) guestHeroCta.style.display = "flex";
     if (guestDemoStrip) guestDemoStrip.style.display = "block";
-    if (authTabsNav) authTabsNav.style.display = "none";
-    if (authPortal) authPortal.style.display = "none";
+
+    const bannerGreeting = document.getElementById("member-banner-greeting");
+    const bannerSub = document.getElementById("member-banner-sub");
+    const bannerRole = document.getElementById("member-banner-role-badge");
+    const bannerAvatar = document.getElementById("member-banner-avatar");
+
+    if (bannerGreeting) bannerGreeting.innerText = "Beyond Identity 24/7 AI Rights & Healthcare Workspace";
+    if (bannerSub) bannerSub.innerText = "Empowering transgender and gender-diverse Indians with statutory legal rights, verified housing, safe HRT protocols & crisis helplines. Anonymous, safe & free.";
+    if (bannerRole) {
+      bannerRole.innerText = "24/7 LIVE";
+      bannerRole.className = "user-role-badge";
+    }
+    if (bannerAvatar) {
+      bannerAvatar.innerText = "🤖";
+      bannerAvatar.className = "user-avatar";
+    }
 
     if (container) {
       container.innerHTML = `
@@ -516,22 +608,13 @@ function renderUserStatus() {
 
       document.getElementById("open-login-btn").addEventListener("click", () => {
         const loginModal = document.getElementById("login-modal");
-        const modalTabSignin = document.getElementById("modal-tab-signin-btn");
-        const modalTabRegister = document.getElementById("modal-tab-register-btn");
-        const modalLoginForm = document.getElementById("modal-login-form");
-        const modalRegisterForm = document.getElementById("modal-register-form");
-        const modalAuthAlert = document.getElementById("modal-auth-alert");
-
-        if (modalAuthAlert) modalAuthAlert.style.display = "none";
-        if (modalTabSignin) modalTabSignin.classList.add("active");
-        if (modalTabRegister) modalTabRegister.classList.remove("active");
-        if (modalLoginForm) modalLoginForm.style.display = "block";
-        if (modalRegisterForm) modalRegisterForm.style.display = "none";
         if (loginModal) loginModal.classList.add("active");
       });
     }
   }
 }
+
+
 
 // ==========================================
 // Stats Loader
@@ -1502,4 +1585,1136 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+// ==========================================================================
+// 24/7 Beyond Identity AI Chatbox Controller
+// ==========================================================================
+function initAIChatbox() {
+  const launcher = document.getElementById("bi-chat-launcher");
+  const navBtn = document.getElementById("nav-open-chat-btn");
+  const heroBtn = document.getElementById("hero-open-chat-btn");
+  const teaser = document.getElementById("bi-chat-teaser");
+  const teaserClose = document.getElementById("bi-chat-teaser-close");
+  const windowEl = document.getElementById("bi-chatbox-window");
+  const closeBtn = document.getElementById("bi-chat-close-btn");
+  const clearBtn = document.getElementById("bi-chat-clear-btn");
+  const voiceToggle = document.getElementById("bi-chat-voice-toggle");
+  const categoryBar = document.getElementById("bi-chat-category-bar");
+  const messagesContainer = document.getElementById("bi-chat-messages");
+  const input = document.getElementById("bi-chat-input");
+  const sendBtn = document.getElementById("bi-chat-send-btn");
+  const micBtn = document.getElementById("bi-chat-mic-btn");
+
+  if (!launcher || !windowEl || !messagesContainer) return;
+
+  let biChatVoiceEnabled = localStorage.getItem("bi_chat_voice") !== "false";
+  let biChatActiveCategory = "";
+  let biActiveSpeechRec = null;
+  let isSending = false;
+
+  function formatTime(d) {
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  const defaultGreeting = {
+    role: "assistant",
+    content:
+      "### 👋 Namaste! I am the Beyond Identity AI Assistant\n\n" +
+      "I am here 24/7 to empower you with **statutory legal rights**, **verified jobs & housing**, " +
+      "**safe clinical healthcare navigation**, and **emergency crisis support** across India.\n\n" +
+      "Select a quick topic below or type your question:",
+    suggestions: [],
+    suggested_prompts: [
+      "💼 Find verified inclusive jobs in Mumbai or Remote",
+      "🏠 Safe housing & Garima Greh emergency transit shelters",
+      "🩺 Safe HRT roadmap & Ayushman Bharat ₹5L surgery coverage",
+      "⚖️ What are my rights against sudden landlord eviction?",
+      "🚨 24/7 Transgender Community Crisis Helpline (868989330)",
+      "🪪 How to apply for TG Certificate on National Portal",
+    ],
+    timestamp: formatTime(new Date()),
+  };
+
+  let biChatHistory = [defaultGreeting];
+
+  function updateVoiceIcon() {
+    if (!voiceToggle) return;
+    if (biChatVoiceEnabled) {
+      voiceToggle.innerHTML = "🔊";
+      voiceToggle.title = "Auto-speech aloud is ON. Click to mute.";
+      voiceToggle.classList.add("active");
+    } else {
+      voiceToggle.innerHTML = "🔇";
+      voiceToggle.title = "Auto-speech aloud is OFF. Click to unmute.";
+      voiceToggle.classList.remove("active");
+    }
+  }
+
+  function toggleVoice() {
+    biChatVoiceEnabled = !biChatVoiceEnabled;
+    localStorage.setItem("bi_chat_voice", biChatVoiceEnabled ? "true" : "false");
+    updateVoiceIcon();
+    if (!biChatVoiceEnabled && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+  }
+
+  function speakText(text) {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    if (!text) return;
+
+    let clean = text
+      .replace(/### (.*?)\n/g, "$1. ")
+      .replace(/#### (.*?)\n/g, "$1. ")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\[(.*?)\]\(.*?\)/g, "$1")
+      .replace(/[`*#_>-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const sentences = clean.split(". ");
+    if (sentences.length > 3) {
+      clean = sentences.slice(0, 3).join(". ") + ".";
+    }
+
+    const utterance = new SpeechSynthesisUtterance(clean);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.lang = "en-IN";
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function openChatbox() {
+    windowEl.classList.add("active");
+    launcher.style.transform = "scale(0.9)";
+    if (teaser) teaser.style.display = "none";
+    sessionStorage.setItem("bi_teaser_dismissed", "true");
+    setTimeout(() => {
+      if (input) input.focus();
+    }, 150);
+    renderChatMessages();
+  }
+
+  function closeChatbox() {
+    windowEl.classList.remove("active");
+    launcher.style.transform = "";
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    stopMicListening();
+  }
+
+  function toggleChatbox() {
+    if (windowEl.classList.contains("active")) {
+      closeChatbox();
+    } else {
+      openChatbox();
+    }
+  }
+
+  // Teaser dismiss logic
+  if (sessionStorage.getItem("bi_teaser_dismissed") === "true") {
+    if (teaser) teaser.style.display = "none";
+  }
+  if (teaserClose && teaser) {
+    teaserClose.addEventListener("click", (e) => {
+      e.stopPropagation();
+      teaser.style.display = "none";
+      sessionStorage.setItem("bi_teaser_dismissed", "true");
+    });
+  }
+
+  // Markdown Parser
+  function parseMarkdown(md) {
+    if (!md) return "";
+    let html = escapeHtml(md);
+
+    // Headers
+    html = html.replace(/### (.*?)(<br\/>|\n|$)/g, "<h4>$1</h4>");
+    html = html.replace(/#### (.*?)(<br\/>|\n|$)/g, "<h5>$1</h5>");
+
+    // Bold & Italics
+    html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
+
+    // Markdown Links [text](url)
+    html = html.replace(
+      /\[(.*?)\]\((.*?)\)/g,
+      `<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>`
+    );
+
+    // Linebreaks
+    html = html.replace(/\n/g, "<br/>");
+
+    // Clean up br tags right after h4/h5
+    html = html.replace(/<\/h4><br\/>/g, "</h4>");
+    html = html.replace(/<\/h5><br\/>/g, "</h5>");
+
+    return html;
+  }
+
+  // Render Messages
+  function renderChatMessages() {
+    messagesContainer.innerHTML = "";
+
+    biChatHistory.forEach((msg, idx) => {
+      const isUser = msg.role === "user";
+      const row = document.createElement("div");
+      row.className = `bi-chat-row ${isUser ? "user" : "assistant"}`;
+
+      if (!isUser) {
+        const avatar = document.createElement("div");
+        avatar.className = "bi-chat-avatar";
+        avatar.innerText = "🤖";
+        row.appendChild(avatar);
+      }
+
+      const bubbleWrap = document.createElement("div");
+      bubbleWrap.className = "bi-chat-bubble-wrap";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bi-chat-bubble";
+      bubble.innerHTML = isUser ? escapeHtml(msg.content) : parseMarkdown(msg.content);
+
+      // Suggestions from Database
+      if (!isUser && msg.suggestions && msg.suggestions.length > 0) {
+        const grid = document.createElement("div");
+        grid.className = "bi-chat-suggestions-grid";
+
+        msg.suggestions.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "bi-chat-card";
+          card.innerHTML = `
+            <div class="bi-chat-card-top">
+              <span class="bi-chat-card-title">${escapeHtml(item.title)}</span>
+              <span class="bi-chat-card-badge">${escapeHtml(item.category || "Verified")}</span>
+            </div>
+            <div class="bi-chat-card-meta">
+              <span>🏛️ ${escapeHtml(item.organization_name || "Verified Org")}</span>
+              <span>📍 ${escapeHtml(item.location || "Pan-India")}</span>
+            </div>
+            ${item.contact_info ? `<div class="bi-chat-card-contact">📞 ${escapeHtml(item.contact_info)}</div>` : ""}
+          `;
+          grid.appendChild(card);
+        });
+        bubble.appendChild(grid);
+      }
+
+      // Action Buttons (Listen Aloud & Copy)
+      if (!isUser) {
+        const actions = document.createElement("div");
+        actions.className = "bi-chat-actions";
+
+        const listenBtn = document.createElement("button");
+        listenBtn.type = "button";
+        listenBtn.className = "bi-chat-action-btn";
+        listenBtn.innerHTML = "<span>🔊</span> Listen";
+        listenBtn.onclick = () => speakText(msg.content);
+        actions.appendChild(listenBtn);
+
+        const copyBtn = document.createElement("button");
+        copyBtn.type = "button";
+        copyBtn.className = "bi-chat-action-btn";
+        copyBtn.innerHTML = "<span>📋</span> Copy";
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(msg.content);
+          copyBtn.innerHTML = "<span>✓</span> Copied";
+          setTimeout(() => (copyBtn.innerHTML = "<span>📋</span> Copy"), 1500);
+        };
+        actions.appendChild(copyBtn);
+
+        bubbleWrap.appendChild(bubble);
+        bubbleWrap.appendChild(actions);
+
+        // Suggested Prompt Chips (only on latest assistant message)
+        if (idx === biChatHistory.length - 1 && msg.suggested_prompts && msg.suggested_prompts.length > 0) {
+          const promptsWrap = document.createElement("div");
+          promptsWrap.className = "bi-chat-prompts-wrap";
+
+          msg.suggested_prompts.forEach((p) => {
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "bi-chat-prompt-chip";
+            chip.innerHTML = `<span>${escapeHtml(p)}</span> <span>→</span>`;
+            chip.onclick = () => {
+              sendMessage(p);
+            };
+            promptsWrap.appendChild(chip);
+          });
+          bubbleWrap.appendChild(promptsWrap);
+        }
+      } else {
+        bubbleWrap.appendChild(bubble);
+      }
+
+      row.appendChild(bubbleWrap);
+      messagesContainer.appendChild(row);
+    });
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Send Message Logic
+  async function sendMessage(text) {
+    if (!text || !text.trim() || isSending) return;
+    const cleanText = text.trim();
+    if (input) input.value = "";
+
+    isSending = true;
+
+    // Push User message
+    biChatHistory.push({
+      role: "user",
+      content: cleanText,
+      timestamp: formatTime(new Date()),
+    });
+    renderChatMessages();
+
+    // Show typing indicator
+    const typingIndicator = document.createElement("div");
+    typingIndicator.className = "bi-chat-row assistant";
+    typingIndicator.id = "bi-chat-typing-indicator";
+    typingIndicator.innerHTML = `
+      <div class="bi-chat-avatar">🤖</div>
+      <div class="bi-chat-bubble-wrap">
+        <div class="bi-chat-typing">
+          <div class="bi-typing-dots">
+            <span class="bi-typing-dot"></span>
+            <span class="bi-typing-dot"></span>
+            <span class="bi-typing-dot"></span>
+          </div>
+          <span>Consulting live database & legal statutes...</span>
+        </div>
+      </div>
+    `;
+    messagesContainer.appendChild(typingIndicator);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    try {
+      const historyPayload = biChatHistory
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .slice(-6)
+        .map((m) => ({ role: m.role, content: m.content }));
+
+      const headers = { "Content-Type": "application/json" };
+      if (currentAuthToken) {
+        headers["Authorization"] = `Bearer ${currentAuthToken}`;
+      }
+
+      const res = await fetch(`${API_BASE}/chatbot/query`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          query: cleanText,
+          history: historyPayload,
+          category_filter: biChatActiveCategory || null,
+        }),
+      });
+
+      const loader = document.getElementById("bi-chat-typing-indicator");
+      if (loader) loader.remove();
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Server error communicating with AI");
+      }
+
+      const data = await res.json();
+
+      biChatHistory.push({
+        role: "assistant",
+        content: data.reply,
+        suggestions: data.suggestions || [],
+        suggested_prompts: data.suggested_prompts || [],
+        timestamp: formatTime(new Date()),
+      });
+
+      renderChatMessages();
+
+      if (biChatVoiceEnabled) {
+        speakText(data.reply);
+      }
+    } catch (err) {
+      const loader = document.getElementById("bi-chat-typing-indicator");
+      if (loader) loader.remove();
+
+      biChatHistory.push({
+        role: "assistant",
+        content:
+          `⚠️ **Unable to complete consultation:** ${escapeHtml(err.message)}.\n\n` +
+          `If this is an emergency, please call the 24x7 Helpline immediately: [**868989330**](tel:868989330) or Tele-MANAS [**14416**](tel:14416).`,
+        suggestions: [],
+        suggested_prompts: ["Retry query", "Call 24/7 Helpline: 868989330"],
+        timestamp: formatTime(new Date()),
+      });
+      renderChatMessages();
+    } finally {
+      isSending = false;
+      if (input) input.focus();
+    }
+  }
+
+  // Clear Chat History
+  function clearChat() {
+    biChatHistory = [defaultGreeting];
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    renderChatMessages();
+    if (input) input.focus();
+  }
+
+  // Speech-to-Text Microphone
+  function startMicListening() {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      alert("Voice recognition is not supported in this browser. Please use Chrome, Edge, or Safari.");
+      return;
+    }
+
+    try {
+      biActiveSpeechRec = new SpeechRec();
+      biActiveSpeechRec.lang = "en-IN";
+      biActiveSpeechRec.continuous = false;
+      biActiveSpeechRec.interimResults = false;
+
+      biActiveSpeechRec.onstart = () => {
+        if (micBtn) {
+          micBtn.classList.add("listening");
+          micBtn.innerText = "🔴";
+        }
+        if (input) input.placeholder = "Listening... Speak your question now";
+      };
+
+      biActiveSpeechRec.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        if (transcript) {
+          if (input) input.value = transcript;
+          sendMessage(transcript);
+        }
+      };
+
+      biActiveSpeechRec.onerror = () => {
+        stopMicListening();
+      };
+
+      biActiveSpeechRec.onend = () => {
+        stopMicListening();
+      };
+
+      biActiveSpeechRec.start();
+    } catch (e) {
+      stopMicListening();
+    }
+  }
+
+  function stopMicListening() {
+    if (micBtn) {
+      micBtn.classList.remove("listening");
+      micBtn.innerText = "🎙️";
+    }
+    if (input) input.placeholder = "Ask about rights, jobs, HRT, shelters...";
+    if (biActiveSpeechRec) {
+      try {
+        biActiveSpeechRec.stop();
+      } catch (e) {}
+      biActiveSpeechRec = null;
+    }
+  }
+
+  // Category Chip Filtering
+  if (categoryBar) {
+    categoryBar.querySelectorAll(".bi-chat-cat-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        categoryBar.querySelectorAll(".bi-chat-cat-chip").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        biChatActiveCategory = chip.getAttribute("data-cat") || "";
+        const catLabel = chip.innerText.trim();
+        if (biChatActiveCategory) {
+          sendMessage(`Show me verified ${catLabel} resources and rights`);
+        }
+      });
+    });
+  }
+
+  // Event Listeners for floating widget
+  launcher.addEventListener("click", toggleChatbox);
+  if (closeBtn) closeBtn.addEventListener("click", closeChatbox);
+  if (clearBtn) clearBtn.addEventListener("click", clearChat);
+  if (voiceToggle) voiceToggle.addEventListener("click", toggleVoice);
+
+  if (sendBtn && input) {
+    sendBtn.addEventListener("click", () => sendMessage(input.value));
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage(input.value);
+      }
+    });
+  }
+
+  if (micBtn) {
+    micBtn.addEventListener("click", () => {
+      if (micBtn.classList.contains("listening")) {
+        stopMicListening();
+      } else {
+        startMicListening();
+      }
+    });
+  }
+
+  updateVoiceIcon();
+  renderChatMessages();
+}
+
+// ==========================================================================
+// Dedicated Full-Width Talking AI Chat Box Tab Controller (#tab-chat)
+// ==========================================================================
+function initTabAIChatbox() {
+  const container = document.getElementById("tab-chat");
+  const messagesContainer = document.getElementById("tab-chat-messages-container");
+  const input = document.getElementById("tab-chat-text-input");
+  const sendBtn = document.getElementById("tab-chat-send-btn");
+  const micBtn = document.getElementById("tab-chat-mic-btn");
+  const micIcon = document.getElementById("tab-chat-mic-icon");
+  const voiceToggle = document.getElementById("tab-chat-voice-toggle");
+  const voiceIcon = document.getElementById("tab-chat-voice-icon");
+  const voiceLabel = document.getElementById("tab-chat-voice-label");
+  const clearBtn = document.getElementById("tab-chat-clear-btn");
+  const categoryBar = document.getElementById("tab-chat-category-bar");
+  const starterPrompts = document.getElementById("tab-chat-starter-prompts");
+
+  // Talking Status & Visualizer Elements
+  const avatarBox = document.getElementById("tab-chat-avatar-box");
+  const statusDot = document.getElementById("tab-chat-status-dot");
+  const liveBadge = document.getElementById("tab-chat-live-badge");
+  const speakingBadge = document.getElementById("tab-chat-speaking-badge");
+  const badgeStopBtn = document.getElementById("tab-chat-badge-stop-btn");
+  const stopSpeakingBtn = document.getElementById("tab-chat-stop-speaking-btn");
+
+  if (!container || !messagesContainer || !input) return;
+
+  let tabVoiceEnabled = localStorage.getItem("bi_tab_voice") !== "false";
+  let tabActiveCategory = "";
+  let tabSpeechRec = null;
+  let isSending = false;
+  let activeSpeakingRow = null;
+
+  function formatTime(d) {
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  // Voice Selection for Web Speech API
+  let availableVoices = [];
+  function loadVoices() {
+    if (!("speechSynthesis" in window)) return;
+    availableVoices = window.speechSynthesis.getVoices();
+  }
+  loadVoices();
+  if ("speechSynthesis" in window && window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }
+
+  function getBestVoice() {
+    if (!availableVoices || availableVoices.length === 0) {
+      loadVoices();
+    }
+    if (!availableVoices || availableVoices.length === 0) return null;
+
+    // Prioritize natural Indian English voice (en-IN), e.g. Heera, Neerja, Google UK English Female, etc.
+    const inVoice = availableVoices.find(
+      (v) => v.lang === "en-IN" || v.lang.replace("_", "-") === "en-IN"
+    );
+    if (inVoice) return inVoice;
+
+    const naturalEn = availableVoices.find(
+      (v) =>
+        (v.lang.startsWith("en") || v.lang.startsWith("en-")) &&
+        (v.name.includes("Natural") ||
+          v.name.includes("Google") ||
+          v.name.includes("Samantha") ||
+          v.name.includes("Zira"))
+    );
+    if (naturalEn) return naturalEn;
+
+    const generalEn = availableVoices.find((v) => v.lang.startsWith("en"));
+    return generalEn || availableVoices[0];
+  }
+
+  const defaultGreeting = {
+    role: "assistant",
+    content:
+      "### 👋 Namaste! I am the Beyond Identity AI Assistant\n\n" +
+      "I am your dedicated 24/7 companion for **statutory legal rights**, **verified inclusive jobs & housing**, " +
+      "**safe clinical healthcare navigation**, and **emergency crisis support** across India.\n\n" +
+      "🎙️ **Talking Voice Assistant:** I talk out loud to answer your questions! Click the microphone or type below:",
+    suggestions: [],
+    suggested_prompts: [
+      "💼 Find verified inclusive jobs in Mumbai or Remote",
+      "🏠 Safe housing & Garima Greh emergency transit shelters",
+      "🩺 Safe HRT roadmap & Ayushman Bharat ₹5L surgery coverage",
+      "⚖️ What are my rights against sudden landlord eviction?",
+      "🪪 How to apply for TG Certificate on National Portal",
+      "🚨 24/7 Transgender Community Crisis Helpline (868989330)",
+    ],
+    timestamp: formatTime(new Date()),
+  };
+
+  let tabChatHistory = [defaultGreeting];
+
+  function updateVoiceUI() {
+    if (!voiceToggle) return;
+    if (tabVoiceEnabled) {
+      if (voiceIcon) voiceIcon.innerText = "🔊";
+      if (voiceLabel) voiceLabel.innerText = "Voice Talking: ON";
+      voiceToggle.title = "Auto-speech aloud is ON. Click to mute.";
+      voiceToggle.classList.add("active");
+    } else {
+      if (voiceIcon) voiceIcon.innerText = "🔇";
+      if (voiceLabel) voiceLabel.innerText = "Voice Talking: OFF";
+      voiceToggle.title = "Auto-speech aloud is OFF. Click to unmute.";
+      voiceToggle.classList.remove("active");
+      stopSpeech();
+    }
+  }
+
+  function toggleVoice() {
+    tabVoiceEnabled = !tabVoiceEnabled;
+    localStorage.setItem("bi_tab_voice", tabVoiceEnabled ? "true" : "false");
+    updateVoiceUI();
+  }
+
+  function stopSpeech() {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    if (avatarBox) avatarBox.classList.remove("is-talking");
+    if (speakingBadge) speakingBadge.classList.remove("active");
+    if (stopSpeakingBtn) stopSpeakingBtn.style.display = "none";
+    if (liveBadge) liveBadge.innerText = "🟢 Online";
+    document.querySelectorAll(".tab-chat-row.speaking-now").forEach((r) => r.classList.remove("speaking-now"));
+    document.querySelectorAll(".tab-chat-speaking-indicator-mini").forEach((ind) => ind.remove());
+    activeSpeakingRow = null;
+  }
+
+  function cleanMarkdownForSpeech(text) {
+    if (!text) return "";
+    let clean = text
+      .replace(/### (.*?)\n/g, "$1. ")
+      .replace(/#### (.*?)\n/g, "$1. ")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
+      .replace(/[`*#_>•\-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    // Split into sentences and keep speech punchy and pleasant
+    const sentences = clean.split(". ");
+    if (sentences.length > 5) {
+      clean = sentences.slice(0, 5).join(". ") + ".";
+    }
+    return clean;
+  }
+
+  function speakText(text, rowElement) {
+    if (!("speechSynthesis" in window) || !tabVoiceEnabled) return;
+    stopSpeech();
+    if (!text) return;
+
+    const speechScript = cleanMarkdownForSpeech(text);
+    if (!speechScript) return;
+
+    const utterance = new SpeechSynthesisUtterance(speechScript);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+
+    const bestVoice = getBestVoice();
+    if (bestVoice) {
+      utterance.voice = bestVoice;
+      utterance.lang = bestVoice.lang;
+    } else {
+      utterance.lang = "en-IN";
+    }
+
+    utterance.onstart = () => {
+      if (avatarBox) avatarBox.classList.add("is-talking");
+      if (speakingBadge) speakingBadge.classList.add("active");
+      if (stopSpeakingBtn) stopSpeakingBtn.style.display = "inline-flex";
+      if (liveBadge) liveBadge.innerText = "🔊 AI Speaking...";
+
+      if (rowElement) {
+        activeSpeakingRow = rowElement;
+        rowElement.classList.add("speaking-now");
+        const actionsRow = rowElement.querySelector(".tab-chat-actions-row");
+        if (actionsRow && !actionsRow.querySelector(".tab-chat-speaking-indicator-mini")) {
+          const mini = document.createElement("div");
+          mini.className = "tab-chat-speaking-indicator-mini";
+          mini.innerHTML = `
+            <div class="ai-voice-waves animating">
+              <span class="ai-wave-bar"></span>
+              <span class="ai-wave-bar"></span>
+              <span class="ai-wave-bar"></span>
+            </div>
+            <span>Talking aloud...</span>
+          `;
+          actionsRow.appendChild(mini);
+        }
+      }
+    };
+
+    utterance.onend = () => {
+      stopSpeech();
+    };
+
+    utterance.onerror = () => {
+      stopSpeech();
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // Global post-login vocal greeting trigger
+  window.triggerPostLoginAIChatGreeting = function(user) {
+    if (!user) return;
+    switchToTab("tab-chat");
+
+    const welcomeGreeting = {
+      role: "assistant",
+      content:
+        `### 👋 Namaste ${user.name}! Welcome to Beyond Identity\n\n` +
+        `I am your **24/7 AI Rights and Healthcare Assistant**. I can help you find **verified inclusive jobs & Garima Greh shelters**, guide you on the **Transgender Persons Act 2019**, explain the **PM-JAY ₹5 Lakh health surgery package**, or provide immediate crisis assistance.\n\n` +
+        `🎙️ **Voice Assistant Active:** Click the microphone or type below to talk with me!`,
+      isPostLogin: true,
+      suggestions: [],
+      suggested_prompts: [
+        "💼 Find verified inclusive jobs in Mumbai or Remote",
+        "🏠 Safe housing & Garima Greh emergency transit shelters",
+        "🩺 Safe HRT roadmap & Ayushman Bharat ₹5L surgery coverage",
+        "⚖️ What are my rights against sudden landlord eviction?",
+        "🪪 How to apply for TG Certificate on National Portal",
+        "🚨 24/7 Transgender Community Crisis Helpline (868989330)",
+      ],
+      timestamp: formatTime(new Date()),
+    };
+
+    // Replace generic initial greeting or append
+    if (tabChatHistory.length <= 1) {
+      tabChatHistory = [welcomeGreeting];
+    } else {
+      tabChatHistory.push(welcomeGreeting);
+    }
+
+    renderMessages();
+
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    if (input) input.focus();
+
+    // Vocal Speech Greeting
+    if (tabVoiceEnabled && "speechSynthesis" in window) {
+      const speechGreeting = `Namaste ${user.name}! Welcome to Beyond Identity. I am your 24/7 AI assistant. I can guide you through statutory legal rights, verified housing, jobs, and healthcare. Feel free to talk with me anytime by clicking the microphone or typing below.`;
+      setTimeout(() => {
+        const rows = messagesContainer.querySelectorAll(".tab-chat-row.assistant");
+        const lastRow = rows[rows.length - 1];
+        speakText(speechGreeting, lastRow);
+      }, 550);
+    }
+  };
+
+  function parseMarkdown(md) {
+    if (!md) return "";
+    let html = escapeHtml(md);
+
+    // Headers
+    html = html.replace(/### (.*?)(<br\/>|\n|$)/g, "<h4>$1</h4>");
+    html = html.replace(/#### (.*?)(<br\/>|\n|$)/g, "<h5>$1</h5>");
+
+    // Bold & Italics
+    html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
+
+    // Markdown Links [text](url)
+    html = html.replace(
+      /\[(.*?)\]\((.*?)\)/g,
+      `<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>`
+    );
+
+    // Linebreaks
+    html = html.replace(/\n/g, "<br/>");
+    html = html.replace(/<\/h4><br\/>/g, "</h4>");
+    html = html.replace(/<\/h5><br\/>/g, "</h5>");
+
+    return html;
+  }
+
+  function renderMessages() {
+    messagesContainer.innerHTML = "";
+
+    tabChatHistory.forEach((msg, idx) => {
+      const isUser = msg.role === "user";
+      const row = document.createElement("div");
+      row.className = `tab-chat-row ${isUser ? "user" : "assistant"}`;
+
+      if (!isUser) {
+        const avatar = document.createElement("div");
+        avatar.className = "tab-chat-msg-avatar";
+        avatar.innerText = "🤖";
+        row.appendChild(avatar);
+      }
+
+      const bubbleWrap = document.createElement("div");
+      bubbleWrap.className = "tab-chat-bubble-wrap";
+
+      const bubble = document.createElement("div");
+      bubble.className = "tab-chat-bubble";
+
+      // If this is the special post-login greeting, show the Welcome Banner
+      if (!isUser && msg.isPostLogin) {
+        const bannerCard = document.createElement("div");
+        bannerCard.className = "post-login-welcome-banner";
+        bannerCard.innerHTML = `
+          <div class="post-login-welcome-left">
+            <div class="post-login-welcome-avatar">🤖</div>
+            <div>
+              <div class="post-login-welcome-title">AI Assistant Connected for ${escapeHtml(currentUser?.name || "Member")}</div>
+              <div class="post-login-welcome-sub">Voice Speech Active • Verified Indian Statutory Knowledge Base</div>
+            </div>
+          </div>
+          <button type="button" class="post-login-talk-cta-btn" id="post-login-mic-cta-${idx}">
+            <span>🎙️</span> Click to Speak Question
+          </button>
+        `;
+        const micCta = bannerCard.querySelector(`#post-login-mic-cta-${idx}`);
+        if (micCta) {
+          micCta.onclick = () => {
+            if (micBtn.classList.contains("listening")) {
+              stopMic();
+            } else {
+              startMic();
+            }
+          };
+        }
+        bubble.appendChild(bannerCard);
+      }
+
+      const bodyDiv = document.createElement("div");
+      bodyDiv.innerHTML = isUser ? escapeHtml(msg.content) : parseMarkdown(msg.content);
+      bubble.appendChild(bodyDiv);
+
+      // Suggestions from database
+      if (!isUser && msg.suggestions && msg.suggestions.length > 0) {
+        const grid = document.createElement("div");
+        grid.className = "tab-chat-db-grid";
+
+        msg.suggestions.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "tab-chat-db-card";
+          card.innerHTML = `
+            <div class="tab-chat-db-card-top">
+              <span class="tab-chat-db-card-title">${escapeHtml(item.title)}</span>
+              <span class="tab-chat-db-card-badge">${escapeHtml(item.category || "Verified")}</span>
+            </div>
+            <div class="tab-chat-db-card-meta">
+              <span>🏛️ ${escapeHtml(item.organization_name || "Verified Provider")}</span>
+              <span>📍 ${escapeHtml(item.location || "Pan-India")}</span>
+            </div>
+            ${item.contact_info ? `<div class="tab-chat-db-card-contact">📞 ${escapeHtml(item.contact_info)}</div>` : ""}
+          `;
+          grid.appendChild(card);
+        });
+        bubble.appendChild(grid);
+      }
+
+      bubbleWrap.appendChild(bubble);
+
+      // Actions & Prompts for Assistant messages
+      if (!isUser) {
+        const actionsRow = document.createElement("div");
+        actionsRow.className = "tab-chat-actions-row";
+
+        const listenBtn = document.createElement("button");
+        listenBtn.type = "button";
+        listenBtn.className = "tab-chat-action-btn";
+        listenBtn.innerHTML = "<span>🔊</span> Listen";
+        listenBtn.onclick = () => speakText(msg.content, row);
+        actionsRow.appendChild(listenBtn);
+
+        const copyBtn = document.createElement("button");
+        copyBtn.type = "button";
+        copyBtn.className = "tab-chat-action-btn";
+        copyBtn.innerHTML = "<span>📋</span> Copy";
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(msg.content);
+          copyBtn.innerHTML = "<span>✓</span> Copied";
+          setTimeout(() => (copyBtn.innerHTML = "<span>📋</span> Copy"), 1500);
+        };
+        actionsRow.appendChild(copyBtn);
+
+        bubbleWrap.appendChild(actionsRow);
+
+        // Suggested Follow-up Prompts (Only on the last message)
+        if (idx === tabChatHistory.length - 1 && msg.suggested_prompts && msg.suggested_prompts.length > 0) {
+          const promptsWrap = document.createElement("div");
+          promptsWrap.className = "tab-chat-bubble-prompts";
+
+          msg.suggested_prompts.forEach((p) => {
+            const pBtn = document.createElement("button");
+            pBtn.type = "button";
+            pBtn.className = "tab-chat-bubble-prompt-btn";
+            pBtn.innerHTML = `<span>${escapeHtml(p)}</span> <span>→</span>`;
+            pBtn.onclick = () => sendTabMessage(p);
+            promptsWrap.appendChild(pBtn);
+          });
+          bubbleWrap.appendChild(promptsWrap);
+        }
+      }
+
+      if (isUser) {
+        const userAvatar = document.createElement("div");
+        userAvatar.className = "tab-chat-msg-avatar";
+        userAvatar.innerText = "👤";
+        row.appendChild(bubbleWrap);
+        row.appendChild(userAvatar);
+      } else {
+        row.appendChild(bubbleWrap);
+      }
+
+      messagesContainer.appendChild(row);
+    });
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  async function sendTabMessage(text) {
+    if (!text || !text.trim() || isSending) return;
+    const cleanText = text.trim();
+    if (input) input.value = "";
+
+    isSending = true;
+    stopSpeech();
+
+    tabChatHistory.push({
+      role: "user",
+      content: cleanText,
+      timestamp: formatTime(new Date()),
+    });
+    renderMessages();
+
+    // Show typing indicator
+    const typingRow = document.createElement("div");
+    typingRow.className = "tab-chat-row assistant";
+    typingRow.id = "tab-chat-typing-indicator";
+    typingRow.innerHTML = `
+      <div class="tab-chat-msg-avatar">🤖</div>
+      <div class="tab-chat-bubble-wrap">
+        <div class="tab-chat-typing-box">
+          <div class="tab-chat-typing-dots">
+            <span class="tab-chat-typing-dot"></span>
+            <span class="tab-chat-typing-dot"></span>
+            <span class="tab-chat-typing-dot"></span>
+          </div>
+          <span>Consulting Indian statutory statutes & verified database...</span>
+        </div>
+      </div>
+    `;
+    messagesContainer.appendChild(typingRow);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    try {
+      const historyPayload = tabChatHistory
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .slice(-6)
+        .map((m) => ({ role: m.role, content: m.content }));
+
+      const headers = { "Content-Type": "application/json" };
+      if (currentAuthToken) {
+        headers["Authorization"] = `Bearer ${currentAuthToken}`;
+      }
+
+      const res = await fetch(`${API_BASE}/chatbot/query`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          query: cleanText,
+          history: historyPayload,
+          category_filter: tabActiveCategory || null,
+        }),
+      });
+
+      const loader = document.getElementById("tab-chat-typing-indicator");
+      if (loader) loader.remove();
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Server error communicating with AI");
+      }
+
+      const data = await res.json();
+
+      tabChatHistory.push({
+        role: "assistant",
+        content: data.reply,
+        suggestions: data.suggestions || [],
+        suggested_prompts: data.suggested_prompts || [],
+        timestamp: formatTime(new Date()),
+      });
+
+      renderMessages();
+
+      // Talk aloud the AI answer!
+      if (tabVoiceEnabled) {
+        const rows = messagesContainer.querySelectorAll(".tab-chat-row.assistant");
+        const lastRow = rows[rows.length - 1];
+        speakText(data.reply, lastRow);
+      }
+    } catch (err) {
+      const loader = document.getElementById("tab-chat-typing-indicator");
+      if (loader) loader.remove();
+
+      tabChatHistory.push({
+        role: "assistant",
+        content:
+          `⚠️ **Unable to complete consultation:** ${escapeHtml(err.message)}.\n\n` +
+          `If this is an emergency, please call the 24x7 Helpline immediately: [**868989330**](tel:868989330) or Tele-MANAS [**14416**](tel:14416).`,
+        suggestions: [],
+        suggested_prompts: ["Retry query", "Call 24/7 Helpline: 868989330"],
+        timestamp: formatTime(new Date()),
+      });
+      renderMessages();
+    } finally {
+      isSending = false;
+      if (input) input.focus();
+    }
+  }
+
+  function clearChat() {
+    stopSpeech();
+    tabChatHistory = [defaultGreeting];
+    renderMessages();
+    if (input) input.focus();
+  }
+
+  function startMic() {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      alert("Voice speech recognition is not supported in this browser. Please use Chrome or Edge.");
+      return;
+    }
+
+    stopSpeech();
+
+    try {
+      tabSpeechRec = new SpeechRec();
+      tabSpeechRec.lang = "en-IN";
+      tabSpeechRec.continuous = false;
+      tabSpeechRec.interimResults = false;
+
+      tabSpeechRec.onstart = () => {
+        if (micBtn) {
+          micBtn.classList.add("listening");
+        }
+        if (liveBadge) liveBadge.innerText = "🎙️ Listening to You...";
+        if (input) input.placeholder = "Listening... Speak your question now";
+      };
+
+      tabSpeechRec.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        if (transcript) {
+          if (input) input.value = transcript;
+          sendTabMessage(transcript);
+        }
+      };
+
+      tabSpeechRec.onerror = () => stopMic();
+      tabSpeechRec.onend = () => stopMic();
+
+      tabSpeechRec.start();
+    } catch (e) {
+      stopMic();
+    }
+  }
+
+  function stopMic() {
+    if (micBtn) {
+      micBtn.classList.remove("listening");
+    }
+    if (liveBadge) liveBadge.innerText = "🟢 Online";
+    if (input) input.placeholder = "Ask anything about legal rights, inclusive jobs, Garima Greh shelters, HRT protocols...";
+    if (tabSpeechRec) {
+      try { tabSpeechRec.stop(); } catch (e) {}
+      tabSpeechRec = null;
+    }
+  }
+
+  // Category filter buttons
+  if (categoryBar) {
+    categoryBar.querySelectorAll(".tab-chat-cat-btn").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        categoryBar.querySelectorAll(".tab-chat-cat-btn").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        tabActiveCategory = chip.getAttribute("data-cat") || "";
+        const catLabel = chip.innerText.trim();
+        if (tabActiveCategory) {
+          sendTabMessage(`Show verified ${catLabel} opportunities, resources and legal rights`);
+        }
+      });
+    });
+  }
+
+  // Starter quick questions
+  if (starterPrompts) {
+    starterPrompts.querySelectorAll(".tab-chat-starter-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const promptText = chip.getAttribute("data-prompt") || chip.innerText.trim();
+        sendTabMessage(promptText);
+      });
+    });
+  }
+
+  // Event Listeners
+  if (sendBtn && input) {
+    sendBtn.addEventListener("click", () => sendTabMessage(input.value));
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendTabMessage(input.value);
+      }
+    });
+  }
+
+  if (micBtn) {
+    micBtn.addEventListener("click", () => {
+      if (micBtn.classList.contains("listening")) {
+        stopMic();
+      } else {
+        startMic();
+      }
+    });
+  }
+
+  if (voiceToggle) voiceToggle.addEventListener("click", toggleVoice);
+  if (clearBtn) clearBtn.addEventListener("click", clearChat);
+  if (badgeStopBtn) badgeStopBtn.addEventListener("click", stopSpeech);
+  if (stopSpeakingBtn) stopSpeakingBtn.addEventListener("click", stopSpeech);
+
+  // Buttons that navigate to the tab chat
+  const navBtn = document.getElementById("nav-open-chat-btn");
+  const heroBtn = document.getElementById("hero-open-chat-btn");
+  const landingBtn = document.getElementById("landing-launch-chat-btn");
+  const bannerBtn = document.getElementById("banner-open-chat-btn");
+
+  [navBtn, heroBtn, landingBtn, bannerBtn].forEach((btn) => {
+    if (btn) {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        switchToTab("tab-chat");
+      });
+    }
+  });
+
+  updateVoiceUI();
+  renderMessages();
 }

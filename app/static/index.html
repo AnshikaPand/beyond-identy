@@ -12,9 +12,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Application Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css" />
+  <link rel="stylesheet" href="/static/css/styles.css?v=3.2" />
 
-  <!-- Immediate Zero-Flicker Theme Initializer -->
+  <!-- Immediate Zero-Flicker Theme & Auth Layout Initializer -->
   <script>
     (function() {
       const savedTheme = localStorage.getItem("bi_theme") || "system";
@@ -23,6 +23,15 @@
         active = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       }
       document.documentElement.setAttribute("data-theme", active);
+
+      // Pre-check authentication to prevent layout flicker or landing jump
+      if (localStorage.getItem("bi_token") && localStorage.getItem("bi_user")) {
+        document.documentElement.classList.add("user-logged-in");
+        document.addEventListener("DOMContentLoaded", function() {
+          document.body.classList.add("user-logged-in");
+          document.body.classList.add("tab-chat-active");
+        });
+      }
     })();
   </script>
 </head>
@@ -55,12 +64,17 @@
         <span class="sdg-pill sdg-3">🩺 SDG 3: Good Health</span>
       </div>
 
-      <!-- Right Header Actions: Helpline + Theme Switcher + Auth -->
+      <!-- Right Header Actions: Helpline + AI Chat + Theme Switcher + Auth -->
       <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
         <!-- Direct Helpline Button -->
         <a href="tel:868989330" class="btn btn-secondary" style="color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.35); padding: 7px 12px; font-size: 12.5px; text-decoration: none; display: flex; align-items: center; gap: 5px; font-weight: 600;" title="Call 24/7 Helpline">
           <span>📞</span> 868989330
         </a>
+
+        <!-- Quick AI Chatbox Nav Launcher Button -->
+        <button type="button" class="btn btn-secondary" id="nav-open-chat-btn" style="color: var(--accent-cyan); border-color: rgba(56, 189, 248, 0.4); padding: 7px 12px; font-size: 12.5px; display: flex; align-items: center; gap: 6px; font-weight: 600; cursor: pointer;" title="Launch 24/7 AI Assistant Chatbox">
+          <span>🤖</span> AI Chat
+        </button>
 
         <!-- Theme Switcher Segmented Control (Day / Night / System) -->
         <div class="theme-switch-group" id="theme-switch-container" title="Select Theme: Day, Night, or System">
@@ -77,15 +91,46 @@
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="hero">
+  <!-- Hero Section (Visible only for guests / logged out state) -->
+  <section class="hero" id="landing-hero-section">
     <div class="container">
       <div class="hero-tag">🇮🇳 National Transgender Rights & Triage Portal</div>
       <h2>Empowering Transgender & Gender-Diverse Communities in India</h2>
       <p>Direct access to verified inclusive opportunities, Indian statutory legal rights awareness, transparent discrimination redressal, and clinically-guided health navigation.</p>
 
+      <!-- Quick 1-Click Evaluation Strip for Guests -->
+      <div id="guest-demo-strip" class="guest-demo-strip">
+        <div class="demo-strip-label">
+          ⚡ 1-Click Instant Evaluation Demo:
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+          <button type="button" class="btn btn-secondary demo-login-btn" data-email="user@example.com" data-password="user123" style="padding: 8px 14px; font-size: 12.5px;">
+            👤 <strong>Community Seeker</strong>
+          </button>
+          <button type="button" class="btn btn-secondary demo-login-btn" data-email="ngo@shreetrust.org" data-password="verifier123" style="padding: 8px 14px; font-size: 12.5px;">
+            🛡️ <strong>NGO Verifier</strong> (Case Triage)
+          </button>
+          <button type="button" class="btn btn-secondary demo-login-btn" data-email="admin@beyondidentity.org" data-password="admin123" style="padding: 8px 14px; font-size: 12.5px;">
+            ⚡ <strong>System Admin</strong>
+          </button>
+        </div>
+      </div>
+
+      <!-- Guest Hero CTA Action Row -->
+      <div class="guest-cta-group" id="guest-hero-cta" style="margin-top: 20px;">
+        <button class="btn btn-primary guest-open-signup-btn" id="guest-hero-register-btn" style="padding: 12px 24px; font-size: 14.5px;">
+          🚀 Join Free — Create Account
+        </button>
+        <button class="btn btn-secondary guest-open-login-btn" id="guest-hero-login-btn" style="padding: 12px 22px; font-size: 14.5px;">
+          🔐 Sign In with Password
+        </button>
+        <a href="/login" class="btn btn-secondary" style="padding: 12px 20px; font-size: 14px;">
+          Dedicated Auth Page →
+        </a>
+      </div>
+
       <!-- Quick Stats Bar -->
-      <div class="stats-grid">
+      <div class="stats-grid" style="margin-top: 36px; margin-bottom: 0;">
         <div class="stat-card">
           <div class="stat-number" id="stat-listings-count">10+</div>
           <div class="stat-label">Verified Opportunities</div>
@@ -103,56 +148,6 @@
           <div class="stat-label">24x7 Community Helpline</div>
         </div>
       </div>
-
-      <!-- Guest Hero CTA Action Row (Hidden when logged in) -->
-      <div class="guest-cta-group" id="guest-hero-cta">
-        <button class="btn btn-primary guest-open-signup-btn" id="guest-hero-register-btn" style="padding: 12px 24px; font-size: 14.5px;">
-          🚀 Join Free — Create Account
-        </button>
-        <button class="btn btn-secondary guest-open-login-btn" id="guest-hero-login-btn" style="padding: 12px 22px; font-size: 14.5px;">
-          🔐 Sign In to Portal
-        </button>
-        <a href="/login" class="btn btn-secondary" style="padding: 12px 20px; font-size: 14px;">
-          Dedicated Auth Page →
-        </a>
-      </div>
-
-      <!-- Quick 1-Click Evaluation Strip for Guests -->
-      <div id="guest-demo-strip" class="guest-demo-strip">
-        <div class="demo-strip-label">
-          ⚡ Instant 1-Click Evaluation Tour:
-        </div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button type="button" class="btn btn-secondary demo-login-btn" data-email="ngo@shreetrust.org" data-password="verifier123" style="padding: 7px 12px; font-size: 12px;">
-            🛡️ <strong>NGO Verifier</strong> (Case Triage Desk)
-          </button>
-          <button type="button" class="btn btn-secondary demo-login-btn" data-email="admin@beyondidentity.org" data-password="admin123" style="padding: 7px 12px; font-size: 12px;">
-            ⚡ <strong>System Admin</strong> (Full Access)
-          </button>
-          <button type="button" class="btn btn-secondary demo-login-btn" data-email="user@example.com" data-password="user123" style="padding: 7px 12px; font-size: 12px;">
-            👤 <strong>Community Seeker</strong> (Standard Access)
-          </button>
-        </div>
-      </div>
-
-      <!-- Navigation Tabs (Active only when authenticated!) -->
-      <nav class="tabs-nav" id="authenticated-tabs-nav" aria-label="Portal Modules" style="display: none; margin-top: 28px;">
-        <button class="tab-btn active" data-tab="tab-listings">
-          <span>📂</span> Opportunities Directory
-        </button>
-        <button class="tab-btn" data-tab="tab-report">
-          <span>🚨</span> Report Discrimination
-        </button>
-        <button class="tab-btn" data-tab="tab-awareness">
-          <span>⚖️</span> AI Rights Awareness
-        </button>
-        <button class="tab-btn" data-tab="tab-health">
-          <span>🩺</span> AI Health Assistant
-        </button>
-        <button class="tab-btn" id="tab-btn-cases" data-tab="tab-cases" style="display: none;">
-          <span>📋</span> Case Triage Desk
-        </button>
-      </nav>
     </div>
   </section>
 
@@ -162,7 +157,7 @@
     <!-- ============================================== -->
     <!-- 1. GUEST LANDING VIEW (Pre-Login State)        -->
     <!-- ============================================== -->
-    <div id="guest-landing-view" class="guest-landing">
+    <div id="guest-landing-view" class="guest-landing" style="display: none;">
       
       <div class="preview-grid-header">
         <div class="guest-hero-badge">🏛️ Statutory Legal Rights & Community Protection</div>
@@ -285,6 +280,34 @@
           </button>
         </div>
 
+        <!-- Pillar 5: 24/7 AI Conversational Assistant -->
+        <div class="pillar-preview-card" style="border-color: rgba(56, 189, 248, 0.35); background: linear-gradient(180deg, rgba(56, 189, 248, 0.05), rgba(99, 102, 241, 0.04));">
+          <div>
+            <div class="pillar-icon-box" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">🤖</div>
+            <div class="pillar-title">24/7 AI Chat Assistant</div>
+            <div class="pillar-desc">
+              Immediate multi-turn AI consultation across statutory legal rights, verified housing shelters, inclusive jobs, safe HRT protocols, and 24/7 emergency crisis hotlines.
+            </div>
+            <div class="pillar-preview-items">
+              <div class="pillar-preview-row">
+                <span>💬 Natural Language Legal & Welfare Q&A</span>
+                <span class="pillar-preview-badge badge-info">24/7 AI</span>
+              </div>
+              <div class="pillar-preview-row">
+                <span>🔍 Live Database Listing Matching</span>
+                <span class="pillar-preview-badge badge-success">Verified DB</span>
+              </div>
+              <div class="pillar-preview-row">
+                <span>🎙️ Voice In / Speech Out Support</span>
+                <span class="pillar-preview-badge badge-purple">Voice Enabled</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" id="landing-launch-chat-btn" style="width: 100%; margin-top: 14px; justify-content: center; padding: 11px; font-weight: 600;">
+            <span>💬</span> Open AI Chat Box Now
+          </button>
+        </div>
+
       </div>
 
       <!-- How Redressal Works Pipeline -->
@@ -368,26 +391,194 @@
     </div>
 
     <!-- ============================================== -->
-    <!-- 2. AUTHENTICATED PORTAL VIEW (Unlocked App)    -->
+    <!-- 2. PORTAL MODULES VIEW (Interactive Portal)    -->
     <!-- ============================================== -->
-    <div id="authenticated-portal-view" style="display: none;">
+    <div id="authenticated-portal-view">
 
-      <!-- Authenticated Member Welcome Banner -->
+      <!-- Member Welcome Top Bar -->
       <div class="auth-member-banner" id="auth-member-banner">
         <div class="auth-member-left">
           <div class="user-avatar" id="member-banner-avatar">👤</div>
           <div>
-            <div class="auth-member-title" id="member-banner-greeting">Welcome to Beyond Identity!</div>
-            <div class="auth-member-subtitle" id="member-banner-sub">Your authenticated session is active with encrypted statutory safeguards.</div>
+            <div class="auth-member-title" id="member-banner-greeting">Welcome to Beyond Identity</div>
+            <div class="auth-member-subtitle" id="member-banner-sub">24/7 AI Rights, Healthcare & Community Redressal Workspace</div>
           </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span class="user-role-badge" id="member-banner-role-badge" style="padding: 6px 14px; background: rgba(99, 102, 241, 0.18); border: 1px solid var(--border-glow); border-radius: var(--radius-full); font-size: 11px;">MEMBER</span>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <span class="user-role-badge" id="member-banner-role-badge">COMMUNITY USER</span>
+          <span class="portal-status-pill">🟢 24/7 Voice AI Active</span>
         </div>
       </div>
 
+      <!-- Navigation Tabs (Only for Authenticated Portal!) -->
+      <nav class="tabs-nav" id="authenticated-tabs-nav" aria-label="Portal Modules">
+        <button class="tab-btn active" data-tab="tab-chat" id="tab-btn-chat">
+          <span>🤖</span> 24/7 AI Voice Assistant
+        </button>
+        <button class="tab-btn" data-tab="tab-listings">
+          <span>📂</span> Opportunities Directory
+        </button>
+        <button class="tab-btn" data-tab="tab-report">
+          <span>🚨</span> Report Discrimination
+        </button>
+        <button class="tab-btn" data-tab="tab-awareness">
+          <span>⚖️</span> AI Rights Awareness
+        </button>
+        <button class="tab-btn" data-tab="tab-health">
+          <span>🩺</span> AI Health Assistant
+        </button>
+        <button class="tab-btn" id="tab-btn-cases" data-tab="tab-cases" style="display: none;">
+          <span>📋</span> Case Triage Desk
+        </button>
+      </nav>
+
+      <!-- TAB: AI Chat Assistant (Embedded Full-Width Chat Box - Primary Tab) -->
+      <section class="tab-panel active" id="tab-chat">
+        <div class="tab-chat-container">
+          <!-- Chat Header Banner -->
+          <div class="tab-chat-header">
+            <div class="tab-chat-header-main">
+              <div class="tab-chat-avatar-glow" id="tab-chat-avatar-box">
+                <span class="tab-chat-avatar-icon">🤖</span>
+                <span class="tab-chat-status-pulse" id="tab-chat-status-dot" title="AI Assistant Online & Ready"></span>
+              </div>
+              <div class="tab-chat-header-text">
+                <div class="tab-chat-title-row">
+                  <h3 class="tab-chat-title">Beyond Identity 24/7 AI Assistant</h3>
+                  <span class="tab-chat-verified-badge">⚡ Verified Knowledge Base</span>
+                  <span class="tab-chat-live-badge" id="tab-chat-live-badge">🟢 Online</span>
+                  <div class="tab-chat-speaking-badge" id="tab-chat-speaking-badge">
+                    <div class="ai-voice-waves animating">
+                      <span class="ai-wave-bar"></span>
+                      <span class="ai-wave-bar"></span>
+                      <span class="ai-wave-bar"></span>
+                      <span class="ai-wave-bar"></span>
+                    </div>
+                    <span>AI Speaking...</span>
+                    <button type="button" class="tab-chat-stop-speech-btn" id="tab-chat-badge-stop-btn" title="Stop AI Voice Speech">⏹️ Stop</button>
+                  </div>
+                </div>
+                <p class="tab-chat-subtitle">
+                  Conversational guidance on Indian statutory rights (TG Act 2019, NALSA 2014), verified inclusive jobs, affirmative housing, PM-JAY ₹5L healthcare triage, and crisis management.
+                </p>
+              </div>
+            </div>
+            <div class="tab-chat-header-controls">
+              <button type="button" class="tab-chat-control-btn active" id="tab-chat-voice-toggle" title="Toggle Auto-Speech Aloud (Voice Output)">
+                <span id="tab-chat-voice-icon">🔊</span> <span class="tab-chat-btn-text" id="tab-chat-voice-label">Voice Talking: ON</span>
+              </button>
+              <button type="button" class="tab-chat-control-btn" id="tab-chat-stop-speaking-btn" style="display: none;" title="Stop AI Voice">
+                <span>⏹️</span> <span class="tab-chat-btn-text">Stop Talking</span>
+              </button>
+              <button type="button" class="tab-chat-control-btn" id="tab-chat-clear-btn" title="Clear Conversation Thread">
+                <span>🗑️</span> <span class="tab-chat-btn-text">Clear Chat</span>
+              </button>
+              <a href="tel:868989330" class="tab-chat-sos-btn" title="Call 24/7 Helpline">
+                <span>📞</span> 868989330
+              </a>
+            </div>
+          </div>
+
+          <!-- Quick Category Filter Bar -->
+          <div class="tab-chat-categories" id="tab-chat-category-bar">
+            <button type="button" class="tab-chat-cat-btn active" data-cat="">✨ All Topics</button>
+            <button type="button" class="tab-chat-cat-btn" data-cat="employment">💼 Jobs & Careers</button>
+            <button type="button" class="tab-chat-cat-btn" data-cat="housing">🏠 Housing & Shelters</button>
+            <button type="button" class="tab-chat-cat-btn" data-cat="healthcare">🩺 Healthcare & HRT</button>
+            <button type="button" class="tab-chat-cat-btn" data-cat="legal">⚖️ Legal Rights & ID</button>
+            <button type="button" class="tab-chat-cat-btn" data-cat="scholarships">🎓 Schemes & Grants</button>
+            <button type="button" class="tab-chat-cat-btn" data-cat="crisis">🚨 Emergency SOS</button>
+          </div>
+
+          <!-- Suggested Starter Prompts Carousel / Strip -->
+          <div class="tab-chat-quick-prompts-container">
+            <span class="tab-chat-prompts-label">💡 Quick Starter Questions:</span>
+            <div class="tab-chat-prompts-scroll" id="tab-chat-starter-prompts">
+              <button type="button" class="tab-chat-starter-chip" data-prompt="Find verified trans-inclusive jobs in Mumbai, Bengaluru or Remote">
+                💼 Verified inclusive jobs & careers
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="What are my rights against unlawful landlord eviction under the TG Act 2019?">
+                🏠 Protection against landlord eviction
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="What medical tests and consultations are required before beginning HRT in India?">
+                🩺 Safe clinical HRT protocol
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="How do I apply for the Transgender Certificate and ID card on the National Portal?">
+                🪪 TG Certificate & ID Card guide
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="How does the Ayushman Bharat PM-JAY ₹5 Lakh transgender surgery package work?">
+                💳 PM-JAY ₹5L surgery coverage
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="How can I get free legal counsel from NALSA under Section 12?">
+                ⚖️ NALSA Free Legal Aid
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="What is the 24/7 Transgender Community Crisis Helpline number?">
+                🚨 24/7 Crisis helpline (868989330)
+              </button>
+            </div>
+          </div>
+
+          <!-- Messages Thread Container -->
+          <div class="tab-chat-messages-area" id="tab-chat-messages-container">
+            <div class="tab-chat-row assistant">
+              <div class="tab-chat-msg-avatar">🤖</div>
+              <div class="tab-chat-bubble-wrap">
+                <div class="tab-chat-bubble">
+                  <div>
+                    <h4 style="margin: 4px 0 8px; color: var(--accent-cyan); font-size: 15px;">👋 Namaste! I am the Beyond Identity AI Assistant</h4>
+                    <p style="margin: 6px 0; font-size: 13.5px; line-height: 1.55;">I am your dedicated 24/7 companion for <strong>statutory legal rights</strong>, <strong>verified inclusive jobs & housing</strong>, <strong>safe clinical healthcare navigation</strong>, and <strong>emergency crisis support</strong> across India.</p>
+                    <p style="margin: 6px 0; font-size: 13.5px; line-height: 1.55;">🎙️ <strong>Talking Voice Assistant:</strong> I talk out loud to answer your questions! Click the microphone or type below:</p>
+                  </div>
+                </div>
+                <div class="tab-chat-actions-row">
+                  <button type="button" class="tab-chat-action-btn tab-chat-static-listen-btn"><span>🔊</span> Listen</button>
+                  <button type="button" class="tab-chat-action-btn tab-chat-static-copy-btn"><span>📋</span> Copy</button>
+                </div>
+                <div class="tab-chat-bubble-prompts">
+                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="Find verified trans-inclusive jobs in Mumbai, Bengaluru or Remote">
+                    <span>💼 Find verified inclusive jobs in Mumbai, Bengaluru or Remote</span> <span>→</span>
+                  </button>
+                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="What are my rights against unlawful landlord eviction under the TG Act 2019?">
+                    <span>🏠 Safe housing & Garima Greh emergency transit shelters</span> <span>→</span>
+                  </button>
+                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="How does the Ayushman Bharat PM-JAY ₹5 Lakh transgender surgery package work?">
+                    <span>🩺 Safe HRT roadmap & Ayushman Bharat ₹5L surgery coverage</span> <span>→</span>
+                  </button>
+                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="What is the 24/7 Transgender Community Crisis Helpline number?">
+                    <span>🚨 24/7 Transgender Community Crisis Helpline (868989330)</span> <span>→</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat Input Bar -->
+          <div class="tab-chat-input-container">
+            <div class="tab-chat-input-bar">
+              <button type="button" class="tab-chat-mic-button" id="tab-chat-mic-btn" title="Speak question into microphone (Speech-to-Text)">
+                🎙️
+              </button>
+              <input
+                type="text"
+                id="tab-chat-text-input"
+                class="tab-chat-input-field"
+                placeholder="Ask anything about legal rights, inclusive jobs, Garima Greh shelters, HRT protocols..."
+                autocomplete="off"
+              />
+              <button type="button" class="tab-chat-send-button" id="tab-chat-send-btn" title="Send message to AI Assistant">
+                <span>Send</span>
+                <span class="send-arrow">➤</span>
+              </button>
+            </div>
+            <div class="tab-chat-footer-disclaimer">
+              <span>🚨 <strong>Crisis Emergency:</strong> Call 24/7 Helpline <a href="tel:868989330">868989330</a> • Tele-MANAS <a href="tel:14416">14416</a> • Free Legal Aid <a href="tel:15100">15100</a> • Police <a href="tel:112">112</a></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- TAB 1: Verified Opportunities Directory -->
-      <section class="tab-panel active" id="tab-listings">
+      <section class="tab-panel" id="tab-listings">
       <div style="margin-bottom: 24px;">
         <h3 style="font-size: 22px; margin-bottom: 6px;">Verified Community Opportunities</h3>
         <p style="color: var(--text-muted); font-size: 14px;">Browse trusted education programs, inclusive jobs, safe housing shelters, and healthcare providers vetted by partner NGOs.</p>
@@ -774,6 +965,8 @@
         <!-- Injected via app.js -->
       </div>
     </div>
+  </div>
+
   <!-- AI Awareness Assistant Modal (Chat Form & Talking Form) -->
   <div class="modal-overlay" id="awareness-ai-modal">
     <div class="modal-content awareness-modal-container" style="max-width: 800px; width: 100%; padding: 0; overflow: hidden; display: flex; flex-direction: column; max-height: 88vh; height: 750px;">
@@ -884,7 +1077,73 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- FLOATING 24/7 AI CHATBOX WIDGET -->
+  <!-- ========================================================================= -->
+
+  <!-- Floating Launcher Button -->
+  <button type="button" class="bi-chat-launcher" id="bi-chat-launcher" aria-label="Open Beyond Identity AI Assistant Chatbox">
+    <div class="bi-chat-online-dot"></div>
+    <span class="bi-chat-launcher-icon">🤖</span>
+    <span>AI Assistant</span>
+  </button>
+
+  <!-- Floating Teaser Tooltip -->
+  <div class="bi-chat-teaser" id="bi-chat-teaser">
+    <span>👋 <strong>Need guidance?</strong> Ask about legal rights, verified jobs, or healthcare!</span>
+    <button type="button" class="bi-chat-teaser-close" id="bi-chat-teaser-close" aria-label="Dismiss Teaser">&times;</button>
+  </div>
+
+  <!-- Floating Chatbox Window -->
+  <aside class="bi-chatbox-window" id="bi-chatbox-window" role="dialog" aria-label="Beyond Identity AI Assistant Chatbox">
+    <!-- Header -->
+    <div class="bi-chatbox-header">
+      <div class="bi-chat-header-profile">
+        <div class="bi-chat-header-avatar">
+          🤖
+          <span class="online-badge"></span>
+        </div>
+        <div class="bi-chat-header-info">
+          <h3>Beyond Identity AI <span class="bi-chat-live-badge">24/7 Live</span></h3>
+          <p>Verified Database & Legal Assistant</p>
+        </div>
+      </div>
+      <div class="bi-chat-header-actions">
+        <button type="button" class="bi-chat-tool-btn" id="bi-chat-voice-toggle" title="Toggle Auto-Speak Aloud (Text-to-Speech)">🔊</button>
+        <button type="button" class="bi-chat-tool-btn" id="bi-chat-clear-btn" title="Clear Chat History">🗑️</button>
+        <button type="button" class="bi-chat-tool-btn" id="bi-chat-close-btn" title="Minimize / Close Chatbox">✕</button>
+      </div>
+    </div>
+
+    <!-- Quick Category Filter Bar -->
+    <div class="bi-chat-category-bar" id="bi-chat-category-bar">
+      <button type="button" class="bi-chat-cat-chip active" data-cat="">✨ All</button>
+      <button type="button" class="bi-chat-cat-chip" data-cat="employment">💼 Jobs</button>
+      <button type="button" class="bi-chat-cat-chip" data-cat="housing">🏠 Housing</button>
+      <button type="button" class="bi-chat-cat-chip" data-cat="healthcare">🩺 Healthcare</button>
+      <button type="button" class="bi-chat-cat-chip" data-cat="legal">⚖️ Legal Rights</button>
+      <button type="button" class="bi-chat-cat-chip" data-cat="crisis">🚨 Emergency SOS</button>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="bi-chat-messages" id="bi-chat-messages">
+      <!-- Populated via JavaScript -->
+    </div>
+
+    <!-- Input Bar -->
+    <div class="bi-chatbox-input-wrap">
+      <button type="button" class="bi-chat-mic-btn" id="bi-chat-mic-btn" title="Speak into microphone (Speech-to-Text)">🎙️</button>
+      <input type="text" class="bi-chat-input" id="bi-chat-input" placeholder="Ask about rights, jobs, HRT, shelters..." autocomplete="off" />
+      <button type="button" class="bi-chat-send-btn" id="bi-chat-send-btn" title="Send Question" aria-label="Send Query">➤</button>
+    </div>
+
+    <!-- Emergency Crisis Banner Footer -->
+    <div class="bi-chat-disclaimer">
+      🚨 <strong>24x7 Helpline:</strong> <a href="tel:868989330">868989330</a> • Tele-MANAS <a href="tel:14416">14416</a> • Legal Aid <a href="tel:15100">15100</a>
+    </div>
+  </aside>
+
   <!-- Application Logic -->
-  <script src="/static/js/app.js"></script>
+  <script src="/static/js/app.js?v=3.2"></script>
 </body>
 </html>

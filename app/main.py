@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from app.database import Base, engine
-from app.routers import auth, listings, incidents, awareness, health_assistant
+from app.routers import auth, listings, incidents, awareness, health_assistant, chatbot
 
 # Creates tables if they don't exist yet (fine for dev/mock-data phase;
 # use Alembic migrations once the schema stabilizes).
@@ -20,10 +20,10 @@ app = FastAPI(
     description=(
         "Backend for the Beyond Identity platform — empowering individuals to report discrimination, "
         "connect with Indian government welfare schemes and NGO support, access AI Legal Rights Awareness, "
-        "and navigate healthcare through an AI Health Assistant decision tree. "
+        "navigate healthcare through an AI Health Assistant decision tree, and consult the 24/7 AI Chatbox. "
         "Aligning with UN SDGs: Reduced Inequalities (SDG 10), Peace & Justice (SDG 16), and Good Health (SDG 3)."
     ),
-    version="0.2.0",
+    version="0.3.0",
 )
 
 app.add_middleware(
@@ -43,17 +43,18 @@ app.include_router(listings.router)
 app.include_router(incidents.router)
 app.include_router(awareness.router)
 app.include_router(health_assistant.router)
+app.include_router(chatbot.router)
 
 
 @app.get("/")
 def root(request: Request):
     accept = request.headers.get("accept", "")
     # Serve interactive web application to browser requests
-    if "text/html" in accept and "application/json" not in accept and INDEX_FILE.exists():
+    if "text/html" in accept and INDEX_FILE.exists():
         return FileResponse(str(INDEX_FILE))
     return {
         "message": "Beyond Identity API is running",
-        "version": "0.2.0",
+        "version": "0.3.0",
         "docs": "/docs",
         "app": "/app",
         "login": "/login",
@@ -80,4 +81,26 @@ def serve_register():
     if LOGIN_FILE.exists():
         return FileResponse(str(LOGIN_FILE))
     return {"message": "Register page not found"}
+
+
+@app.get("/chat")
+def serve_chat():
+    if INDEX_FILE.exists():
+        return FileResponse(str(INDEX_FILE))
+    return {"message": "AI Chatbox frontend not found"}
+
+
+@app.get("/chatbot")
+def serve_chatbot():
+    if INDEX_FILE.exists():
+        return FileResponse(str(INDEX_FILE))
+    return {"message": "AI Chatbox frontend not found"}
+
+
+@app.get("/portal")
+def serve_portal():
+    if INDEX_FILE.exists():
+        return FileResponse(str(INDEX_FILE))
+    return {"message": "Portal frontend not found"}
+
 
