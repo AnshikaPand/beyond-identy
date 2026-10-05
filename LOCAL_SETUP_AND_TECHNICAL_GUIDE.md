@@ -29,7 +29,7 @@
                 +------------------------+                          +------------------------+
                 |   Guest Landing Page   |                          |  Authenticated Portal  |
                 |  (Locked Pillars,      |                          | (Opportunities, Report |
-                |   Teasers, Pipelines)  |                          |  AI Awareness, Health) |
+                |   Teasers, Pipelines)  |                          | Rights Awareness, Health) |
                 +------------------------+                          +------------------------+
                              |                                                   |
                              +-------------------------+-------------------------+
@@ -193,7 +193,7 @@ The database includes three pre-configured accounts representing all three role 
 
 | Role | Name | Email Address | Password | Permissions & Capabilities |
 | :--- | :--- | :--- | :--- | :--- |
-| **Community Seeker** (`user`) | Priya Sharma | `user@example.com` | `user123` | View verified opportunities, file discrimination complaints (anonymous or authenticated), AI legal rights engine, AI health assistant triage. |
+| **Community Seeker** (`user`) | Priya Sharma | `user@example.com` | `user123` | View verified opportunities, file discrimination complaints (anonymous or authenticated), legal rights engine, health assistant triage. |
 | **NGO Partner** (`verifier`) | Shree Welfare Trust | `ngo@shreetrust.org` | `verifier123` | All community seeker permissions + access to **Case Triage Desk**, case escalation, status updates, case notes, and opportunity vetting. |
 | **System Admin** (`admin`) | Beyond Identity Admin | `admin@beyondidentity.org` | `admin123` | Full system control: listing verification/delisting, incident triage, user management, and audit inspection. |
 
@@ -203,7 +203,7 @@ The database includes three pre-configured accounts representing all three role 
 
 ## 🧪 Running the Automated Test Suite
 
-Beyond Identity includes a complete automated test suite covering authentication, role permissions, registration validation, incident filing, AI query matching, and health assistant traversals.
+Beyond Identity includes a complete automated test suite covering authentication, role permissions, registration validation, incident filing, query matching, and health assistant traversals.
 
 To execute the test suite:
 
@@ -249,13 +249,13 @@ Theme selection is immediately executed in the `<head>` of each HTML document be
 ### 1. Guest Landing Page vs. Authenticated Portal
 - **Guest State (Unauthenticated Visitors)**:
   - Displays a high-converting landing experience with statutory trust badges.
-  - **4 Locked Pillars Grid**: Opportunities Directory, Confidential Redressal, AI Legal Rights, and AI Clinical Health.
+  - **4 Locked Pillars Grid**: Opportunities Directory, Confidential Redressal, Legal Rights, and Clinical Health.
   - **Interactive 4-Step Redressal Pipeline**: Transparent breakdown of complaint filing, automated matching, NGO review, and legal follow-up.
   - **1-Click Evaluation Strip**: Instant testing buttons for evaluators.
 - **Authenticated Member Portal**:
   - Automatically unlocked upon sign-in.
   - Personalized welcome banner showing user role, initials avatar, and member safeguards.
-  - Dynamic navigation tabs (`Opportunities`, `Report Discrimination`, `AI Rights Awareness`, `AI Health Assistant`, and `Case Triage Desk` for verifiers/admins).
+  - Dynamic navigation tabs (`Opportunities`, `Report Discrimination`, `Rights Awareness`, `Health Assistant`, and `Case Triage Desk` for verifiers/admins).
 
 ### 2. Verified Opportunities Directory (`/listings`)
 - **Categories**: Education, Employment, Housing & Shelter, Healthcare, Government Schemes, Scholarships, Community/Mentorship.
@@ -307,7 +307,7 @@ Theme selection is immediately executed in the `<head>` of each HTML document be
   - Instantly links regional crisis desks (e.g., The Humsafar Trust, Tweet Foundation, Nazariya QFRG, Sahodari Foundation).
 - **Status Lifecycle**: `submitted` ➔ `under_review` ➔ `escalated_to_ngo` ➔ `legal_aid_assigned` ➔ `resolved`.
 
-### 4. AI Legal Rights Awareness Engine (`/awareness`)
+### 4. Legal Rights Awareness Engine (`/awareness`)
 - **Curated Statutory Knowledge Base**:
   - Transgender Persons (Protection of Rights) Act 2019 (Sections 3, 4, 9, 10, 11, 12, 15, 18).
   - Supreme Court NALSA (2014) landmark judgment (Articles 14, 15, 19, 21).
@@ -316,7 +316,7 @@ Theme selection is immediately executed in the `<head>` of each HTML document be
 - **Query Endpoint (`POST /awareness/query`)**:
   - Natural-language matching returning statutory sections, plain-language rights explanation, actionable next steps, emergency legal contacts, and direct government links.
 
-### 5. AI Clinical Health Assistant Decision Tree (`/health-assistant`)
+### 5. Clinical Health Assistant Decision Tree (`/health-assistant`)
 - **Evidence-Based Clinical Protocols**: Built according to WPATH Standards of Care version 8.
 - **Interactive State Machine**:
   - **Crisis SOS Triage**: Immediate connect to Tele-MANAS `14416` and Kiran `1800-599-0019`.
@@ -361,14 +361,14 @@ All API routes are prefixed under the root host and output standard JSON.
 | `GET` | `/incidents/my-reports`| Bearer Token | Lists all non-anonymous incidents filed by current user. |
 | `PATCH`| `/incidents/{id}/status`| Verifier / Admin | Updates case status (`under_review`, `escalated_to_ngo`, `resolved`) with caseworker notes. |
 
-### ⚖️ AI Rights Awareness (`/awareness`)
+### ⚖️ Rights Awareness (`/awareness`)
 
 | Method | Endpoint | Auth Required | Description |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/awareness/topics` | No | Returns all legal topics covered in statutory knowledge base. |
 | `POST` | `/awareness/query` | No | Accepts natural language question; returns applicable laws, statutory sections, and legal remedies. |
 
-### 🩺 AI Health Assistant (`/health-assistant`)
+### 🩺 Health Assistant (`/health-assistant`)
 
 | Method | Endpoint | Auth Required | Description |
 | :--- | :--- | :--- | :--- |
@@ -469,8 +469,8 @@ beyond_identity_backend/
 │   │   ├── auth.py                 # Authentication routes (login, register, me)
 │   │   ├── listings.py             # Opportunities directory routes
 │   │   ├── incidents.py            # Discrimination reporting & scheme matcher routes
-│   │   ├── awareness.py            # AI Legal Rights awareness engine routes
-│   │   └── health_assistant.py     # AI Health decision tree routes
+│   │   ├── awareness.py            # Legal Rights awareness engine routes
+│   │   └── health_assistant.py     # Health decision tree routes
 │   │
 │   ├── services/
 │   │   ├── __init__.py

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign In & Register — Beyond Identity</title>
-  <meta name="description" content="Sign in or register your account on Beyond Identity to access verified community listings, confidential discrimination reporting, AI legal guidance, and case triage." />
+  <meta name="description" content="Sign in or register your account on Beyond Identity to access verified community listings, confidential discrimination reporting, legal guidance, and case triage." />
 
   <!-- Google Fonts: Inter and Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -360,7 +360,7 @@
               <input type="radio" name="reg-role" value="user" checked />
               <div class="role-icon">👤</div>
               <div class="role-title">Community Seeker</div>
-              <div class="role-desc">File reports, browse opportunities, consult AI rights & health triage</div>
+              <div class="role-desc">File reports, browse opportunities, consult rights & health triage</div>
             </div>
 
             <div class="role-option" data-role="verifier" id="role-opt-verifier">
@@ -701,7 +701,7 @@
           localStorage.setItem("bi_user", JSON.stringify(data.user));
         }
 
-        showAlert("Login successful! Launching Talking AI Chat Assistant...", false);
+        showAlert("Login successful! Launching Talking Chat Assistant...", false);
         setTimeout(() => {
           window.location.href = "/?tab=chat&talk=1&login=success";
         }, 800);

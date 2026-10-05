@@ -465,7 +465,7 @@ textarea {
   resize: vertical;
 }
 
-/* AI Awareness Chat / Query box */
+/* Awareness Chat / Query box */
 .ai-box {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);

@@ -1,5 +1,5 @@
 """
-AI Chatbot Service for Beyond Identity.
+Chatbot Service for Beyond Identity.
 Provides an intelligent, empathetic 24/7 conversational assistant with:
 - Natural Language Intent Detection (Crisis/Emergency, Jobs, Housing, Healthcare, Legal Rights, Welfare Schemes, Incident Redressal)
 - Live Database Search over verified listings (Employment, Housing, Healthcare, Schemes, Scholarships)
@@ -19,8 +19,9 @@ from app.services.awareness import AWARENESS_TOPICS
 
 
 def clean_markdown_for_speech(text: str) -> str:
-    """Strip markdown symbols for smooth audio text-to-speech output."""
-    clean = re.sub(r"(\*\*|\*|###|##|#|`|\[|\]|\(.*?\))", " ", text)
+    """Strip markdown symbols and emoji numbers for smooth audio text-to-speech output."""
+    clean = re.sub(r"[1-9]️⃣", " ", text)
+    clean = re.sub(r"(\*\*|\*|###|##|#|`|\[|\]|\(.*?\))", " ", clean)
     clean = re.sub(r"\s+", " ", clean).strip()
     return clean
 
@@ -34,90 +35,76 @@ def _matches_any(keywords: List[str], text: str) -> bool:
     return False
 
 
-def detect_intent(query: str) -> str:
-    """Detect the primary conversational intent from the user query."""
-    q = query.lower()
+CHATBOT_SYSTEM_PROMPT = """You are the chatbot for "Beyond Identity", a website that gives verified information and support related to transgender identity and related topics.
 
-    # 1. Emergency / Crisis SOS
+MOST IMPORTANT RULE — STOP AFTER EVERY REPLY
+- Respond to only the user's current message, in 2-4 short sentences maximum.
+- After your reply, STOP completely. Do not add follow-up information, extra tips, or guess what they'll ask next.
+- Never send more than one message in a row. Wait for the user to type again before saying anything else.
+- Do not repeat or summarize what you already said in earlier messages.
+
+GREETING
+- If the user says "hi" / "hello", reply exactly in this style:
+  "Hi! I'm Beyond Identity — a website where you get verified, trustworthy information about transgender identity and related topics."
+- Then STOP. Do not ask a question yet, do not explain more. Wait for the user's next message.
+
+HANDLING QUESTIONS
+- When the user asks for help (e.g. "I need help", "I'm confused", "how do I tell my family"), give a short, warm, practical reply — about 2 to 4 sentences, or at most 2-3 short points.
+- Keep it specific to what they asked. Do not give a long lecture.
+- End your reply there and wait. Do not keep adding "also you could..." after your own answer.
+
+TONE
+- Warm, respectful, non-judgmental. Use the name/pronouns the user gives.
+- Simple, plain language — avoid long paragraphs.
+- For medical or legal questions, give general guidance only and suggest a qualified doctor or lawyer for anything specific.
+
+SAFETY
+- If the user sounds distressed or unsafe, respond gently, encourage them to reach out to someone they trust or a local helpline, then stop and wait — do not lecture.
+
+SCOPE
+- Only answer questions about transgender identity, rights, healthcare basics, coming out, family/workplace support, and being an ally.
+- For anything else, politely say this chat is focused on transgender-related support.
+"""
+
+
+def detect_intent(query: str) -> str:
+    """Detect conversational intent conforming to Beyond Identity chatbot rules."""
+    q = query.strip().lower()
+
+    # 1. Check for Unclear or Empty Queries (e.g. "?", "???", "...", "what?")
+    clean_punct = re.sub(r"[\s\?\.\!\,\-\_\:\;]", "", q)
+    if not clean_punct or q in ("?", "??", "???", "...", "what?", "huh"):
+        return "unclear"
+
+    # 2. Emergency / Crisis / Distress / Unsafe
     emergency_keywords = [
-        "suicide", "kill myself", "harm", "crisis", "sos", "emergency", "danger",
+        "suicide", "kill myself", "harm", "self harm", "crisis", "sos", "emergency", "danger",
         "attacked", "beaten", "threatened", "police violence", "immediate help",
-        "save me", "depressed", "mental breakdown", "helpline", "call helpline"
+        "save me", "depressed", "mental breakdown", "helpline", "call helpline",
+        "unsafe", "in danger", "being hit", "abuse", "abused", "physical threat"
     ]
     if _matches_any(emergency_keywords, q):
         return "emergency_crisis"
 
-    # 2. Healthcare & HRT
-    health_keywords = [
-        "hrt", "hormone", "hormones", "therapy", "doctor", "clinic", "surgery", "srs",
-        "gender affirmation", "transition", "endocrinologist", "blood test",
-        "ayushman", "pmjay", "pm-jay", "mental health", "counseling", "psychiatrist"
+    # 3. Help, Confused & Coming Out queries
+    coming_out_patterns = [
+        r"\b(tell|telling)\s+(my\s+)?(family|parents|mom|dad|mother|father|relatives)\b",
+        r"\bhow\s+(do|can)\s+i\s+tell\b",
+        r"\bcoming\s+out\b",
+        r"\bcome\s+out\b",
     ]
-    if _matches_any(health_keywords, q):
-        return "healthcare"
+    if any(re.search(p, q, re.IGNORECASE) for p in coming_out_patterns):
+        return "family_coming_out"
 
-    # 3. Employment & Jobs
-    job_keywords = [
-        "job", "jobs", "employment", "work", "hiring", "vacancy", "career", "salary",
-        "interview", "resume", "cv", "retail", "tech", "customer support", "remote"
+    confused_keywords = [
+        "i need help", "need help", "i'm confused", "im confused", "feel confused",
+        "feeling confused", "so confused", "can you help me"
     ]
-    if _matches_any(job_keywords, q):
-        return "employment"
+    if _matches_any(confused_keywords, q):
+        return "confused_need_help"
 
-    # 4. Housing & Shelters (using word boundaries to prevent 'rent' matching 'parents')
-    housing_keywords = [
-        "housing", "house", "rent", "room", "flat", "apartment", "landlord",
-        "evict", "eviction", "shelter", "garima greh", "pg", "transit shelter",
-        "kicked out", "homeless"
-    ]
-    if _matches_any(housing_keywords, q):
-        return "housing"
-
-    # 5. Incident & Discrimination Reporting
-    incident_keywords = [
-        "report", "incident", "harass", "harassment", "discrimination", "extort",
-        "complaint", "file a complaint", "abuse", "fir", "police station", "bribe"
-    ]
-    if _matches_any(incident_keywords, q):
-        return "incident_report"
-
-    # 6. Welfare Schemes & Scholarships
-    scheme_keywords = [
-        "scheme", "scholarship", "smile", "pm-daksh", "daksh", "welfare",
-        "financial aid", "grant", "stipend", "government benefit", "ration", "pension"
-    ]
-    if _matches_any(scheme_keywords, q):
-        return "scholarship_schemes"
-
-    # 7. Legal Rights & Identity Documentation
-    legal_keywords = [
-        "rights", "law", "legal", "tg act", "transgender act", "nalsa", "article 14",
-        "article 21", "certificate", "id card", "identity card", "district magistrate",
-        "dm", "affidavit", "aadhaar", "pan card", "passport", "adopt", "adoption",
-        "child", "custody", "parents", "parenting", "marriage", "free legal aid", "15100"
-    ]
-    if _matches_any(legal_keywords, q):
-        return "legal_rights"
-
-    # 8. Conversational / Small Talk Intention Check
-    # A. "What are you doing" / "What r u doing" / "wyd" (takes priority over plain hi)
-    doing_patterns = [
-        r"\bwhat\s+(are|r)\s+(you|u)\s+doing\b",
-        r"\bwhat\s+(are|r)\s+(you|u)\s+up\s+to\b",
-        r"\bwhat\s+(are|r)\s+(you|u)\s+upto\b",
-        r"\bwhat\s+do\s+you\s+do\b",
-        r"\bwyd\b",
-        r"\bwhat\'?s\s+up\b",
-        r"\bwhats\s+up\b",
-        r"\bwassup\b",
-        r"\bsup\b",
-        r"\bwhat\s+you\s+doing\b",
-        r"\bwhat\s+u\s+doing\b",
-    ]
-    if any(re.search(p, q, re.IGNORECASE) for p in doing_patterns):
-        return "chitchat_doing"
-
-    # B. "How are you" / "How r u" / "How's it going"
+    # 3. Conversational / Small Talk Intention Check
+    # A. "How are you" / "How r u" / "How's it going" (including combined "hello how are you")
     howareyou_patterns = [
         r"\bhow\s+(are|r)\s+(you|u)\b",
         r"\bhow\s+(are|r)\s+(you|u)\s+doing\b",
@@ -129,7 +116,42 @@ def detect_intent(query: str) -> str:
     if any(re.search(p, q, re.IGNORECASE) for p in howareyou_patterns):
         return "chitchat_howareyou"
 
-    # C. "Who are you" / "What can you do" / "What is this"
+    # B. "What are you doing" / "wyd" (takes priority over plain greeting)
+    doing_patterns = [
+        r"\bwhat\s+(are|r)\s+(you|u)\s+doing\b",
+        r"\bwhat\s+(are|r)\s+(you|u)\s+up\s+to\b",
+        r"\bwhat\s+(are|r)\s+(you|u)\s+upto\b",
+        r"\bwhat\s+do\s+you\s+do\b",
+        r"\bwyd\b",
+        r"\bwhat\'?s\s+up\b",
+        r"\bwhats\s+up\b",
+        r"\bwassup\b",
+        r"\bsup\b",
+    ]
+    if any(re.search(p, q, re.IGNORECASE) for p in doing_patterns):
+        return "chitchat_doing"
+
+    # C. User replies about feeling good / fine: "I am fine", "I'm good", etc.
+    user_good_patterns = [
+        r"\bi\s*(am|\'m)?\s*(doing\s+)?(good|fine|great|well|awesome|okay|ok)\b",
+        r"\b(doing|feeling)\s+(good|fine|great|well)\b",
+        r"\ball\s+good\b",
+        r"\bfit\s+and\s+fine\b",
+        r"^(good|fine|great|well|all good|awesome|ok|okay)[\.\!]?$",
+    ]
+    if any(re.search(p, q, re.IGNORECASE) for p in user_good_patterns) and not any(neg in q for neg in ("not", "never", "unhappy", "bad")):
+        return "chitchat_user_good"
+
+    # D. Greetings: "hello", "hi", "hey", "namaste", etc.
+    greeting_keywords = [
+        "hi", "hii", "hiii", "hello", "helo", "hey", "heyy", "heyyy", "hey there",
+        "hola", "namaste", "namaskar", "vanakkam", "pranam", "greetings",
+        "good morning", "good evening", "good afternoon"
+    ]
+    if _matches_any(greeting_keywords, q):
+        return "chitchat_greeting"
+
+    # E. "Who are you" / "What can you do" / "What is this"
     identity_patterns = [
         r"\bwho\s+(are|r)\s+(you|u)\b",
         r"\bwhat\s+(are|r)\s+(you|u)\b",
@@ -143,7 +165,7 @@ def detect_intent(query: str) -> str:
     if any(re.search(p, q, re.IGNORECASE) for p in identity_patterns):
         return "chitchat_identity"
 
-    # D. "Thank you" / "Thanks"
+    # F. "Thank you" / "Thanks"
     thanks_keywords = [
         "thank you", "thanks", "thank u", "thx", "thank you so much",
         "dhanyawad", "shukriya", "much appreciated"
@@ -151,7 +173,7 @@ def detect_intent(query: str) -> str:
     if _matches_any(thanks_keywords, q):
         return "chitchat_thanks"
 
-    # E. Compliments & Positive feedback
+    # G. Compliments & Positive feedback
     compliment_keywords = [
         "awesome", "great job", "nice work", "you are great", "you're great",
         "love you", "cool", "superb", "brilliant", "amazing", "wonderful", "good bot"
@@ -159,20 +181,142 @@ def detect_intent(query: str) -> str:
     if _matches_any(compliment_keywords, q):
         return "chitchat_compliment"
 
-    # F. Farewell / Goodbye
+    # H. Farewell / Goodbye
     farewell_keywords = [
         "bye", "goodbye", "see you", "cya", "good night", "take care", "tata"
     ]
     if _matches_any(farewell_keywords, q):
         return "chitchat_farewell"
 
-    # G. Greetings: "hi", "hii", "hello", "hey", "namaste", etc.
-    greeting_keywords = [
-        "hi", "hii", "hiii", "hello", "helo", "hey", "heyy", "heyyy", "hey there",
-        "hola", "namaste", "namaskar", "vanakkam", "pranam", "greetings", "good morning", "good evening", "good afternoon"
+    # 4. Direct Option / Number Selection
+    q_clean = re.sub(r"[^a-zA-Z0-9\s]", " ", q).strip()
+    words = q_clean.split()
+    first_token = words[0] if words else ""
+    if q_clean in ("1", "option 1", "option1", "choice 1", "first option") or (len(words) <= 3 and first_token == "1"):
+        return "employment"
+    if q_clean in ("2", "option 2", "option2", "choice 2", "second option") or (len(words) <= 3 and first_token == "2"):
+        return "housing"
+    if q_clean in ("3", "option 3", "option3", "choice 3", "third option") or (len(words) <= 3 and first_token == "3"):
+        return "healthcare"
+    if q_clean in ("4", "option 4", "option4", "choice 4", "fourth option") or (len(words) <= 3 and first_token == "4"):
+        return "legal_rights"
+    if q_clean in ("5", "option 5", "option5", "choice 5", "fifth option") or (len(words) <= 3 and first_token == "5"):
+        return "emergency_crisis"
+
+    # 5. Employment & Jobs (checked before ally support so customer support / jobs are identified properly)
+    job_keywords = [
+        "job", "jobs", "employment", "work", "hiring", "vacancy", "career", "salary",
+        "interview", "resume", "cv", "retail", "tech", "customer support"
     ]
-    if _matches_any(greeting_keywords, q):
-        return "chitchat_greeting"
+    if _matches_any(job_keywords, q):
+        return "employment"
+
+    # 6. Core Transgender Topics (the 5 allowed topics)
+    # Topic A: Transgender and gender identity basics & terminology
+    basics_keywords = [
+        "transgender", "trans", "gender identity", "gender expression", "cisgender",
+        "non-binary", "nonbinary", "pronoun", "pronouns", "dysphoria", "gender dysphoria",
+        "deadname", "deadnaming", "queer", "intersex", "third gender", "trans person",
+        "trans man", "trans woman", "transmasc", "transfem", "ftm", "mtf",
+        "what does transgender mean", "what is transgender", "transgender meaning"
+    ]
+    if _matches_any(["pronoun", "pronouns", "cisgender", "non-binary", "nonbinary", "gender identity", "gender expression", "deadname", "deadnaming", "what is trans", "what does trans"], q):
+        return "basics_terminology"
+
+    # Topic B: Rights and laws (for India: Transgender Persons Act 2019, NALSA judgment, ID/certificate process)
+    legal_keywords = [
+        "rights", "law", "legal", "tg act", "transgender act", "act 2019", "nalsa", "article 14",
+        "article 21", "certificate", "id card", "identity card", "district magistrate",
+        "dm", "affidavit", "aadhaar", "pan card", "passport", "adopt", "adoption",
+        "child", "custody", "marriage", "free legal aid", "15100", "section 12", "section 18",
+        "national portal", "dm certificate"
+    ]
+    if _matches_any(legal_keywords, q):
+        return "legal_rights"
+
+    # Topic C: Healthcare and transition information (general info only)
+    health_keywords = [
+        "hrt", "hormone", "hormones", "therapy", "doctor", "clinic", "surgery", "srs",
+        "gender affirmation", "transition", "transitioning", "endocrinologist", "blood test", "blood tests",
+        "ayushman", "pmjay", "pm-jay", "estrogen", "testosterone", "blockers"
+    ]
+    if _matches_any(health_keywords, q):
+        return "healthcare"
+
+    # Topic D: Mental health and emotional support
+    mental_keywords = [
+        "mental health", "emotional support", "tele-manas", "14416", "counselor", "counseling",
+        "psychiatrist", "psychologist", "anxiety", "depression", "lonely", "dysphoric"
+    ]
+    if _matches_any(mental_keywords, q):
+        return "mental_health"
+
+    # Topic E: Family, friends and workplace support, and how to be a good ally
+    ally_keywords = [
+        "ally", "allies", "good ally", "allyship", "be an ally",
+        "parents", "parenting", "family support", "coming out", "come out",
+        "workplace support", "colleague", "colleagues", "coworker",
+        "how to support", "be supportive", "acceptance"
+    ]
+    if _matches_any(ally_keywords, q):
+        return "support_and_ally"
+
+    # Other Transgender-related domains in Beyond Identity portal:
+    # Employment & Jobs
+    job_keywords = [
+        "job", "jobs", "employment", "work", "hiring", "vacancy", "career", "salary",
+        "interview", "resume", "cv", "retail", "tech", "customer support"
+    ]
+    if _matches_any(job_keywords, q):
+        return "employment"
+
+    # Housing & Shelters
+    housing_keywords = [
+        "housing", "house", "rent", "room", "flat", "apartment", "landlord",
+        "evict", "eviction", "shelter", "garima greh", "pg", "transit shelter",
+        "kicked out", "homeless"
+    ]
+    if _matches_any(housing_keywords, q):
+        return "housing"
+
+    # Incident reporting
+    incident_keywords = [
+        "report", "incident", "harass", "harassment", "discrimination", "extort",
+        "complaint", "file a complaint", "abuse", "fir", "police station", "bribe"
+    ]
+    if _matches_any(incident_keywords, q):
+        return "incident_report"
+
+    # Welfare Schemes
+    scheme_keywords = [
+        "scheme", "scholarship", "smile", "pm-daksh", "daksh", "welfare",
+        "financial aid", "grant", "stipend", "government benefit", "ration", "pension"
+    ]
+    if _matches_any(scheme_keywords, q):
+        return "scholarship_schemes"
+
+    if _matches_any(basics_keywords, q):
+        return "basics_terminology"
+
+    # Check for obvious out-of-scope queries (weather, coding, math, sports, recipes, etc.)
+    out_of_scope_patterns = [
+        r"\b(weather|temperature|rain|forecast)\b",
+        r"\b(python|javascript|code|coding|programming|function|compiler|bug)\b",
+        r"\b(cricket|football|soccer|ipl|match|score|fifa)\b",
+        r"\b(recipe|cook|cooking|bake|cake|food)\b",
+        r"\b(capital of|president of|prime minister of)\b",
+        r"\b(bitcoin|crypto|stock market|cryptocurrency)\b",
+        r"\b(movie|cinema|netflix|song|actor|actress)\b",
+    ]
+    if any(re.search(p, q, re.IGNORECASE) for p in out_of_scope_patterns):
+        return "out_of_scope"
+
+    words_list = q.split()
+    if len(words_list) >= 4 and not _matches_any(
+        basics_keywords + legal_keywords + health_keywords + mental_keywords + ally_keywords + job_keywords + housing_keywords,
+        q
+    ):
+        return "out_of_scope"
 
     return "general"
 
@@ -258,292 +402,132 @@ def generate_curated_reply(
     query: str,
     suggestions: List[schemas.ChatbotItemOut],
 ) -> tuple[str, List[str]]:
-    """Generates empathetic, authoritative legal & platform guidance grounded in Indian statutes."""
+    """Generates empathetic, warm, concise responses adhering to the chatbot behavior and rules."""
     suggested_prompts: List[str] = []
 
-    if intent == "emergency_crisis":
-        suggested_prompts = [
-            "Connect me to free legal counsel (NALSA)",
-            "Find nearest Garima Greh emergency shelter",
-            "How to file a confidential police complaint",
-            "Talk to a peer counselor",
-        ]
+    if intent == "unclear":
+        reply = "Could you please clarify what specific question you have?"
+
+    elif intent == "emergency_crisis":
         reply = (
-            "### 🚨 Immediate Crisis & Safety Support\n\n"
-            "If you are in immediate danger or facing acute emotional distress, please reach out right away. "
-            "You are not alone, and help is available 24/7:\n\n"
-            "- 📞 **24/7 Community Support Helpline:** [**868989330**](tel:868989330) *(Confidential & trans-affirming)*\n"
-            "- 🧠 **National Tele-MANAS Helpline:** [**14416**](tel:14416) *(Toll-free 24x7 mental health triage)*\n"
-            "- ⚖️ **NALSA Free Legal Aid Helpline:** [**15100**](tel:15100) *(Free legal defense under Section 12)*\n"
-            "- 🚨 **National Emergency Response (Police/Ambulance):** [**112**](tel:112)\n\n"
-            "**Your Safety First:**\n"
-            "1. If facing immediate physical threat, move to a well-lit public space or contact 112.\n"
-            "2. Under **Section 18 of the Transgender Persons Act, 2019**, violence, physical abuse, or extortion "
-            "against transgender persons carries imprisonment up to 2 years with non-bailable clauses.\n"
-            "3. If you have been evicted or separated from your family, emergency stay is provided at **Garima Greh** transit shelters."
+            "I'm so sorry you're feeling distressed or unsafe, and your safety is the most important thing. "
+            "Please reach out to someone you trust, or contact the 24/7 Transgender Helpline at 868989330, "
+            "Tele-MANAS at 14416, NALSA legal aid at 15100, or emergency services at 112. "
+            "Support is available right now."
+        )
+        suggested_prompts = [
+            "Call Helpline: 868989330",
+            "Tele-MANAS: 14416",
+            "NALSA Free Legal Aid: 15100",
+        ]
+
+    elif intent == "family_coming_out":
+        reply = (
+            "Coming out to your family is a deeply personal step, and your emotional and physical safety should always come first. "
+            "Take your time until you feel ready, consider sharing simple educational resources to help them understand, "
+            "and lean on supportive friends as you take this step."
         )
 
-    elif intent == "employment":
-        suggested_prompts = [
-            "What should a company Equal Opportunity Policy contain?",
-            "What if my company fires me for transitioning?",
-            "View all verified corporate job openings",
-            "Skill training under PM-DAKSH",
-        ]
-        listings_text = ""
-        if suggestions:
-            listings_text = "\n\n**Verified Opportunities from our Database:**\n" + "\n".join(
-                [f"- **{s.title}** ({s.organization_name}, {s.location}) — Contact: `{s.contact_info}`" for s in suggestions]
-            )
-
+    elif intent == "confused_need_help":
         reply = (
-            "### 💼 Transgender Inclusive Employment & Workplace Rights\n\n"
-            "Under Indian law, discrimination in hiring, promotions, wages, or office amenities based on gender identity is strictly prohibited:\n\n"
-            "1. **Sections 9 & 10 of TG Act 2019:** Every establishment (private and public) is mandated to provide equal opportunities and publish an **Equal Opportunity Policy**.\n"
-            "2. **Complaints Officer (Section 11):** Every company with 20+ employees must appoint a designated Complaints Officer to resolve discrimination grievances within 15 days.\n"
-            "3. **SMILE & PM-DAKSH Skilling:** The Ministry of Social Justice provides free market-oriented skill training with monthly stipends for trans individuals aged 18–45.\n"
-            f"{listings_text}\n\n"
-            "💡 *Tip: If you faced workplace discrimination, you can lodge an incident report through our portal to receive free NGO advocacy and legal assistance.*"
-        )
-
-    elif intent == "housing":
-        suggested_prompts = [
-            "Can a landlord evict me without notice?",
-            "How do I apply for a Garima Greh shelter stay?",
-            "Find verified inclusive rental apartments",
-            "Housing rights under Section 12",
-        ]
-        shelters_text = ""
-        if suggestions:
-            shelters_text = "\n\n**Verified Housing & Transit Shelters from our Database:**\n" + "\n".join(
-                [f"- **{s.title}** ({s.organization_name}, {s.location}) — `{s.contact_info}`" for s in suggestions]
-            )
-
-        reply = (
-            "### 🏠 Safe Housing & Landlord Non-Discrimination Protections\n\n"
-            "Your right to shelter and safe residence is guaranteed under Indian constitutional jurisprudence and statutory mandates:\n\n"
-            "1. **Section 12 of the Transgender Persons Act, 2019:** Explicitly protects the right to residence. No family or landlord can arbitrarily separate or evict a transgender individual.\n"
-            "2. **Arbitrary Eviction is Illegal:** A landlord cannot terminate a tenancy or demand sudden eviction based on gender identity or gender expression.\n"
-            "3. **Garima Greh Shelter Homes:** The Central Government runs Garima Greh transit homes across 15+ Indian states providing safe shelter, meals, medical care, and skill training for up to 1 year.\n"
-            f"{shelters_text}\n\n"
-            "📞 Need emergency transit housing? Call our community helpline at [**868989330**](tel:868989330) or approach NALSA at 15100."
-        )
-
-    elif intent == "healthcare":
-        suggested_prompts = [
-            "What blood tests are needed before starting HRT?",
-            "How does Ayushman Bharat ₹5 Lakh TG package work?",
-            "Find queer-affirmative endocrinologists",
-            "Free mental health tele-consultation (14416)",
-        ]
-        clinics_text = ""
-        if suggestions:
-            clinics_text = "\n\n**Verified Affirmative Healthcare Providers in our Database:**\n" + "\n".join(
-                [f"- **{s.title}** ({s.organization_name}, {s.location}) — `{s.contact_info}`" for s in suggestions]
-            )
-
-        reply = (
-            "### 🩺 Safe Gender-Affirming Healthcare & Clinical Navigation\n\n"
-            "Accessing healthcare should be affirmative, safe, and clinically guided:\n\n"
-            "1. **Ayushman Bharat TG Package (AB-PMJAY):** Provides up to **₹5,00,000/year** health insurance coverage specifically for transgender persons. It covers gender-affirming surgeries, hormone therapy, and hospitalization across empanelled hospitals.\n"
-            "2. **Safe HRT Roadmap (WPATH SOC v8):** Self-medicating hormones poses high thromboembolic and hepatic risks. Always consult a qualified endocrinologist. Baseline tests include CBC, Lipid Profile, Liver & Kidney Function (LFT/KFT), and baseline hormone levels (Total Testosterone & Estradiol).\n"
-            "3. **Mental Health Triage:** If experiencing dysphoria or emotional distress, call **Tele-MANAS** toll-free at [**14416**](tel:14416) for 24/7 psychologist consultation.\n"
-            f"{clinics_text}\n\n"
-            "✨ *Explore our interactive 'AI Health Assistant' tab for a step-by-step clinical decision tree!*"
-        )
-
-    elif intent == "scholarship_schemes":
-        suggested_prompts = [
-            "How to apply for SMILE scheme?",
-            "National Portal Transgender scholarship",
-            "PM-DAKSH vocational training eligibility",
-            "Chandigarh education fee-waiver scheme",
-        ]
-        schemes_text = ""
-        if suggestions:
-            schemes_text = "\n\n**Verified Government Schemes & Grants:**\n" + "\n".join(
-                [f"- **{s.title}** ({s.organization_name}) — Details: `{s.contact_info}`" for s in suggestions]
-            )
-
-        reply = (
-            "### 🎓 Government Schemes, Scholarships & Economic Empowerment\n\n"
-            "Multiple welfare schemes are actively operational under the Ministry of Social Justice and Empowerment (MoSJE):\n\n"
-            "1. **SMILE (Support for Marginalized Individuals for Livelihood and Enterprise):** Central umbrella scheme providing medical care, skill development, and financial assistance.\n"
-            "2. **National Post-Matric Scholarships:** Financial assistance covering full tuition and ₹2,000/month maintenance allowance for degree, diploma, and higher education courses.\n"
-            "3. **PM-DAKSH Yojana:** Skill training across IT, hospitality, handicrafts, and entrepreneurship with toolkits and stipend.\n"
-            f"{schemes_text}\n\n"
-            "Apply online through the **National Portal for Transgender Persons** ([transgender.dosje.gov.in](https://transgender.dosje.gov.in)) or call helpline **14566**."
-        )
-
-    elif intent == "incident_report":
-        suggested_prompts = [
-            "How do I file an anonymous discrimination report?",
-            "What happens after I report an incident?",
-            "Section 18 penalties against harassment",
-            "Call 24/7 Community Helpline (868989330)",
-        ]
-        reply = (
-            "### 🛡️ Incident Redressal & Legal Protection\n\n"
-            "If you or someone in your community has faced discrimination, harassment, or unlawful eviction, Beyond Identity can help you seek redress:\n\n"
-            "1. **Confidential & Anonymous Filing:** You can report an incident via our **Report Discrimination** tab. You may choose to stay completely anonymous.\n"
-            "2. **Automated Matching:** Our system immediately matches your case to relevant **Indian Government Welfare Schemes** and verified **Local NGO Response Cells**.\n"
-            "3. **Statutory Penalties (Section 18):** Under Central Act No. 40 of 2019, physical, verbal, emotional, or sexual abuse of a transgender person is punishable by up to 2 years imprisonment plus fines.\n"
-            "4. **Emergency Escalation:** For urgent legal intervention, contact the **NALSA Free Legal Aid Helpline at 15100** or call our 24/7 community helpline at [**868989330**](tel:868989330)."
-        )
-
-    elif intent == "legal_rights":
-        qa_matches = search_qa(query, limit=2)
-        qa_text = ""
-        if qa_matches:
-            qa_text = "\n\n**Relevant Legal Knowledge:**\n" + "\n".join(
-                [f"**Q: {q_item['question']}**\n- {q_item['answer']}\n*(Law: {q_item['applicable_law']})*" for q_item in qa_matches]
-            )
-
-        suggested_prompts = [
-            "Can trans parents legally adopt in India under CARA?",
-            "What is the 30-day DM certificate timeline?",
-            "How to change gender marker to Male/Female on Aadhaar?",
-            "Free Legal Aid under NALSA Section 12",
-        ]
-        reply = (
-            "### ⚖️ Know Your Rights Under Indian Law\n\n"
-            "Your identity and dignity are constitutionally and statutorily protected in India:\n\n"
-            "- **NALSA vs. Union of India (2014):** Supreme Court declared the right to self-perceived gender identity as fundamental under Articles 14, 15, 19(1)(a), and 21. Medical or surgical interventions are **NOT** required for legal identity recognition.\n"
-            "- **Transgender Persons Act, 2019 & Rules 2020:** The District Magistrate must issue a Certificate of Identity within **30 days** of an online application at `transgender.dosje.gov.in`.\n"
-            "- **Free Legal Aid:** Under Section 12 of the Legal Services Authorities Act, all transgender citizens are entitled to **100% free legal representation** via the High Court / District Legal Services Authority.\n"
-            f"{qa_text}\n\n"
-            "📞 For free legal counsel, dial NALSA helpline [**15100**](tel:15100) or National TG Helpline [**14566**](tel:14566)."
-        )
-
-    elif intent == "chitchat_doing":
-        suggested_prompts = [
-            "💼 Show me verified inclusive jobs",
-            "🏠 Find safe housing & Garima Greh shelters",
-            "What are my rights against landlord eviction?",
-            "How to get free legal aid under NALSA?",
-            "Safe HRT & gender-affirming healthcare",
-        ]
-        reply = (
-            "### 👋 Hey there! I'm doing great, thank you for asking! 😊\n\n"
-            "Right now, I am right here on **Beyond Identity** assisting community members across India:\n\n"
-            "- 💼 **Searching live verified jobs & internships** with transgender-affirmative employers\n"
-            "- 🏠 **Finding safe housing** & Garima Greh emergency transit shelter beds\n"
-            "- 🩺 **Guiding on safe HRT protocols** and Ayushman Bharat ₹5 Lakh medical coverage\n"
-            "- ⚖️ **Explaining statutory legal rights** under the Transgender Persons Act 2019 & NALSA ruling\n"
-            "- 🚨 **Connecting to 24/7 crisis helplines** whenever someone is in distress\n\n"
-            "How are you doing today? What's on your mind? Feel free to ask me anything or click one of the suggestions below!"
-        )
-
-    elif intent == "chitchat_howareyou":
-        suggested_prompts = [
-            "Find verified trans-inclusive jobs",
-            "Safe housing & transit shelters",
-            "Gender-affirming healthcare guidance",
-            "Know my legal rights under TG Act 2019",
-        ]
-        reply = (
-            "### 😊 I'm doing wonderful, thank you for checking in!\n\n"
-            "I am fully operational and ready to assist you today. Whether you're exploring verified inclusive jobs, "
-            "looking for safe housing, checking your legal rights under Indian law, or just exploring the platform, "
-            "I'm right here with you.\n\n"
-            "How are you feeling today? How can I help you out?"
+            "It is completely normal to feel confused or overwhelmed, and you do not have to have everything figured out right away. "
+            "Beyond Identity provides verified guidance on gender identity, Indian legal rights, healthcare, and community support. "
+            "What specific question can I help you with?"
         )
 
     elif intent == "chitchat_greeting":
-        suggested_prompts = [
-            "💼 Find verified jobs in Mumbai or Remote",
-            "🏠 Safe housing & Garima Greh shelters",
-            "🩺 Safe HRT roadmap & clinical tests",
-            "⚖️ What are my rights against workplace harassment?",
-            "🚨 24/7 Community Crisis Helpline (868989330)",
-        ]
-        reply = (
-            "### 👋 Hello & Namaste! Wonderful to connect with you! 😊\n\n"
-            "Welcome to **Beyond Identity**. I am your dedicated 24/7 AI companion, here to help you navigate:\n\n"
-            "- 💼 **Verified Inclusive Opportunities:** Jobs, scholarships, and skill programs\n"
-            "- 🏠 **Safe Housing:** Verified rental apartments and Garima Greh emergency transit shelters\n"
-            "- 🩺 **Healthcare Triage:** Safe HRT guidance, endocrinologists, and Ayushman Bharat ₹5L cover\n"
-            "- ⚖️ **Legal Protections:** TG Act 2019, NALSA 2014, Section 12 Free Legal Aid (15100)\n"
-            "- 🚨 **Crisis Support:** 24/7 Helpline at [**868989330**](tel:868989330)\n\n"
-            "How can I assist you today? Feel free to ask any question!"
-        )
+        reply = "Hi! I'm Beyond Identity — a website where you get verified, trustworthy information about transgender identity and related topics."
+
+    elif intent == "chitchat_howareyou":
+        reply = "I'm doing well, thanks! How can I help you today?"
+
+    elif intent == "chitchat_user_good":
+        reply = "I'm glad to hear that! What would you like to know about transgender identity or support?"
+
+    elif intent == "chitchat_doing":
+        reply = "I'm right here on Beyond Identity and ready to help with any transgender-related questions you have."
 
     elif intent == "chitchat_identity":
-        suggested_prompts = [
-            "How does Beyond Identity verify employers?",
-            "Tell me about the Transgender Persons Act 2019",
-            "Find verified inclusive jobs",
-            "Emergency crisis contacts",
-        ]
-        reply = (
-            "### 🤖 About Me: Beyond Identity AI Assistant\n\n"
-            "I am the official 24/7 AI guide for the **Beyond Identity** portal, designed specifically to champion the rights, "
-            "dignity, and welfare of transgender and gender-diverse individuals across India. Aligning with UN SDGs 3, 10, and 16.\n\n"
-            "**What I can do for you:**\n"
-            "1. 💼 **Live Database Search:** Instantly look up vetted inclusive employers, shelters, clinics, and government grants.\n"
-            "2. ⚖️ **Indian Statutory Legal Rights:** Break down legal rights under the Transgender Persons Act 2019, Supreme Court NALSA judgment, and 30-day DM certificate process.\n"
-            "3. 🩺 **Clinical Health Guidance:** Provide evidence-based clinical roadmaps aligned with WPATH SOC v8 and Ayushman Bharat ₹5 Lakh packages.\n"
-            "4. 🛡️ **Incident Redressal:** Guide you through filing confidential discrimination reports matched to local NGOs.\n"
-            "5. 🚨 **Emergency Crisis SOS:** Direct, immediate connection to verified helplines (868989330, 14416, 15100, 112).\n\n"
-            "Feel free to ask me anything in simple, natural English, Hindi, or Tamil!"
-        )
+        reply = "I am the Beyond Identity Assistant, here to provide verified, trustworthy information about transgender identity, rights, and support."
 
     elif intent == "chitchat_thanks":
-        suggested_prompts = [
-            "Explore verified jobs",
-            "Know my legal rights",
-            "Safe housing options",
-        ]
-        reply = (
-            "### 💖 You're most welcome! 😊\n\n"
-            "I'm always here to support you. Never hesitate to reach out whenever you need legal advice, safe housing, "
-            "healthcare guidance, or crisis assistance.\n\n"
-            "Stay safe, proud, and empowered! ✨ Let me know if you need anything else."
-        )
+        reply = "You're very welcome! Feel free to reach out whenever you need information."
 
     elif intent == "chitchat_compliment":
-        suggested_prompts = [
-            "Find verified jobs",
-            "Safe housing & shelters",
-            "Legal rights Q&A",
-        ]
-        reply = (
-            "### ✨ Thank you so much! That really means a lot! 😊\n\n"
-            "Our team at Beyond Identity works hard to ensure every individual has access to safe opportunities and legal protection. "
-            "Let me know if there's anything else I can assist you with today!"
-        )
+        reply = "Thank you so much, that's very kind! How can I help you today?"
 
     elif intent == "chitchat_farewell":
-        suggested_prompts = [
-            "24/7 Helpline: 868989330",
-            "Explore verified opportunities",
-        ]
+        reply = "Goodbye! Take care, and feel free to reach out anytime."
+
+    elif intent == "basics_terminology":
         reply = (
-            "### 👋 Goodbye & Take Care! 🌈\n\n"
-            "It was a pleasure assisting you today. Remember that Beyond Identity and our 24/7 community helpline "
-            "([**868989330**](tel:868989330)) are always here for you whenever you need us.\n\n"
-            "Have a wonderful day ahead! ✨"
+            "Transgender describes a person whose gender identity differs from the sex assigned to them at birth. "
+            "Gender identity is an internal, personal sense of who you are, while pronouns and gender expression are ways to share and respect that identity. "
+            "Everyone's journey is unique and valid."
         )
+
+    elif intent == "legal_rights":
+        reply = (
+            "In India, the Supreme Court NALSA judgment (2014) and the Transgender Persons Act 2019 protect your right to self-perceived gender identity. "
+            "You can apply online for a Transgender Certificate at transgender.dosje.gov.in without requiring surgery. "
+            "For specific legal issues, free legal aid is available under NALSA Section 12 at 15100, or you can consult a qualified lawyer."
+        )
+
+    elif intent == "healthcare":
+        reply = (
+            "Gender-affirming healthcare can include counseling, hormone therapy (HRT), and surgeries tailored to your personal needs. "
+            "In India, the Ayushman Bharat TG package provides health cover up to ₹5 Lakh per year for eligible individuals. "
+            "Please note this is general guidance only; consult a qualified doctor or endocrinologist before starting or changing medical care."
+        )
+
+    elif intent == "mental_health":
+        reply = (
+            "Navigating gender identity, dysphoria, or stress can be challenging, but you do not have to carry it alone. "
+            "You can speak with a queer-affirmative counselor, or call the 24/7 Tele-MANAS helpline at 14416 "
+            "or the Transgender Community Helpline at 868989330 for free, confidential mental health support."
+        )
+
+    elif intent == "support_and_ally":
+        reply = (
+            "Being a good ally means listening with empathy, respecting a person's chosen name and pronouns, and speaking up against harassment. "
+            "Educating yourself and fostering an accepting environment at home or work makes a meaningful difference."
+        )
+
+    elif intent == "employment":
+        reply = (
+            "Under the Transgender Persons Act 2019, discrimination in recruitment, wages, and workplace conditions is prohibited in India. "
+            "Establishments must designate a Complaints Officer to address discrimination grievances. "
+            "For specific workplace disputes, please consult a qualified lawyer or legal aid."
+        )
+
+    elif intent == "housing":
+        reply = (
+            "Under Section 12 of the Transgender Persons Act 2019, arbitrary eviction from a home or rental property based on gender identity is unlawful. "
+            "For emergency shelter, the government operates Garima Greh transit shelter homes across India. "
+            "For legal disputes with landlords, reach out to NALSA free legal aid at 15100."
+        )
+
+    elif intent == "incident_report":
+        reply = (
+            "Under Section 18 of the Transgender Persons Act 2019, abuse or discrimination against transgender persons carries penalties up to two years imprisonment. "
+            "You can file a complaint with local authorities or call NALSA Free Legal Aid at 15100 for support."
+        )
+
+    elif intent == "scholarship_schemes":
+        reply = (
+            "Welfare schemes and scholarships are available under the Ministry of Social Justice and Empowerment (MoSJE), "
+            "including the SMILE umbrella scheme and PM-DAKSH vocational training. "
+            "Applications are submitted online through the National Portal for Transgender Persons at transgender.dosje.gov.in."
+        )
+
+    elif intent == "out_of_scope":
+        reply = "This chat is focused on transgender-related support, including identity, rights, healthcare basics, coming out, and family or workplace support."
 
     else:
         # General / Platform Help
-        suggested_prompts = [
-            "Find verified trans-inclusive jobs",
-            "Safe housing & transit shelters",
-            "Gender affirming healthcare & HRT guide",
-            "Know my legal rights under TG Act 2019",
-            "24/7 Community Crisis Helplines",
-        ]
         reply = (
-            "### 🏳️‍⚧️ Welcome to the Beyond Identity AI Assistant!\n\n"
-            "I am your 24/7 companion for navigating transgender rights, inclusive opportunities, and healthcare across India. "
-            "Here is how I can assist you today:\n\n"
-            "- 💼 **Verified Opportunities:** Browse inclusive employment, scholarships, and skill programs.\n"
-            "- 🏠 **Safe Housing:** Discover verified rental listings and Garima Greh transit shelters.\n"
-            "- 🩺 **Health Navigation:** Guidance on safe HRT protocols, endocrinologists, and PM-JAY ₹5L coverage.\n"
-            "- ⚖️ **Legal Awareness:** Get clear answers on the TG Act 2019, NALSA judgment, ID cards, and free legal aid.\n"
-            "- 🚨 **24/7 Crisis Support:** Quick access to verified helplines ([868989330](tel:868989330), Tele-MANAS 14416, NALSA 15100).\n\n"
-            "How can I help you right now? Feel free to ask any question or click a suggestion below!"
+            "Beyond Identity gives verified information on transgender identity, Indian legal rights, healthcare basics, and community support. "
+            "What would you like to know?"
         )
 
     return reply, suggested_prompts
@@ -555,22 +539,24 @@ def answer_chatbot_query(
     current_user: Optional[models.User] = None,
 ) -> schemas.ChatbotQueryResponse:
     """
-    Main AI Chatbot processing logic.
+    Main Chatbot processing logic.
     Analyzes intent, searches live database listings, consults legal repository or Claude,
-    and returns a structured response.
+    and returns a structured response conforming to friendly chatbot rules.
     """
     query = request.query.strip()
     intent = detect_intent(query)
 
-    # 1. Search Live Database Listings
-    suggestions = search_listings_in_db(
-        db=db,
-        intent=intent,
-        query=query,
-        category_filter=request.category_filter,
-        location_filter=request.location_filter,
-        limit=4,
-    )
+    # 1. Search Live Database Listings if applicable
+    suggestions = []
+    if intent in ("employment", "housing", "healthcare", "scholarship_schemes"):
+        suggestions = search_listings_in_db(
+            db=db,
+            intent=intent,
+            query=query,
+            category_filter=request.category_filter,
+            location_filter=request.location_filter,
+            limit=4,
+        )
 
     # Count total verified database records
     total_records = db.query(models.Listing).filter(
@@ -619,23 +605,21 @@ def answer_chatbot_query(
             )
 
             system_prompt = (
-                "You are the Beyond Identity AI Assistant — an empathetic, authoritative, and supportive guide for "
-                "transgender, intersex, and gender-diverse individuals across India. Aligning with UN SDGs 3, 10, and 16.\n\n"
-                "Ground all legal answers in Indian law:\n"
-                "- Transgender Persons (Protection of Rights) Act 2019 (Sections 3, 4, 9, 10, 11, 12, 18)\n"
-                "- NALSA vs Union of India (2014) Supreme Court verdict\n"
-                "- Free legal aid under Section 12 of Legal Services Authorities Act (NALSA Helpline: 15100)\n"
-                "- National Transgender Helpline: 14566 | Tele-MANAS: 14416 | 24/7 Helpline: 868989330 | Emergency: 112\n"
-                "- Ayushman Bharat TG ₹5 Lakh package for gender-affirming care\n"
-                "- Garima Greh shelter homes for trans transit stay\n"
-                "- Conversational Small Talk: If the user greets you or asks casual questions like 'hii', 'what are you doing', 'how are you', or 'who are you', reply in a warm, conversational, friendly English tone. Explain what you are doing (assisting community members with verified jobs, safe shelters, healthcare triage, and legal rights on Beyond Identity), ask how their day is going, and invite them to ask questions or explore resources.\n\n"
-                f"Active Database Verified Listings available in portal:\n{database_context}\n\n"
-                "Provide an empathetic, structured answer using clean markdown headers, bullet points, and direct helpline numbers."
+                f"{CHATBOT_SYSTEM_PROMPT}\n\n"
+                "Additional Portal Context:\n"
+                "- 24/7 Community Helpline: 868989330\n"
+                "- Tele-MANAS Mental Health Helpline: 14416\n"
+                "- NALSA Free Legal Aid Helpline: 15100\n"
+                "- Emergency Police/Ambulance: 112\n"
+                "- National Portal for Transgender Persons: https://transgender.dosje.gov.in\n"
+                "- Garima Greh emergency transit shelter homes\n"
+                "- Ayushman Bharat TG ₹5 Lakh package\n"
+                f"Active Database Verified Listings:\n{database_context}\n"
             )
 
             response = client.messages.create(
                 model="claude-3-5-sonnet-20241022",
-                max_tokens=900,
+                max_tokens=500,
                 system=system_prompt,
                 messages=claude_messages,
             )
@@ -651,7 +635,6 @@ def answer_chatbot_query(
                 total_database_records=total_records,
             )
         except Exception:
-            # Fallback to curated knowledge base on any API exception
             pass
 
     # 4. Curated Knowledge & Database Engine Fallback

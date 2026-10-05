@@ -1,5 +1,5 @@
 """
-AI Awareness Module: Know Your Rights & Legal Protections.
+Awareness Module: Know Your Rights & Legal Protections.
 Contains curated knowledge and intelligent Q&A retrieval on Indian laws,
 including the Transgender Persons (Protection of Rights) Act 2019,
 NALSA (2014) Supreme Court verdict, and legal aid remedies.

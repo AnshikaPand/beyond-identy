@@ -46,14 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
   setupIncidentForm();
   setupAwarenessUI();
   setupHealthAssistantUI();
-  initAIChatbox();
-  initTabAIChatbox();
+  initChatbox();
+  initTabChatbox();
 
   // Initialize guest vs member presentation
   renderUserStatus();
   initGuestDemo();
 
-  // If already authenticated, jump straight to the 24/7 Voice AI Chat tab
+  // If already authenticated, jump straight to the 24/7 Voice Chat tab
   if (currentUser && currentAuthToken) {
     switchToTab("tab-chat");
   }
@@ -65,7 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (isAuth && isPostLoginRedirect) {
     window.history.replaceState({}, document.title, window.location.pathname);
     setTimeout(() => {
-      if (typeof window.triggerPostLoginAIChatGreeting === "function") {
+      if (typeof window.triggerPostLoginChatGreeting === "function") {
+        window.triggerPostLoginChatGreeting(currentUser);
+      } else if (typeof window.triggerPostLoginAIChatGreeting === "function") {
         window.triggerPostLoginAIChatGreeting(currentUser);
       }
     }, 550);
@@ -507,12 +509,14 @@ async function executeLogin(email, password, notify = true) {
 
     renderUserStatus();
     switchToTab("tab-chat");
-    showToast(`Welcome, ${currentUser?.name}! AI Chat Assistant is ready.`, "success");
+    showToast(`Welcome, ${currentUser?.name}! Chat Assistant is ready.`, "success");
     loadIncidents();
     loadListings();
 
-    // Trigger Talking AI Chat Box Vocal Greeting right after login!
-    if (typeof window.triggerPostLoginAIChatGreeting === "function") {
+    // Trigger Talking Chat Box Vocal Greeting right after login!
+    if (typeof window.triggerPostLoginChatGreeting === "function") {
+      window.triggerPostLoginChatGreeting(currentUser);
+    } else if (typeof window.triggerPostLoginAIChatGreeting === "function") {
       window.triggerPostLoginAIChatGreeting(currentUser);
     }
     return true;
@@ -550,7 +554,7 @@ function renderUserStatus() {
     if (authPortal) authPortal.style.display = "block";
     if (authTabsNav) authTabsNav.style.display = "flex";
 
-    // Nav chat button directly switches to the AI chat tab
+    // Nav chat button directly switches to the chat tab
     if (navChatBtn) {
       navChatBtn.onclick = (e) => {
         e.preventDefault();
@@ -580,7 +584,7 @@ function renderUserStatus() {
         ? "🛡️ NGO Partner Moderation Console: Access verified listings and confidential incident cases."
         : currentUser.role === "admin"
         ? "⚡ System Administrator Access: Full platform, moderation, and redressal management."
-        : "👤 Community Seeker Portal: Full access to verified opportunities, confidential reporting, AI legal rights & health triage.";
+        : "👤 Community Seeker Portal: Full access to verified opportunities, confidential reporting, legal rights & health triage.";
     }
     if (bannerRole) {
       bannerRole.innerText = roleUpper;
@@ -601,7 +605,7 @@ function renderUserStatus() {
             <span class="user-role-badge ${roleClass}">${roleUpper}</span>
           </div>
         </div>
-        <button type="button" class="btn btn-primary" id="nav-direct-chat-btn" style="padding: 6px 12px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px;"><span>🤖</span> AI Chat</button>
+        <button type="button" class="btn btn-primary" id="nav-direct-chat-btn" style="padding: 6px 12px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px;"><span>🤖</span> Chat</button>
         <button class="btn btn-outline-danger" id="logout-btn" style="padding: 6px 12px; font-size: 12.5px;">Sign Out</button>
       `;
 
@@ -659,11 +663,13 @@ function renderUserStatus() {
       floatingWin.classList.remove("active");
     }
 
-    // Nav chat button smoothly scrolls to guest demo AI section
+    // Nav chat button smoothly scrolls to guest demo section
     if (navChatBtn) {
       navChatBtn.onclick = (e) => {
         e.preventDefault();
-        const demoSection = document.getElementById("guest-demo-ai-section");
+        const demoSection =
+          document.getElementById("guest-demo-assistant-section") ||
+          document.getElementById("guest-demo-ai-section");
         if (demoSection) {
           demoSection.scrollIntoView({ behavior: "smooth" });
           const demoInput = document.getElementById("guest-demo-input");
@@ -690,7 +696,7 @@ function renderUserStatus() {
 }
 
 // ==========================================================================
-// Guest Limited Demo Controller (AI Sandbox & Opportunities Preview)
+// Guest Limited Demo Controller (Sandbox & Opportunities Preview)
 // ==========================================================================
 function initGuestDemo() {
   const form = document.getElementById("guest-demo-form");
@@ -711,7 +717,7 @@ function initGuestDemo() {
     if (demoQueryCount >= maxQueries) {
       if (lockedNotice) lockedNotice.style.display = "flex";
       if (input) {
-        input.placeholder = "🔒 Demo limit reached (2/2). Sign in to unlock unlimited voice AI...";
+        input.placeholder = "🔒 Demo limit reached (2/2). Sign in to unlock unlimited voice assistant...";
         input.disabled = true;
       }
       const sendBtn = document.getElementById("guest-demo-send-btn");
@@ -727,7 +733,7 @@ function initGuestDemo() {
       const q = chip.getAttribute("data-query");
       if (!q) return;
       if (demoQueryCount >= maxQueries) {
-        showToast("🔒 Demo limit reached. Sign in for unlimited AI Assistant access!", "info");
+        showToast("🔒 Demo limit reached. Sign in for unlimited Assistant access!", "info");
         const modal = document.getElementById("login-modal");
         if (modal) modal.classList.add("active");
         return;
@@ -779,7 +785,7 @@ function initGuestDemo() {
 
     // Append Loading Indicator
     const loadingMsg = document.createElement("div");
-    loadingMsg.className = "guest-demo-msg ai demo-loading-msg";
+    loadingMsg.className = "guest-demo-msg assistant demo-loading-msg";
     loadingMsg.innerHTML = `
       <div class="guest-demo-avatar">🤖</div>
       <div class="guest-demo-bubble" style="color: var(--text-muted);">
@@ -802,16 +808,16 @@ function initGuestDemo() {
       let answer = "";
       if (res.ok) {
         const data = await res.json();
-        answer = data.reply || data.answer || "Thank you for asking. Our full AI system contains complete case guidance.";
+        answer = data.reply || data.answer || "Thank you for asking. Our system contains complete case guidance.";
       } else {
         answer = "I am currently running in limited guest demo mode. Please sign in or use 1-click evaluation to unlock live database matching and continuous voice consultation.";
       }
 
       const formattedHtml = parseMarkdown(answer);
 
-      const aiMsg = document.createElement("div");
-      aiMsg.className = "guest-demo-msg ai";
-      aiMsg.innerHTML = `
+      const assistantMsg = document.createElement("div");
+      assistantMsg.className = "guest-demo-msg assistant";
+      assistantMsg.innerHTML = `
         <div class="guest-demo-avatar">🤖</div>
         <div class="guest-demo-bubble">
           ${formattedHtml}
@@ -820,7 +826,7 @@ function initGuestDemo() {
           </div>
         </div>
       `;
-      messagesBox.appendChild(aiMsg);
+      messagesBox.appendChild(assistantMsg);
       messagesBox.scrollTop = messagesBox.scrollHeight;
 
       demoQueryCount++;
@@ -830,11 +836,11 @@ function initGuestDemo() {
     } catch (err) {
       loadingMsg.remove();
       const errMsg = document.createElement("div");
-      errMsg.className = "guest-demo-msg ai";
+      errMsg.className = "guest-demo-msg assistant";
       errMsg.innerHTML = `
         <div class="guest-demo-avatar">🤖</div>
         <div class="guest-demo-bubble" style="color: var(--accent-rose);">
-          Service temporarily busy. Please sign in to connect directly to the 24/7 AI Rights Assistant.
+          Service temporarily busy. Please sign in to connect directly to the 24/7 Rights Assistant.
         </div>
       `;
       messagesBox.appendChild(errMsg);
@@ -1063,7 +1069,7 @@ document.getElementById("close-inc-modal")?.addEventListener("click", () => {
 });
 
 // ==========================================
-// AI Legal Rights Awareness Module
+// Legal Rights Awareness Module
 // ==========================================
 function setupAwarenessUI() {
   const queryInput = document.getElementById("awareness-query-input");
@@ -1071,7 +1077,9 @@ function setupAwarenessUI() {
   const resultCard = document.getElementById("awareness-result-card");
 
   // Modal elements
-  const modal = document.getElementById("awareness-ai-modal");
+  const modal =
+    document.getElementById("awareness-assistant-modal") ||
+    document.getElementById("awareness-ai-modal");
   const openChatBtn = document.getElementById("open-awareness-chat-btn");
   const openTalkBtn = document.getElementById("open-awareness-talk-btn");
   const closeModalBtn = document.getElementById("close-awareness-modal");
@@ -1094,7 +1102,9 @@ function setupAwarenessUI() {
   const talkTranscriptBox = document.getElementById("talk-transcript-box");
   const talkUserTranscript = document.getElementById("talk-user-transcript");
   const talkResponseBox = document.getElementById("talk-response-box");
-  const talkAiText = document.getElementById("talk-ai-text");
+  const talkAiText =
+    document.getElementById("talk-assistant-text") ||
+    document.getElementById("talk-ai-text");
   const talkLawCite = document.getElementById("talk-law-cite");
   const talkReplayBtn = document.getElementById("talk-replay-btn");
   const talkStopBtn = document.getElementById("talk-stop-btn");
@@ -1105,9 +1115,9 @@ function setupAwarenessUI() {
     {
       role: "assistant",
       content:
-        "Welcome! I am your AI Legal Rights Awareness Assistant. Ask me anything about your rights under the **Transgender Persons (Protection of Rights) Act 2019**, **NALSA (2014)** Supreme Court judgment, Section 12 Free Legal Aid, workplace non-discrimination, or housing protections.",
+        "Welcome! I am your Legal Rights Awareness Assistant. Ask me anything about your rights under the **Transgender Persons (Protection of Rights) Act 2019**, **NALSA (2014)** Supreme Court judgment, Section 12 Free Legal Aid, workplace non-discrimination, or housing protections.",
       speech_text:
-        "Welcome to the AI Legal Rights Awareness Assistant. Ask me anything about your rights under Indian law, workplace non-discrimination, or how to get free legal aid under Section 12.",
+        "Welcome to the Legal Rights Awareness Assistant. Ask me anything about your rights under Indian law, workplace non-discrimination, or how to get free legal aid under Section 12.",
     },
   ];
 
@@ -1182,7 +1192,7 @@ function setupAwarenessUI() {
     awarenessChatHistory.forEach((msg) => {
       const isUser = msg.role === "user";
       const row = document.createElement("div");
-      row.className = `awareness-msg ${isUser ? "user" : "ai"}`;
+      row.className = `awareness-msg ${isUser ? "user" : "assistant"}`;
 
       const avatar = document.createElement("div");
       avatar.className = "awareness-avatar";
@@ -1198,7 +1208,7 @@ function setupAwarenessUI() {
       bubble.innerHTML = isUser ? escapeHtml(msg.content) : formatReply(msg.content);
       bubbleWrap.appendChild(bubble);
 
-      // Actions row for AI messages
+      // Actions row for assistant messages
       if (!isUser && msg.speech_text) {
         const actions = document.createElement("div");
         actions.className = "awareness-bubble-actions";
@@ -1241,7 +1251,7 @@ function setupAwarenessUI() {
 
     // Add temporary loading indicator
     const loadingRow = document.createElement("div");
-    loadingRow.className = "awareness-msg ai";
+    loadingRow.className = "awareness-msg assistant";
     loadingRow.id = "chat-loading-indicator";
     loadingRow.innerHTML = `
       <div class="awareness-avatar">⚖️</div>
@@ -1263,7 +1273,7 @@ function setupAwarenessUI() {
         body: JSON.stringify({ messages: messagesPayload, voice_mode: false }),
       });
 
-      if (!res.ok) throw new Error("Failed to consult AI awareness");
+      if (!res.ok) throw new Error("Failed to consult awareness assistant");
       const data = await res.json();
 
       const loader = document.getElementById("chat-loading-indicator");
@@ -1621,7 +1631,7 @@ function setupAwarenessUI() {
 }
 
 // ==========================================
-// AI Health Assistant Decision Tree Wizard
+// Health Assistant Decision Tree Wizard
 // ==========================================
 async function setupHealthAssistantUI() {
   const wizardContainer = document.getElementById("health-wizard-container");
@@ -1845,9 +1855,9 @@ function escapeHtml(str) {
 }
 
 // ==========================================================================
-// 24/7 Beyond Identity AI Chatbox Controller
+// 24/7 Beyond Identity Chatbox Controller
 // ==========================================================================
-function initAIChatbox() {
+function initChatbox() {
   const launcher = document.getElementById("bi-chat-launcher");
   const navBtn = document.getElementById("nav-open-chat-btn");
   const heroBtn = document.getElementById("hero-open-chat-btn");
@@ -1877,18 +1887,21 @@ function initAIChatbox() {
   const defaultGreeting = {
     role: "assistant",
     content:
-      "### 👋 Namaste! I am the Beyond Identity AI Assistant\n\n" +
-      "I am here 24/7 to empower you with **statutory legal rights**, **verified jobs & housing**, " +
-      "**safe clinical healthcare navigation**, and **emergency crisis support** across India.\n\n" +
-      "Select a quick topic below or type your question:",
+      "### 👋 Hello & Namaste! Welcome to Beyond Identity\n\n" +
+      "I am your 24/7 Assistant. How are you doing today?\n\n" +
+      "Please choose an option below or type your question:\n\n" +
+      "1️⃣ 💼 **Jobs & Employment** — Find verified trans-inclusive jobs & career opportunities\n" +
+      "2️⃣ 🏠 **Housing & Shelters** — Safe rental housing & Garima Greh transit shelters\n" +
+      "3️⃣ 🩺 **Healthcare & HRT** — Hormone therapy roadmap & Ayushman Bharat ₹5L coverage\n" +
+      "4️⃣ ⚖️ **Legal Rights** — TG Act 2019 protections, Certificate of Identity & free legal aid\n" +
+      "5️⃣ 🚨 **Crisis & Helplines** — 24/7 Community Crisis Helpline (868989330)",
     suggestions: [],
     suggested_prompts: [
-      "💼 Find verified inclusive jobs in Mumbai or Remote",
-      "🏠 Safe housing & Garima Greh emergency transit shelters",
-      "🩺 Safe HRT roadmap & Ayushman Bharat ₹5L surgery coverage",
-      "⚖️ What are my rights against sudden landlord eviction?",
-      "🚨 24/7 Transgender Community Crisis Helpline (868989330)",
-      "🪪 How to apply for TG Certificate on National Portal",
+      "💼 Find Verified Jobs",
+      "🏠 Safe Housing & Transit Shelters",
+      "🩺 Healthcare & HRT Guidance",
+      "⚖️ Know My Legal Rights",
+      "🚨 24/7 Crisis Helpline (868989330)",
     ],
     timestamp: formatTime(new Date()),
   };
@@ -1925,6 +1938,7 @@ function initAIChatbox() {
     let clean = text
       .replace(/### (.*?)\n/g, "$1. ")
       .replace(/#### (.*?)\n/g, "$1. ")
+      .replace(/[1-9]️⃣/g, "")
       .replace(/\*\*(.*?)\*\*/g, "$1")
       .replace(/\[(.*?)\]\(.*?\)/g, "$1")
       .replace(/[`*#_>-]/g, " ")
@@ -2175,7 +2189,7 @@ function initAIChatbox() {
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.detail || "Server error communicating with AI");
+        throw new Error(errorData.detail || "Server error communicating with assistant");
       }
 
       const data = await res.json();
@@ -2327,9 +2341,9 @@ function initAIChatbox() {
 }
 
 // ==========================================================================
-// Dedicated Full-Width Talking AI Chat Box Tab Controller (#tab-chat)
+// Dedicated Full-Width Talking Chat Box Tab Controller (#tab-chat)
 // ==========================================================================
-function initTabAIChatbox() {
+function initTabChatbox() {
   const container = document.getElementById("tab-chat");
   const messagesContainer = document.getElementById("tab-chat-messages-container");
   const input = document.getElementById("tab-chat-text-input");
@@ -2402,20 +2416,9 @@ function initTabAIChatbox() {
 
   const defaultGreeting = {
     role: "assistant",
-    content:
-      "### 👋 Namaste! I am the Beyond Identity AI Assistant\n\n" +
-      "I am your dedicated 24/7 companion for **statutory legal rights**, **verified inclusive jobs & housing**, " +
-      "**safe clinical healthcare navigation**, and **emergency crisis support** across India.\n\n" +
-      "🎙️ **Talking Voice Assistant:** I talk out loud to answer your questions! Click the microphone or type below:",
+    content: "Hi! I'm Beyond Identity — a website where you get verified, trustworthy information about transgender identity and related topics.",
     suggestions: [],
-    suggested_prompts: [
-      "💼 Find verified inclusive jobs in Mumbai or Remote",
-      "🏠 Safe housing & Garima Greh emergency transit shelters",
-      "🩺 Safe HRT roadmap & Ayushman Bharat ₹5L surgery coverage",
-      "⚖️ What are my rights against sudden landlord eviction?",
-      "🪪 How to apply for TG Certificate on National Portal",
-      "🚨 24/7 Transgender Community Crisis Helpline (868989330)",
-    ],
+    suggested_prompts: [],
     timestamp: formatTime(new Date()),
   };
 
@@ -2461,6 +2464,7 @@ function initTabAIChatbox() {
     let clean = text
       .replace(/### (.*?)\n/g, "$1. ")
       .replace(/#### (.*?)\n/g, "$1. ")
+      .replace(/[1-9]️⃣/g, "")
       .replace(/\*\*(.*?)\*\*/g, "$1")
       .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
       .replace(/[`*#_>•\-]/g, " ")
@@ -2499,7 +2503,7 @@ function initTabAIChatbox() {
       if (avatarBox) avatarBox.classList.add("is-talking");
       if (speakingBadge) speakingBadge.classList.add("active");
       if (stopSpeakingBtn) stopSpeakingBtn.style.display = "inline-flex";
-      if (liveBadge) liveBadge.innerText = "🔊 AI Speaking...";
+      if (liveBadge) liveBadge.innerText = "🔊 Speaking...";
 
       if (rowElement) {
         activeSpeakingRow = rowElement;
@@ -2509,10 +2513,10 @@ function initTabAIChatbox() {
           const mini = document.createElement("div");
           mini.className = "tab-chat-speaking-indicator-mini";
           mini.innerHTML = `
-            <div class="ai-voice-waves animating">
-              <span class="ai-wave-bar"></span>
-              <span class="ai-wave-bar"></span>
-              <span class="ai-wave-bar"></span>
+            <div class="voice-waves animating">
+              <span class="voice-wave-bar"></span>
+              <span class="voice-wave-bar"></span>
+              <span class="voice-wave-bar"></span>
             </div>
             <span>Talking aloud...</span>
           `;
@@ -2533,7 +2537,7 @@ function initTabAIChatbox() {
   }
 
   // Global post-login vocal greeting trigger
-  window.triggerPostLoginAIChatGreeting = function(user) {
+  window.triggerPostLoginChatGreeting = function(user) {
     if (!user) return;
     switchToTab("tab-chat");
 
@@ -2541,17 +2545,22 @@ function initTabAIChatbox() {
       role: "assistant",
       content:
         `### 👋 Namaste ${user.name}! Welcome to Beyond Identity\n\n` +
-        `I am your **24/7 AI Rights and Healthcare Assistant**. I can help you find **verified inclusive jobs & Garima Greh shelters**, guide you on the **Transgender Persons Act 2019**, explain the **PM-JAY ₹5 Lakh health surgery package**, or provide immediate crisis assistance.\n\n` +
+        `I am your **24/7 Rights and Healthcare Assistant**. How are you doing today?\n\n` +
+        `Please choose an option below or type what you need:\n\n` +
+        `1️⃣ 💼 **Jobs & Employment** — Find verified inclusive job openings\n` +
+        `2️⃣ 🏠 **Housing & Shelters** — Safe rental housing & Garima Greh transit shelters\n` +
+        `3️⃣ 🩺 **Healthcare & HRT** — Hormone therapy roadmap & Ayushman Bharat ₹5L coverage\n` +
+        `4️⃣ ⚖️ **Legal Rights** — TG Act 2019 protections, Certificate of Identity & free legal aid\n` +
+        `5️⃣ 🚨 **Crisis & Helplines** — 24/7 Community Crisis Helpline (868989330)\n\n` +
         `🎙️ **Voice Assistant Active:** Click the microphone or type below to talk with me!`,
       isPostLogin: true,
       suggestions: [],
       suggested_prompts: [
-        "💼 Find verified inclusive jobs in Mumbai or Remote",
-        "🏠 Safe housing & Garima Greh emergency transit shelters",
-        "🩺 Safe HRT roadmap & Ayushman Bharat ₹5L surgery coverage",
-        "⚖️ What are my rights against sudden landlord eviction?",
-        "🪪 How to apply for TG Certificate on National Portal",
-        "🚨 24/7 Transgender Community Crisis Helpline (868989330)",
+        "💼 Find Verified Jobs",
+        "🏠 Safe Housing & Transit Shelters",
+        "🩺 Healthcare & HRT Guidance",
+        "⚖️ Know My Legal Rights",
+        "🚨 24/7 Crisis Helpline (868989330)",
       ],
       timestamp: formatTime(new Date()),
     };
@@ -2572,7 +2581,7 @@ function initTabAIChatbox() {
 
     // Vocal Speech Greeting
     if (tabVoiceEnabled && "speechSynthesis" in window) {
-      const speechGreeting = `Namaste ${user.name}! Welcome to Beyond Identity. I am your 24/7 AI assistant. I can guide you through statutory legal rights, verified housing, jobs, and healthcare. Feel free to talk with me anytime by clicking the microphone or typing below.`;
+      const speechGreeting = `Namaste ${user.name}! Welcome to Beyond Identity. I am your 24/7 assistant. I can guide you through statutory legal rights, verified housing, jobs, and healthcare. Feel free to talk with me anytime by clicking the microphone or typing below.`;
       setTimeout(() => {
         const rows = messagesContainer.querySelectorAll(".tab-chat-row.assistant");
         const lastRow = rows[rows.length - 1];
@@ -2580,6 +2589,7 @@ function initTabAIChatbox() {
       }, 550);
     }
   };
+  window.triggerPostLoginAIChatGreeting = window.triggerPostLoginChatGreeting;
 
   function parseMarkdown(md) {
     if (!md) return "";
@@ -2636,7 +2646,7 @@ function initTabAIChatbox() {
           <div class="post-login-welcome-left">
             <div class="post-login-welcome-avatar">🤖</div>
             <div>
-              <div class="post-login-welcome-title">AI Assistant Connected for ${escapeHtml(currentUser?.name || "Member")}</div>
+              <div class="post-login-welcome-title">Assistant Connected for ${escapeHtml(currentUser?.name || "Member")}</div>
               <div class="post-login-welcome-sub">Voice Speech Active • Verified Indian Statutory Knowledge Base</div>
             </div>
           </div>
@@ -2806,7 +2816,7 @@ function initTabAIChatbox() {
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.detail || "Server error communicating with AI");
+        throw new Error(errorData.detail || "Server error communicating with assistant");
       }
 
       const data = await res.json();
@@ -2821,7 +2831,7 @@ function initTabAIChatbox() {
 
       renderMessages();
 
-      // Talk aloud the AI answer!
+      // Talk aloud the answer!
       if (tabVoiceEnabled) {
         const rows = messagesContainer.querySelectorAll(".tab-chat-row.assistant");
         const lastRow = rows[rows.length - 1];
@@ -2970,7 +2980,9 @@ function initTabAIChatbox() {
         if (currentUser && currentAuthToken) {
           switchToTab("tab-chat");
         } else {
-          const demoSection = document.getElementById("guest-demo-ai-section");
+          const demoSection =
+            document.getElementById("guest-demo-assistant-section") ||
+            document.getElementById("guest-demo-ai-section");
           if (demoSection) {
             demoSection.scrollIntoView({ behavior: "smooth" });
             const inputEl = document.getElementById("guest-demo-input");
@@ -2987,3 +2999,6 @@ function initTabAIChatbox() {
   updateVoiceUI();
   renderMessages();
 }
+
+window.initAIChatbox = initChatbox;
+window.initTabAIChatbox = initTabChatbox;

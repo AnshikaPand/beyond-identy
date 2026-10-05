@@ -1,5 +1,5 @@
 """
-AI Health Assistant Decision-Tree Prototype.
+Health Assistant Decision-Tree Prototype.
 Provides an interactive, rule-based expert triage and guidance system
 for transgender individuals navigating crisis support, safe hormone therapy (HRT),
 gender-affirmation surgery protocols, and affirmative mental health care.
@@ -19,7 +19,7 @@ HEALTH_DISCLAIMER = (
 DECISION_NODES: Dict[str, Dict[str, Any]] = {
     "root": {
         "node_id": "root",
-        "title": "AI Health Assistant — Main Navigation",
+        "title": "Health Assistant — Main Navigation",
         "category": "Triage",
         "message": (
             "Welcome to the Beyond Identity Health Assistant. We provide confidential, "

@@ -5,8 +5,8 @@ Covers:
 - Authentication & RBAC (register, login, me, invalid credentials)
 - Listings CRUD & Verification workflows
 - Discrimination Incident Reporting & Scheme/NGO Matcher
-- AI Legal Rights Awareness Module
-- AI Health Assistant Decision Tree state machine
+- Legal Rights Awareness Module
+- Health Assistant Decision Tree state machine
 """
 import pytest
 from fastapi.testclient import TestClient
@@ -242,7 +242,7 @@ def test_list_and_update_incidents_rbac():
 
 
 # ==========================================
-# 5. AI Awareness Module Tests
+# 5. Awareness Module Tests
 # ==========================================
 
 def test_awareness_topics_list_and_detail():
@@ -288,7 +288,7 @@ def test_awareness_query_police_harassment():
 
 
 # ==========================================
-# 6. AI Health Assistant Decision Tree Tests
+# 6. Health Assistant Decision Tree Tests
 # ==========================================
 
 def test_health_assistant_initial_tree():

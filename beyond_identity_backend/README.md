@@ -1,6 +1,6 @@
 # Beyond Identity — Backend
 
-FastAPI + SQLAlchemy backend empowering transgender and marginalized individuals across India to report discrimination, connect with authentic government schemes and verified NGO support, learn their statutory rights via the **AI Awareness Module**, and receive clinically guided triage via the **AI Health Assistant decision tree prototype**.
+FastAPI + SQLAlchemy backend empowering transgender and marginalized individuals across India to report discrimination, connect with authentic government schemes and verified NGO support, learn their statutory rights via the **Awareness Module**, and receive clinically guided triage via the **Health Assistant decision tree prototype**.
 
 Aliged with United Nations Sustainable Development Goals:
 - **SDG 10 (Reduced Inequalities)**: Promoting equal opportunities, inclusive workplaces, housing, and transparent discrimination redressal.
@@ -37,7 +37,7 @@ Aliged with United Nations Sustainable Development Goals:
   - Matches with verified partner NGOs (**The Humsafar Trust**, **Tweet Foundation**, **Nazariya QFRG**, **Sahodari Foundation**, **Mitr Trust**, **Sappho for Equality**).
 - Case lifecycle tracking: `submitted` -> `under_review` -> `escalated_to_ngo` -> `legal_aid_assigned` -> `resolved`.
 
-### 4. AI Awareness Module — Know Your Rights (`/awareness`)
+### 4. Awareness Module — Know Your Rights (`/awareness`)
 - Curated legal knowledge base covering:
   - **Transgender Persons (Protection of Rights) Act, 2019** (Sections 3, 4, 9, 10, 11, 12, 15, 18).
   - **NALSA vs. Union of India (2014)** Supreme Court Judgment (Articles 14, 15, 19, 21).
@@ -48,7 +48,7 @@ Aliged with United Nations Sustainable Development Goals:
   - Accepts natural-language questions or incident descriptions.
   - Returns applicable laws, sections cited, plain-language rights explanation, step-by-step remedies, legal aid helpline contacts, and direct government portal links.
 
-### 5. AI Health Assistant Decision-Tree Prototype (`/health-assistant`)
+### 5. Health Assistant Decision-Tree Prototype (`/health-assistant`)
 - Rule-based diagnostic/guidance state machine designed according to WPATH Standards of Care v8:
   - **Crisis SOS Triage**: Immediate connect to 24x7 crisis helplines (Tele-MANAS `14416`, Kiran Helpline `1800-599-0019`, emergency shelter).
   - **Safe Hormone Replacement Therapy (HRT)**: Clinical protocol, pre-HRT required blood panels (LFT, KFT, CBC, Lipid profile, Fasting Glucose, Baseline Testosterone/Estradiol, Prolactin), and explicit medical alerts against unsupervised DIY self-medication.
@@ -111,7 +111,7 @@ uvicorn app.main:app --reload
 pytest -v
 ```
 
-The comprehensive test suite in `tests/test_api.py` verifies all 15 core behaviors including auth, RBAC, listing verification, incident reporting & matching, AI legal queries, and decision tree state traversal.
+The comprehensive test suite in `tests/test_api.py` verifies all 15 core behaviors including auth, RBAC, listing verification, incident reporting & matching, legal queries, and decision tree state traversal.
 
 ---
 
@@ -132,8 +132,8 @@ beyond_identity_backend/
 │   ├── services/
 │   │   ├── __init__.py
 │   │   ├── matcher.py       # Scheme & NGO matching engine
-│   │   ├── awareness.py     # AI Legal Awareness knowledge base & query engine
-│   │   └── health_assistant.py # AI Health Assistant decision-tree state machine
+│   │   ├── awareness.py     # Legal Awareness knowledge base & query engine
+│   │   └── health_assistant.py # Health Assistant decision-tree state machine
 │   └── routers/
 │       ├── __init__.py
 │       ├── auth.py          # /auth (register, login, me)

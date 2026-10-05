@@ -12,8 +12,8 @@ app = FastAPI(
     title="Beyond Identity API",
     description=(
         "Backend for the Beyond Identity platform — empowering individuals to report discrimination, "
-        "connect with Indian government welfare schemes and NGO support, access AI Legal Rights Awareness, "
-        "and navigate healthcare through an AI Health Assistant decision tree. "
+        "connect with Indian government welfare schemes and NGO support, access Legal Rights Awareness, "
+        "and navigate healthcare through a Health Assistant decision tree. "
         "Aligning with UN SDGs: Reduced Inequalities (SDG 10), Peace & Justice (SDG 16), and Good Health (SDG 3)."
     ),
     version="0.2.0",

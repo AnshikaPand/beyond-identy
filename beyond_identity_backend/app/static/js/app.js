@@ -333,7 +333,7 @@ document.getElementById("close-inc-modal")?.addEventListener("click", () => {
 });
 
 // ==========================================
-// AI Legal Rights Awareness Module
+// Legal Rights Awareness Module
 // ==========================================
 function setupAwarenessUI() {
   const queryInput = document.getElementById("awareness-query-input");
@@ -431,7 +431,7 @@ function setupAwarenessUI() {
 }
 
 // ==========================================
-// AI Health Assistant Decision Tree Wizard
+// Health Assistant Decision Tree Wizard
 // ==========================================
 async function setupHealthAssistantUI() {
   const wizardContainer = document.getElementById("health-wizard-container");

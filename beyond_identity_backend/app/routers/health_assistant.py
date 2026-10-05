@@ -1,5 +1,5 @@
 """
-AI Health Assistant Decision-Tree Router:
+Health Assistant Decision-Tree Router:
 Endpoints for traversing the healthcare decision tree prototype,
 providing safe guidance on HRT, crisis triage, surgery coverage, and affirmative care.
 """
@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException
 from app import schemas
 from app.services import health_assistant
 
-router = APIRouter(prefix="/health-assistant", tags=["ai-health-assistant"])
+router = APIRouter(prefix="/health-assistant", tags=["health-assistant"])
 
 
 @router.get("/tree", response_model=schemas.HealthTraverseResponse)

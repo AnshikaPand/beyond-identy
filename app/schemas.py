@@ -1,7 +1,7 @@
 """
 Pydantic schemas for Beyond Identity.
 Defines data validation and serialization for Users, Listings, Incident Reports,
-Scheme/NGO matching, AI Awareness, and AI Health Assistant decision trees.
+Scheme/NGO matching, Awareness, and Health Assistant decision trees.
 """
 from datetime import datetime
 from typing import Optional, List
@@ -173,7 +173,7 @@ class IncidentStatusUpdate(BaseModel):
 
 
 # ==========================================
-# 4. AI Awareness Module Schemas
+# 4. Awareness Module Schemas
 # ==========================================
 
 class AwarenessTopicOut(BaseModel):
@@ -245,7 +245,7 @@ class QAListResponse(BaseModel):
 
 
 # ==========================================
-# 5. AI Health Assistant Decision-Tree Schemas
+# 5. Health Assistant Decision-Tree Schemas
 # ==========================================
 
 class DecisionNodeOption(BaseModel):
@@ -278,7 +278,7 @@ class HealthTraverseResponse(BaseModel):
 
 
 # ==========================================
-# 6. Live Database AI Chatbot Schemas
+# 6. Live Database Chatbot Schemas
 # ==========================================
 
 class ChatbotItemOut(BaseModel):

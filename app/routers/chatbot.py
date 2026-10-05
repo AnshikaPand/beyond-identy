@@ -1,6 +1,6 @@
 """
-AI Chatbot Router:
-Provides endpoints for the interactive 24/7 Beyond Identity AI Assistant Chatbox.
+Chatbot Router:
+Provides endpoints for the interactive 24/7 Beyond Identity Assistant Chatbox.
 Supports multi-turn conversational querying, live database listing search,
 legal rights guidance, health triage, and crisis management.
 """
@@ -14,7 +14,7 @@ from app.database import get_db
 from app.services import chatbot
 from app.auth import SECRET_KEY, ALGORITHM
 
-router = APIRouter(prefix="/chatbot", tags=["ai-chatbot"])
+router = APIRouter(prefix="/chatbot", tags=["chatbot"])
 
 
 def get_optional_current_user(
@@ -42,7 +42,7 @@ def handle_chatbot_query(
     current_user: Optional[models.User] = Depends(get_optional_current_user),
 ):
     """
-    Primary endpoint for the AI Chatbox widget.
+    Primary endpoint for the Chatbox widget.
     Processes user queries across legal rights, verified database listings,
     healthcare triage, and 24/7 crisis support.
     """
@@ -54,9 +54,54 @@ def handle_chatbot_query(
 
 @router.get("/prompts")
 def get_chatbot_prompts():
-    """Returns curated starter prompts for 1-click consultation in the AI Chatbox."""
+    """Returns curated starter prompts for 1-click consultation in the Chatbox."""
     return {
         "categories": [
+            {
+                "id": "basics",
+                "label": "🏳️‍⚧️ Basics & Terminology",
+                "prompts": [
+                    "What is the difference between gender identity and sex assigned at birth?",
+                    "What does non-binary mean?",
+                    "Why are pronouns important?",
+                ],
+            },
+            {
+                "id": "legal",
+                "label": "⚖️ Rights & Laws (India)",
+                "prompts": [
+                    "How do I apply for a TG Certificate on the National Portal?",
+                    "What rights were established in the NALSA 2014 judgment?",
+                    "How can I get free legal counsel under NALSA Section 12?",
+                ],
+            },
+            {
+                "id": "healthcare",
+                "label": "🩺 Healthcare & Transition",
+                "prompts": [
+                    "What blood tests are required before starting HRT?",
+                    "How does Ayushman Bharat ₹5 Lakh transgender package work?",
+                    "What are the general guidelines for hormone replacement therapy?",
+                ],
+            },
+            {
+                "id": "mental_health",
+                "label": "🧠 Mental Health Support",
+                "prompts": [
+                    "How can I cope with gender dysphoria?",
+                    "Connect me to Tele-MANAS mental health support (14416)",
+                    "How to find a queer-affirmative therapist?",
+                ],
+            },
+            {
+                "id": "ally",
+                "label": "🤝 Family & Ally Support",
+                "prompts": [
+                    "How can I be a good ally to a transgender friend or coworker?",
+                    "How can parents support a trans child?",
+                    "What are workplace non-discrimination rights under TG Act 2019?",
+                ],
+            },
             {
                 "id": "jobs",
                 "label": "💼 Jobs & Employment",
@@ -76,24 +121,6 @@ def get_chatbot_prompts():
                 ],
             },
             {
-                "id": "healthcare",
-                "label": "🩺 Healthcare & HRT",
-                "prompts": [
-                    "What blood tests are required before starting HRT?",
-                    "How does Ayushman Bharat ₹5 Lakh transgender package work?",
-                    "Find gender-affirming healthcare clinics",
-                ],
-            },
-            {
-                "id": "legal",
-                "label": "⚖️ Legal Rights & ID",
-                "prompts": [
-                    "How do I apply for a TG Certificate on the National Portal?",
-                    "How to get free legal counsel under NALSA Section 12?",
-                    "Can trans parents legally adopt in India under CARA rules?",
-                ],
-            },
-            {
                 "id": "crisis",
                 "label": "🚨 Crisis & Helplines",
                 "prompts": [
@@ -108,7 +135,7 @@ def get_chatbot_prompts():
 
 @router.get("/stats")
 def get_chatbot_stats(db: Session = Depends(get_db)):
-    """Returns statistics of resources available through the AI assistant."""
+    """Returns statistics of resources available through the assistant."""
     verified_listings = db.query(models.Listing).filter(
         models.Listing.status == models.VerificationStatus.verified
     ).count()

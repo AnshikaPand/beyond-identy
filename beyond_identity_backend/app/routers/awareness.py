@@ -1,5 +1,5 @@
 """
-AI Awareness Module Router:
+Awareness Module Router:
 Endpoints for retrieving legal rights topics and asking interactive questions
 regarding protections under the Transgender Persons Act 2019, NALSA judgment,
 and Indian legal aid provisions.
@@ -10,7 +10,7 @@ from fastapi import APIRouter, HTTPException
 from app import schemas
 from app.services import awareness
 
-router = APIRouter(prefix="/awareness", tags=["ai-awareness"])
+router = APIRouter(prefix="/awareness", tags=["awareness"])
 
 
 @router.get("/topics", response_model=List[schemas.AwarenessTopicOut])
@@ -31,7 +31,7 @@ def get_awareness_topic(topic_id: str):
 @router.post("/query", response_model=schemas.AwarenessQueryResponse)
 def ask_awareness_query(query_in: schemas.AwarenessQueryRequest):
     """
-    Query the AI Legal Awareness knowledge base.
+    Query the Legal Awareness knowledge base.
     Analyzes questions on discrimination, workplace issues, housing rights, police harassment,
     or documentation, returning legal citations, plain-language rights, actionable steps,
     and official portal links.

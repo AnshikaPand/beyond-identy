@@ -596,8 +596,9 @@ label {
   color: #475569;
 }
 
-/* AI Awareness */
-[data-theme="light"] .ai-box {
+/* Awareness */
+[data-theme="light"] .ai-box,
+[data-theme="light"] .assistant-box {
   background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.1);
   box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
@@ -701,7 +702,7 @@ label {
   font-weight: 600;
 }
 
-/* AI Health Decision Tree */
+/* Health Decision Tree */
 [data-theme="light"] .decision-card {
   background: #ffffff;
   border: 1px solid rgba(79, 70, 229, 0.25);
@@ -1300,8 +1301,9 @@ textarea {
   resize: vertical;
 }
 
-/* AI Awareness Chat / Query box */
-.ai-box {
+/* Awareness Chat / Query box */
+.ai-box,
+.assistant-box {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
@@ -1345,7 +1347,7 @@ textarea {
   background: rgba(56, 189, 248, 0.1);
 }
 
-/* AI Awareness Modal & Cards (Chat & Talking Forms) */
+/* Awareness Modal & Cards (Chat & Talking Forms) */
 .awareness-mode-card {
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -1386,7 +1388,8 @@ textarea {
   align-self: flex-end;
   flex-direction: row-reverse;
 }
-.awareness-msg.ai {
+.awareness-msg.ai,
+.awareness-msg.assistant {
   align-self: flex-start;
 }
 
@@ -1402,7 +1405,8 @@ textarea {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-subtle);
 }
-.awareness-msg.ai .awareness-avatar {
+.awareness-msg.ai .awareness-avatar,
+.awareness-msg.assistant .awareness-avatar {
   background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2));
   border-color: var(--accent-cyan);
 }
@@ -1424,7 +1428,8 @@ textarea {
   border-bottom-right-radius: 3px;
   border: none;
 }
-.awareness-msg.ai .awareness-bubble {
+.awareness-msg.ai .awareness-bubble,
+.awareness-msg.assistant .awareness-bubble {
   border-bottom-left-radius: 3px;
   background: var(--bg-card);
   border-color: var(--border-subtle);
@@ -1527,7 +1532,8 @@ textarea {
 [data-theme="light"] .awareness-modal-header {
   background: #f8fafc !important;
 }
-[data-theme="light"] .awareness-msg.ai .awareness-bubble {
+[data-theme="light"] .awareness-msg.ai .awareness-bubble,
+[data-theme="light"] .awareness-msg.assistant .awareness-bubble {
   background: #f1f5f9 !important;
   color: #0f172a !important;
   border-color: #cbd5e1 !important;
@@ -2254,7 +2260,7 @@ body.user-logged-in main.container {
   padding-bottom: 24px;
 }
 
-/* When on the 24/7 AI chat tab, hide floating launcher widget to avoid overlap */
+/* When on the 24/7 chat tab, hide floating launcher widget to avoid overlap */
 body.tab-chat-active #bi-chat-launcher,
 body.tab-chat-active #bi-chat-teaser,
 body.tab-chat-active #bi-chatbox-window {
@@ -2262,7 +2268,7 @@ body.tab-chat-active #bi-chatbox-window {
 }
 
 /* ==========================================================================
-   FLOATING AI CHATBOX WIDGET (Beyond Identity AI 24/7 Assistant)
+   FLOATING CHATBOX WIDGET (Beyond Identity 24/7 Assistant)
    ========================================================================== */
 
 /* Floating Launcher Button */
@@ -2937,7 +2943,7 @@ body.tab-chat-active #bi-chatbox-window {
 }
 
 /* ==========================================================================
-   DEDICATED FULL-WIDTH AI CHAT BOX TAB (#tab-chat)
+   DEDICATED FULL-WIDTH CHAT BOX TAB (#tab-chat)
    ========================================================================== */
 .tab-chat-container {
   display: flex;
@@ -3851,7 +3857,7 @@ body.tab-chat-active #bi-chatbox-window {
 }
 
 /* ==========================================================================
-   TALKING AI CHAT BOX: Voice Waves, Avatar Animations & Post-Login Styling
+   TALKING CHAT BOX: Voice Waves, Avatar Animations & Post-Login Styling
    ========================================================================== */
 
 /* Talking Avatar Pulsing Animation */
@@ -3872,7 +3878,8 @@ body.tab-chat-active #bi-chatbox-window {
 }
 
 /* Audio Equalizer Soundwave Bars */
-.ai-voice-waves {
+.ai-voice-waves,
+.voice-waves {
   display: inline-flex;
   align-items: center;
   gap: 3.5px;
@@ -3880,7 +3887,8 @@ body.tab-chat-active #bi-chatbox-window {
   padding: 0 4px;
 }
 
-.ai-wave-bar {
+.ai-wave-bar,
+.voice-wave-bar {
   width: 3.5px;
   height: 6px;
   border-radius: 999px;
@@ -3889,15 +3897,18 @@ body.tab-chat-active #bi-chatbox-window {
 }
 
 .is-talking .ai-wave-bar,
+.is-talking .voice-wave-bar,
 .speaking-now .ai-wave-bar,
-.ai-voice-waves.animating .ai-wave-bar {
+.speaking-now .voice-wave-bar,
+.ai-voice-waves.animating .ai-wave-bar,
+.voice-waves.animating .voice-wave-bar {
   animation: aiSoundWave 0.85s infinite ease-in-out;
 }
 
-.ai-wave-bar:nth-child(1) { animation-delay: 0.1s; }
-.ai-wave-bar:nth-child(2) { animation-delay: 0.3s; }
-.ai-wave-bar:nth-child(3) { animation-delay: 0.5s; }
-.ai-wave-bar:nth-child(4) { animation-delay: 0.2s; }
+.ai-wave-bar:nth-child(1), .voice-wave-bar:nth-child(1) { animation-delay: 0.1s; }
+.ai-wave-bar:nth-child(2), .voice-wave-bar:nth-child(2) { animation-delay: 0.3s; }
+.ai-wave-bar:nth-child(3), .voice-wave-bar:nth-child(3) { animation-delay: 0.5s; }
+.ai-wave-bar:nth-child(4), .voice-wave-bar:nth-child(4) { animation-delay: 0.2s; }
 
 @keyframes aiSoundWave {
   0%, 100% {
@@ -4183,7 +4194,8 @@ body.user-logged-in #authenticated-tabs-nav {
   position: relative;
   overflow: hidden;
 }
-.guest-demo-ai-card {
+.guest-demo-ai-card,
+.guest-demo-assistant-card {
   border-color: rgba(56, 189, 248, 0.35);
   background: linear-gradient(180deg, rgba(56, 189, 248, 0.04), var(--bg-card) 20%);
 }

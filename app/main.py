@@ -19,8 +19,8 @@ app = FastAPI(
     title="Beyond Identity API",
     description=(
         "Backend for the Beyond Identity platform — empowering individuals to report discrimination, "
-        "connect with Indian government welfare schemes and NGO support, access AI Legal Rights Awareness, "
-        "navigate healthcare through an AI Health Assistant decision tree, and consult the 24/7 AI Chatbox. "
+        "connect with Indian government welfare schemes and NGO support, access Legal Rights Awareness, "
+        "navigate healthcare through a Health Assistant decision tree, and consult the 24/7 Chatbox. "
         "Aligning with UN SDGs: Reduced Inequalities (SDG 10), Peace & Justice (SDG 16), and Good Health (SDG 3)."
     ),
     version="0.3.0",
@@ -87,14 +87,14 @@ def serve_register():
 def serve_chat():
     if INDEX_FILE.exists():
         return FileResponse(str(INDEX_FILE))
-    return {"message": "AI Chatbox frontend not found"}
+    return {"message": "Chatbox frontend not found"}
 
 
 @app.get("/chatbot")
 def serve_chatbot():
     if INDEX_FILE.exists():
         return FileResponse(str(INDEX_FILE))
-    return {"message": "AI Chatbox frontend not found"}
+    return {"message": "Chatbox frontend not found"}
 
 
 @app.get("/portal")

@@ -1,5 +1,5 @@
 """
-AI Awareness Module: Know Your Rights & Legal Protections.
+Awareness Module: Know Your Rights & Legal Protections.
 Contains curated knowledge and intelligent Q&A retrieval on Indian laws,
 including the Transgender Persons (Protection of Rights) Act 2019,
 NALSA (2014) Supreme Court verdict, and legal aid remedies.
@@ -475,7 +475,7 @@ def chat_awareness(
                 claude_messages = [{"role": "user", "content": latest_user_msg}]
 
             system_prompt = (
-                "You are the Beyond Identity AI Legal Rights & Awareness Assistant, an empathetic, authoritative "
+                "You are the Beyond Identity Legal Rights & Awareness Assistant, an empathetic, authoritative "
                 f"legal guide for transgender, intersex, and gender-diverse individuals in India. Language Mode: '{lang}'.\n"
                 "- If language='hi', you MUST reply entirely in fluent, respectful, natural Hindi (Devanagari script).\n"
                 "- If language='ta', you MUST reply entirely in fluent, respectful, natural Tamil script.\n"

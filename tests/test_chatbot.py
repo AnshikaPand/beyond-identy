@@ -1,5 +1,5 @@
 """
-Unit tests for the Beyond Identity AI Chatbot Router and Service.
+Unit tests for the Beyond Identity Chatbot Router and Service.
 Tests intent detection, live database listing retrieval, legal Q&A matching,
 crisis SOS responses, and prompt recommendations.
 """
@@ -108,7 +108,6 @@ def test_chatbot_chitchat_what_are_you_doing():
         data = response.json()
         assert data["intent"] == "chitchat_doing"
         assert "doing great" in data["reply"].lower() or "beyond identity" in data["reply"].lower()
-        assert len(data["suggested_prompts"]) > 0
 
 
 def test_chatbot_chitchat_greeting():
@@ -117,15 +116,108 @@ def test_chatbot_chitchat_greeting():
         assert response.status_code == 200
         data = response.json()
         assert data["intent"] == "chitchat_greeting"
-        assert len(data["suggested_prompts"]) > 0
+        assert "Hi! I'm Beyond Identity" in data["reply"]
+        assert "website where you get verified, trustworthy information" in data["reply"]
+        assert len(data["suggested_prompts"]) == 0
 
 
 def test_chatbot_chitchat_how_are_you():
-    response = client.post("/chatbot/query", json={"query": "how are you doing today"})
+    for q in ["how are you doing today", "how are you", "hello how are you"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "chitchat_howareyou"
+        assert "doing well, thanks" in data["reply"].lower()
+
+
+def test_chatbot_chitchat_user_good():
+    for q in ["I am fine", "I'm good", "doing well", "all good"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "chitchat_user_good"
+        assert "glad to hear that" in data["reply"].lower()
+
+
+def test_chatbot_unclear_query():
+    for q in ["?", "???", "..."]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "unclear"
+        assert "clarify" in data["reply"].lower()
+
+
+def test_chatbot_family_coming_out():
+    for q in ["how do I tell my family", "coming out to parents"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "family_coming_out"
+        assert "coming out" in data["reply"].lower()
+        # Verify length is short (2-4 sentences)
+        sentences = [s.strip() for s in data["reply"].split(".") if s.strip()]
+        assert 1 <= len(sentences) <= 4
+
+
+def test_chatbot_confused_need_help():
+    for q in ["I'm confused", "I need help"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "confused_need_help"
+        assert "confused" in data["reply"].lower()
+        sentences = [s.strip() for s in data["reply"].split(".") if s.strip()]
+        assert 1 <= len(sentences) <= 4
+
+
+def test_chatbot_out_of_scope_query():
+    for q in ["What is the capital of France?", "Write python code to reverse a string", "How to bake a cake?"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "out_of_scope"
+        assert "focused on transgender-related support" in data["reply"].lower()
+
+
+def test_chatbot_basics_and_terminology():
+    response = client.post("/chatbot/query", json={"query": "What does transgender mean?"})
     assert response.status_code == 200
     data = response.json()
-    assert data["intent"] == "chitchat_howareyou"
-    assert "wonderful" in data["reply"].lower() or "doing" in data["reply"].lower()
+    assert data["intent"] == "basics_terminology"
+    assert "gender identity" in data["reply"].lower()
+    sentences = [s.strip() for s in data["reply"].split(".") if s.strip()]
+    assert 1 <= len(sentences) <= 4
+
+
+def test_chatbot_support_and_ally():
+    response = client.post("/chatbot/query", json={"query": "How can I be a good ally to trans people?"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["intent"] == "support_and_ally"
+    assert "ally" in data["reply"].lower() or "pronouns" in data["reply"].lower()
+    sentences = [s.strip() for s in data["reply"].split(".") if s.strip()]
+    assert 1 <= len(sentences) <= 4
+
+
+def test_chatbot_menu_options_navigation():
+    options_map = {
+        "1": "employment",
+        "option 1": "employment",
+        "2": "housing",
+        "option 2": "housing",
+        "3": "healthcare",
+        "option 3": "healthcare",
+        "4": "legal_rights",
+        "option 4": "legal_rights",
+        "5": "emergency_crisis",
+        "option 5": "emergency_crisis",
+    }
+    for q, expected_intent in options_map.items():
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == expected_intent
 
 
 def test_chatbot_chitchat_identity():
@@ -133,7 +225,7 @@ def test_chatbot_chitchat_identity():
     assert response.status_code == 200
     data = response.json()
     assert data["intent"] == "chitchat_identity"
-    assert "Beyond Identity AI" in data["reply"]
+    assert "Beyond Identity Assistant" in data["reply"]
 
 
 def test_chatbot_chitchat_thanks():
@@ -142,4 +234,5 @@ def test_chatbot_chitchat_thanks():
     data = response.json()
     assert data["intent"] == "chitchat_thanks"
     assert "welcome" in data["reply"].lower()
+
 
