@@ -289,8 +289,10 @@ def detect_intent(query: str) -> str:
 
     # Welfare Schemes
     scheme_keywords = [
-        "scheme", "scholarship", "smile", "pm-daksh", "daksh", "welfare",
-        "financial aid", "grant", "stipend", "government benefit", "ration", "pension"
+        "scheme", "schemes", "scholarship", "scholarships", "smile", "pm-daksh", "daksh", "welfare",
+        "financial aid", "grant", "grants", "stipend", "government benefit", "government scheme",
+        "ration", "pension", "mazhavillu", "garima greh", "ayushman scheme", "utthan kosh",
+        "sweekruti", "mythri"
     ]
     if _matches_any(scheme_keywords, q):
         return "scholarship_schemes"
@@ -343,10 +345,21 @@ def search_listings_in_db(
     }
 
     if category_filter:
-        try:
-            db_query = db_query.filter(models.Listing.category == models.ListingCategory(category_filter))
-        except Exception:
-            pass
+        cf_clean = category_filter.strip().lower()
+        if cf_clean in ("scholarships", "scholarship"):
+            db_query = db_query.filter(
+                or_(
+                    models.Listing.category == models.ListingCategory.scholarship,
+                    models.Listing.category == models.ListingCategory.scheme,
+                )
+            )
+        elif cf_clean in ("government_scheme", "government_schemes", "schemes", "scheme"):
+            db_query = db_query.filter(models.Listing.category == models.ListingCategory.scheme)
+        else:
+            try:
+                db_query = db_query.filter(models.Listing.category == models.ListingCategory(cf_clean))
+            except Exception:
+                pass
     elif intent in category_map and category_map[intent] is not None:
         db_query = db_query.filter(models.Listing.category == category_map[intent])
     elif intent == "scholarship_schemes":

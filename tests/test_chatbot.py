@@ -3,6 +3,7 @@ Unit tests for the Beyond Identity Chatbot Router and Service.
 Tests intent detection, live database listing retrieval, legal Q&A matching,
 crisis SOS responses, and prompt recommendations.
 """
+import re
 from fastapi.testclient import TestClient
 from app.main import app
 
@@ -234,5 +235,24 @@ def test_chatbot_chitchat_thanks():
     data = response.json()
     assert data["intent"] == "chitchat_thanks"
     assert "welcome" in data["reply"].lower()
+
+
+def test_chatbot_government_schemes_query():
+    for q in [
+        "What government schemes and scholarships are available for transgender persons?",
+        "Tell me about SMILE scheme and welfare benefits",
+        "How do I apply for government scholarships as a trans student?",
+    ]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "scholarship_schemes"
+        assert "SMILE" in data["reply"] or "transgender.dosje.gov.in" in data["reply"]
+        clean_text = re.sub(r"https?://\S+|www\.\S+|\b\w+\.\w+\.\w+(\.\w+)?\b", "", data["reply"])
+        sentences = [s.strip() for s in clean_text.split(".") if s.strip()]
+        assert 1 <= len(sentences) <= 4
+        # Suggestions should include verified schemes from the database
+        assert isinstance(data["suggestions"], list)
+
 
 

@@ -27,16 +27,30 @@ def create_listing(
 
 @router.get("/", response_model=List[schemas.ListingOut])
 def list_listings(
-    category: Optional[models.ListingCategory] = None,
-    status: Optional[models.VerificationStatus] = models.VerificationStatus.verified,
+    category: Optional[str] = None,
+    status: Optional[str] = "verified",
     db: Session = Depends(get_db),
 ):
     """Public browsing endpoint. Defaults to showing only verified listings — that's the whole trust model."""
     query = db.query(models.Listing)
     if category:
-        query = query.filter(models.Listing.category == category)
+        cat_clean = category.strip().lower()
+        if cat_clean in ("government_scheme", "government_schemes", "schemes", "scheme"):
+            query = query.filter(models.Listing.category == models.ListingCategory.scheme)
+        elif cat_clean in ("scholarships", "scholarship"):
+            query = query.filter(models.Listing.category == models.ListingCategory.scholarship)
+        else:
+            try:
+                enum_cat = models.ListingCategory(cat_clean)
+                query = query.filter(models.Listing.category == enum_cat)
+            except Exception:
+                pass
     if status:
-        query = query.filter(models.Listing.status == status)
+        try:
+            enum_status = models.VerificationStatus(status.strip().lower())
+            query = query.filter(models.Listing.status == enum_status)
+        except Exception:
+            pass
     return query.order_by(models.Listing.created_at.desc()).all()
 
 

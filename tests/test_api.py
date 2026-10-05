@@ -621,3 +621,84 @@ def test_qa_api_endpoints():
     nf_res = client.get("/awareness/qa/99999")
     assert nf_res.status_code == 404
 
+
+# ==========================================
+# 7. Verified Government Schemes Tests
+# ==========================================
+
+def test_government_schemes_listings_filtering():
+    """Verify that government schemes can be retrieved via /listings/?category=scheme and aliases."""
+    # Test primary category 'scheme'
+    res = client.get("/listings/?category=scheme")
+    assert res.status_code == 200
+    schemes = res.json()
+    assert len(schemes) >= 15
+
+    titles = [s["title"] for s in schemes]
+    # Check national umbrella schemes
+    assert any("SMILE" in t for t in titles)
+    assert any("Ayushman Bharat" in t for t in titles)
+    assert any("National Portal" in t for t in titles)
+    assert any("Garima Greh" in t for t in titles)
+    assert any("NALSA" in t for t in titles)
+    assert any("PM-DAKSH" in t for t in titles)
+
+    # Check state schemes
+    assert any("Kerala Mazhavillu" in t for t in titles)
+    assert any("Tamil Nadu" in t for t in titles)
+    assert any("Karnataka Mythri" in t for t in titles)
+    assert any("Odisha Sweekruti" in t for t in titles)
+    assert any("Rajasthan" in t for t in titles)
+    assert any("Maharashtra" in t for t in titles)
+
+    # Check government link integrity
+    for s in schemes:
+        assert s["category"] == "scheme"
+        assert s["status"] == "verified"
+        assert len(s["description"]) > 20
+        assert s["organization_name"] is not None
+
+    # Test alias 'government_scheme'
+    alias_res = client.get("/listings/?category=government_scheme")
+    assert alias_res.status_code == 200
+    assert len(alias_res.json()) == len(schemes)
+
+
+def test_scheme_state_matching_engine():
+    """Verify intelligent matcher maps state-specific and central schemes accurately."""
+    # Test Kerala healthcare denial incident
+    kerala_payload = {
+        "incident_type": "healthcare_denial",
+        "title": "Hospital refused to provide gender affirmation hormone treatment",
+        "description": "Private clinic in Thiruvananthapuram refused consultation citing non-recognition of trans identities.",
+        "location_city": "Thiruvananthapuram",
+        "location_state": "Kerala",
+        "urgency_level": "medium",
+        "is_anonymous": True,
+    }
+    k_res = client.post("/incidents/", json=kerala_payload)
+    assert k_res.status_code == 201
+    k_data = k_res.json()
+    k_schemes = [s["name"] for s in k_data["matched_schemes"]]
+    # Should match Kerala Mazhavillu and Ayushman Bharat PM-JAY
+    assert any("Kerala Mazhavillu" in name for name in k_schemes)
+    assert any("Ayushman Bharat" in name for name in k_schemes)
+
+    # Test Tamil Nadu housing eviction incident
+    tn_payload = {
+        "incident_type": "housing_eviction",
+        "title": "Unlawful eviction from rented room in Chennai",
+        "description": "Landlord forced tenant to vacate within 24 hours upon learning of transgender identity.",
+        "location_city": "Chennai",
+        "location_state": "Tamil Nadu",
+        "urgency_level": "high",
+        "is_anonymous": True,
+    }
+    tn_res = client.post("/incidents/", json=tn_payload)
+    assert tn_res.status_code == 201
+    tn_data = tn_res.json()
+    tn_schemes = [s["name"] for s in tn_data["matched_schemes"]]
+    # Should match Tamil Nadu Transgender Welfare Board and Garima Greh
+    assert any("Tamil Nadu" in name for name in tn_schemes)
+    assert any("Garima Greh" in name for name in tn_schemes)
+
