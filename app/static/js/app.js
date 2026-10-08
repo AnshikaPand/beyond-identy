@@ -2763,6 +2763,11 @@ function initTabChatbox() {
     isSending = true;
     stopSpeech();
 
+    const starterContainer = document.getElementById("tab-chat-quick-prompts-container");
+    if (starterContainer) {
+      starterContainer.style.display = "none";
+    }
+
     tabChatHistory.push({
       role: "user",
       content: cleanText,
@@ -2861,6 +2866,10 @@ function initTabChatbox() {
     stopSpeech();
     tabChatHistory = [defaultGreeting];
     renderMessages();
+    const starterContainer = document.getElementById("tab-chat-quick-prompts-container");
+    if (starterContainer) {
+      starterContainer.style.display = "";
+    }
     if (input) input.focus();
   }
 
