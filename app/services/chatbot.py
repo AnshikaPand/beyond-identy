@@ -557,26 +557,17 @@ def answer_chatbot_query(
     and returns a structured response conforming to friendly chatbot rules.
     """
     query = request.query.strip()
-    intent = detect_intent(query)
 
-    # 1. Search Live Database Listings if applicable
-    suggestions = []
-    if intent in ("employment", "housing", "healthcare", "scholarship_schemes"):
-        suggestions = search_listings_in_db(
-            db=db,
-            intent=intent,
-            query=query,
-            category_filter=request.category_filter,
-            location_filter=request.location_filter,
-            limit=4,
-        )
+    # Step 0: Check Built-in Q&A Knowledge Base first (Answers instantly)
+    from app.data import knowledge_base
+    kb_match = knowledge_base.find_best_match(query, threshold=0.65)
 
     # Count total verified database records
     total_records = db.query(models.Listing).filter(
         models.Listing.status == models.VerificationStatus.verified
     ).count()
 
-    # 2. Check for User Cases if relevant
+    # Check for User Cases if relevant
     user_cases: List[schemas.ChatbotCaseOut] = []
     if current_user and ("my case" in query.lower() or "my report" in query.lower() or "status" in query.lower()):
         cases = db.query(models.IncidentReport).filter(
@@ -599,59 +590,147 @@ def answer_chatbot_query(
                 )
             )
 
-    # 3. Try Anthropic Claude API if key is present
-    api_key = os.getenv("ANTHROPIC_API_KEY")
-    if api_key:
-        try:
-            import anthropic
-            client = anthropic.Anthropic(api_key=api_key)
+    if kb_match:
+        qid = kb_match.get("id")
+        reply = kb_match["answer"]
+        suggestions: List[schemas.ChatbotItemOut] = []
 
-            claude_messages = []
-            for h in (request.history or []):
-                role = h.get("role", "user")
-                if role in ("user", "assistant") and h.get("content"):
-                    claude_messages.append({"role": role, "content": h["content"]})
-            claude_messages.append({"role": "user", "content": query})
-
-            database_context = "\n".join(
-                [f"- {s.title} ({s.category}, {s.organization_name}, {s.location}, Contact: {s.contact_info})" for s in suggestions]
+        if qid == "crisis_safety":
+            intent = "emergency_crisis"
+            reply = (
+                "You are not alone. Call Tele-MANAS 14416 (free, 24/7 mental health support). "
+                "If you are in immediate danger, call 112. "
+                "Direct community crisis support is also available 24/7 at 868989330, and NALSA free legal aid at 15100."
             )
+            suggested_prompts = ["Tele-MANAS: 14416", "Emergency: 112", "Helpline: 868989330"]
 
-            system_prompt = (
-                f"{CHATBOT_SYSTEM_PROMPT}\n\n"
-                "Additional Portal Context:\n"
-                "- 24/7 Community Helpline: 868989330\n"
-                "- Tele-MANAS Mental Health Helpline: 14416\n"
-                "- NALSA Free Legal Aid Helpline: 15100\n"
-                "- Emergency Police/Ambulance: 112\n"
-                "- National Portal for Transgender Persons: https://transgender.dosje.gov.in\n"
-                "- Garima Greh emergency transit shelter homes\n"
-                "- Ayushman Bharat TG ₹5 Lakh package\n"
-                f"Active Database Verified Listings:\n{database_context}\n"
+        elif qid == 1:
+            intent = "chitchat_greeting"
+            suggested_prompts = []
+        elif qid == 2:
+            intent = "chitchat_howareyou"
+            suggested_prompts = []
+        elif qid == 3:
+            intent = "chitchat_user_good"
+            suggested_prompts = []
+        elif qid == 4:
+            intent = "chitchat_mood_sad"
+            suggested_prompts = ["Tele-MANAS: 14416"]
+        elif qid == 5:
+            intent = "chitchat_identity"
+            suggested_prompts = []
+        elif qid == 6:
+            intent = "chitchat_capabilities"
+            suggested_prompts = []
+        elif qid == 7:
+            intent = "chitchat_thanks"
+            suggested_prompts = []
+        elif qid == 8:
+            intent = "chitchat_time_greeting"
+            suggested_prompts = []
+        elif qid == 9:
+            intent = "chitchat_farewell"
+            suggested_prompts = []
+        elif qid == 10:
+            intent = "chitchat_bot_identity"
+            suggested_prompts = []
+        elif qid == 11:
+            intent = "chitchat_acknowledgment"
+            suggested_prompts = []
+        elif qid == 22:
+            intent = "chitchat_doing"
+            suggested_prompts = []
+        elif qid == 23:
+            intent = "confused_need_help"
+            suggested_prompts = ["What rights do transgender persons have in India?", "Garima Greh Shelters"]
+        elif qid == 24:
+            intent = "basics_terminology"
+            suggested_prompts = ["What rights do transgender persons have in India?", "How to get TG Certificate"]
+        elif qid in (12, 13, 16):
+            intent = "legal_rights"
+            suggested_prompts = ["Free Legal Aid: 15100", "TG Certificate Portal", "Report Discrimination"]
+        elif qid == 14:
+            intent = "employment"
+            suggested_prompts = ["Find Inclusive Jobs", "File Complaint with Complaints Officer"]
+            suggestions = search_listings_in_db(db=db, intent="employment", query=query, limit=3)
+        elif qid == 15:
+            intent = "incident_report"
+            suggested_prompts = ["Report Discrimination Tab", "Emergency: 112", "Free Legal Aid: 15100"]
+        elif qid == 17:
+            intent = "housing"
+            suggested_prompts = ["Garima Greh Shelters", "Tenant Protections Section 12"]
+            suggestions = search_listings_in_db(db=db, intent="housing", query=query, limit=3)
+        elif qid in (18, 19):
+            intent = "healthcare"
+            suggested_prompts = ["Ayushman Bharat TG Plus", "HRT Medical Guidance"]
+            suggestions = search_listings_in_db(db=db, intent="healthcare", query=query, limit=3)
+        elif qid == 20:
+            intent = "scholarship_schemes"
+            suggested_prompts = ["SMILE Scheme Portal", "Skill Training PM-DAKSH"]
+            suggestions = search_listings_in_db(db=db, intent="scholarship_schemes", query=query, limit=3)
+        elif qid == 21:
+            intent = "emergency_crisis"
+            reply = (
+                "You are not alone. Call Tele-MANAS 14416 (free, 24/7 mental health support). "
+                "If you are in immediate danger, call 112. "
+                "Direct community crisis support is also available 24/7 at 868989330."
             )
+            suggested_prompts = ["Call Tele-MANAS: 14416", "Emergency: 112"]
+        else:
+            intent = kb_match.get("category", "general")
+            suggested_prompts = []
 
-            response = client.messages.create(
-                model="claude-3-5-sonnet-20241022",
-                max_tokens=500,
-                system=system_prompt,
-                messages=claude_messages,
-            )
-            raw_reply = response.content[0].text if response.content else ""
-            _, suggested_prompts = generate_curated_reply(intent, query, suggestions)
+        return schemas.ChatbotQueryResponse(
+            reply=reply,
+            intent=intent,
+            suggestions=suggestions,
+            user_cases=user_cases,
+            suggested_prompts=suggested_prompts,
+            total_database_records=total_records,
+        )
 
-            return schemas.ChatbotQueryResponse(
-                reply=raw_reply,
-                intent=intent,
-                suggestions=suggestions,
-                user_cases=user_cases,
-                suggested_prompts=suggested_prompts,
-                total_database_records=total_records,
-            )
-        except Exception:
-            pass
+    # Step 1: Secondary Intent and Live Database Search Fallback
+    intent = detect_intent(query)
+    suggestions = []
+    if intent in ("employment", "housing", "healthcare", "scholarship_schemes"):
+        suggestions = search_listings_in_db(
+            db=db,
+            intent=intent,
+            query=query,
+            category_filter=request.category_filter,
+            location_filter=request.location_filter,
+            limit=4,
+        )
 
-    # 4. Curated Knowledge & Database Engine Fallback
+    if intent == "out_of_scope":
+        reply = "Sorry, I don't have a verified answer for that yet. You can try one of the topics above, or call the helpline for direct help."
+        suggested_prompts = [
+            "What rights do transgender persons have in India?",
+            "How do I get a Transgender Certificate / ID?",
+            "Is there shelter or housing support?",
+            "24/7 Helpline: 868989330",
+        ]
+        return schemas.ChatbotQueryResponse(
+            reply=reply,
+            intent=intent,
+            suggestions=[],
+            user_cases=user_cases,
+            suggested_prompts=suggested_prompts,
+            total_database_records=total_records,
+        )
+
+    # Curated Knowledge & Database Engine Fallback
     reply, suggested_prompts = generate_curated_reply(intent, query, suggestions)
+
+    # If the response reached generic fallback, use the requested fallback message
+    if intent == "general" and not suggestions:
+        reply = "Sorry, I don't have a verified answer for that yet. You can try one of the topics above, or call the helpline for direct help."
+        suggested_prompts = [
+            "What rights do transgender persons have in India?",
+            "How do I get a Transgender Certificate / ID?",
+            "Is there shelter or housing support?",
+            "24/7 Helpline: 868989330",
+        ]
 
     return schemas.ChatbotQueryResponse(
         reply=reply,

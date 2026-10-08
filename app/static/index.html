@@ -83,8 +83,8 @@
       <!-- Center: Main Navigation Links + More Dropdown -->
       <nav class="nav-links-menu" id="nav-links-menu" aria-label="Main Navigation">
         <a href="#landing-hero-section" class="nav-link active">Home</a>
-        <a href="#guest-demo-opp-section" class="nav-link">Opportunities</a>
-        <a href="#guest-demo-assistant-section" class="nav-link">Legal Rights</a>
+        <a href="#guest-demo-opp-section" class="nav-link" id="nav-link-opportunities">Opportunities</a>
+        <a href="#guest-demo-assistant-section" class="nav-link" id="nav-link-legal">Legal Rights</a>
         <a href="#guest-pillars-section" class="nav-link">Health &amp; Support</a>
 
         <!-- More Dropdown -->
@@ -904,20 +904,38 @@
             <button type="button" class="tab-chat-cat-btn" data-cat="crisis">🚨 Emergency</button>
           </div>
 
-          <!-- Suggested Starter Prompts (4 Clean Cards) -->
+          <!-- Suggested Starter Prompts (Connected to Built-in Q&A Knowledge Base) -->
           <div class="tab-chat-quick-prompts-container" id="tab-chat-quick-prompts-container">
             <div class="tab-chat-starter-grid" id="tab-chat-starter-prompts">
-              <button type="button" class="tab-chat-starter-chip" data-prompt="Find verified trans-inclusive jobs in Mumbai, Bengaluru or Remote">
-                <span>💼</span> <span>Verified inclusive jobs &amp; careers</span>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="Hello">
+                <span>👋</span> <span>Hello / Namaste</span>
               </button>
-              <button type="button" class="tab-chat-starter-chip" data-prompt="What are my rights against unlawful landlord eviction under the TG Act 2019?">
-                <span>🏠</span> <span>Protection against unlawful eviction</span>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="What rights do transgender persons have in India?">
+                <span>⚖️</span> <span>Rights under TG Act 2019 &amp; NALSA</span>
               </button>
-              <button type="button" class="tab-chat-starter-chip" data-prompt="How do I apply for the Transgender Certificate and ID card on the National Portal?">
-                <span>🪪</span> <span>TG Certificate &amp; ID Card guide</span>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="How do I get a Transgender Certificate / ID?">
+                <span>🪪</span> <span>TG Certificate &amp; ID Card Guide</span>
               </button>
-              <button type="button" class="tab-chat-starter-chip" data-prompt="How does the Ayushman Bharat PM-JAY ₹5 Lakh transgender surgery package work?">
-                <span>🩺</span> <span>Ayushman Bharat ₹5L HRT &amp; surgery</span>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="What can I do if I face discrimination at work?">
+                <span>💼</span> <span>Workplace Rights &amp; Complaint Officer</span>
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="Where can I get free legal help?">
+                <span>⚖️</span> <span>Free Legal Aid Helpline 15100 (NALSA)</span>
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="Is there shelter or housing support?">
+                <span>🏠</span> <span>Garima Greh Shelters &amp; Housing</span>
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="Is there health insurance for transgender persons?">
+                <span>🩺</span> <span>Ayushman Bharat TG Plus ₹5L Cover</span>
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="Tell me about HRT.">
+                <span>💊</span> <span>About HRT (Hormone Therapy)</span>
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="What government schemes are available?">
+                <span>🏛️</span> <span>SMILE Scheme &amp; Govt Grants</span>
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="I'm feeling very low or unsafe.">
+                <span>🚨</span> <span>Feeling Low or Unsafe (Tele-MANAS 14416)</span>
               </button>
             </div>
           </div>
@@ -931,9 +949,9 @@
                   <div>
                     <h4 style="margin: 4px 0 8px; color: var(--accent-cyan); font-size: 15px;" id="tab-chat-initial-heading">👋 Hello &amp; Welcome to Beyond Identity!</h4>
                     <p style="margin: 6px 0; font-size: 13.5px; line-height: 1.55;">
-                      I am your 24/7 Assistant. Ask me anything about verified inclusive jobs, safe housing, healthcare, or legal rights.
+                      I am your 24/7 Rights and Empowerment Assistant. Ask me anything about Indian transgender laws, verified inclusive jobs, safe housing, healthcare, or government schemes.
                     </p>
-                    <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.45; color: var(--text-muted);">How can I help you today?</p>
+                    <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.45; color: var(--text-muted);">What would you like to know today?</p>
                   </div>
                 </div>
                 <div class="tab-chat-actions-row">
@@ -941,17 +959,23 @@
                   <button type="button" class="tab-chat-action-btn tab-chat-static-copy-btn"><span>📋</span> Copy</button>
                 </div>
                 <div class="tab-chat-bubble-prompts">
-                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="Find verified trans-inclusive jobs in Mumbai or Remote">
-                    <span>💼 Find Jobs</span> <span>→</span>
+                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="Hello">
+                    <span>👋 Hello</span> <span>→</span>
                   </button>
-                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="Safe housing & Garima Greh emergency transit shelters">
-                    <span>🏠 Safe Housing</span> <span>→</span>
+                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="What rights do transgender persons have in India?">
+                    <span>⚖️ Rights in India</span> <span>→</span>
                   </button>
-                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="Safe HRT roadmap & clinical guidance">
-                    <span>🩺 Healthcare &amp; HRT</span> <span>→</span>
+                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="How do I get a Transgender Certificate / ID?">
+                    <span>🪪 TG Certificate &amp; ID</span> <span>→</span>
                   </button>
-                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="Know my legal rights under TG Act 2019">
-                    <span>⚖️ Legal Rights</span> <span>→</span>
+                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="Is there shelter or housing support?">
+                    <span>🏠 Garima Greh Shelters</span> <span>→</span>
+                  </button>
+                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="Is there health insurance for transgender persons?">
+                    <span>🩺 Ayushman Bharat ₹5L</span> <span>→</span>
+                  </button>
+                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="What government schemes are available?">
+                    <span>🏛️ SMILE Govt Schemes</span> <span>→</span>
                   </button>
                 </div>
               </div>
@@ -1693,6 +1717,33 @@
             moreMenu.classList.remove("active");
             moreToggle.setAttribute("aria-expanded", "false");
           });
+        });
+      }
+
+      // Smart Opportunities and Legal Navigation when Authenticated
+      const oppLink = document.getElementById("nav-link-opportunities");
+      if (oppLink) {
+        oppLink.addEventListener("click", function (e) {
+          const authView = document.getElementById("authenticated-portal-view");
+          if (authView && authView.style.display !== "none") {
+            e.preventDefault();
+            const tabBtn = document.querySelector('.tab-btn[data-tab="tab-listings"]');
+            if (tabBtn) tabBtn.click();
+            window.scrollTo({ top: authView.offsetTop - 80, behavior: "smooth" });
+          }
+        });
+      }
+
+      const legalLink = document.getElementById("nav-link-legal");
+      if (legalLink) {
+        legalLink.addEventListener("click", function (e) {
+          const authView = document.getElementById("authenticated-portal-view");
+          if (authView && authView.style.display !== "none") {
+            e.preventDefault();
+            const tabBtn = document.querySelector('.tab-btn[data-tab="tab-awareness"]');
+            if (tabBtn) tabBtn.click();
+            window.scrollTo({ top: authView.offsetTop - 80, behavior: "smooth" });
+          }
         });
       }
 

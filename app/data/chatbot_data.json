@@ -1,0 +1,478 @@
+{
+  "safety_rule": {
+    "triggers": [
+      "suicide",
+      "kill myself",
+      "harm",
+      "self harm",
+      "abuse",
+      "danger",
+      "end my life",
+      "marna chahta hoon",
+      "marna chahti hoon",
+      "jaan de dunga",
+      "jaan lena",
+      "physical abuse",
+      "sexual abuse",
+      "in danger",
+      "unsafe",
+      "crisis",
+      "police violence",
+      "violence",
+      "emergency help"
+    ],
+    "answer": "You are not alone. Call Tele-MANAS 14416 (free, 24/7 mental health support). If you are in immediate danger, call 112."
+  },
+  "fallback": {
+    "answer": "Sorry, I don't have a verified answer for that yet. You can try one of the topics above, or call the helpline for direct help."
+  },
+  "questions": [
+    {
+      "id": 1,
+      "category": "small_talk",
+      "question": "Hello / Greeting",
+      "triggers": [
+        "hi",
+        "hello",
+        "namaste",
+        "hey",
+        "hii",
+        "heyy",
+        "namaskar",
+        "pranam",
+        "hola",
+        "hey there",
+        "hello there",
+        "kem cho"
+      ],
+      "answer": "Namaste! Welcome to Beyond Identity. I can help with legal rights, jobs, housing, healthcare, schemes and reporting discrimination. What would you like to know?"
+    },
+    {
+      "id": 2,
+      "category": "small_talk",
+      "question": "How are you?",
+      "triggers": [
+        "how are you",
+        "kaise ho",
+        "kya haal hai",
+        "how r u",
+        "aap kaise ho",
+        "kaise ho aap",
+        "kaisa chal raha hai",
+        "how are you doing",
+        "sab kaisa hai",
+        "how do you do",
+        "kya haal",
+        "how are you doing today"
+      ],
+      "answer": "I'm doing well, thank you for asking! How are you today? I'm here if you need any help."
+    },
+    {
+      "id": 3,
+      "category": "small_talk",
+      "question": "I am fine / good",
+      "triggers": [
+        "i am fine",
+        "i'm fine",
+        "i am good",
+        "i'm good",
+        "main theek hoon",
+        "main theek hu",
+        "sab badhiya",
+        "sab thik hai",
+        "all good",
+        "doing well",
+        "i am doing well",
+        "main badhiya hoon",
+        "thik hu",
+        "theek hu"
+      ],
+      "answer": "That's great to hear! Is there anything I can help you with today, like legal rights, jobs, housing or healthcare?"
+    },
+    {
+      "id": 4,
+      "category": "small_talk",
+      "question": "I am not fine / feeling sad",
+      "triggers": [
+        "i am not fine",
+        "i'm not fine",
+        "i am sad",
+        "i'm sad",
+        "mood kharab hai",
+        "main theek nahi hoon",
+        "main theek nahi hu",
+        "not feeling good",
+        "dil udaas hai",
+        "udaas hoon",
+        "feeling low",
+        "sad hoon",
+        "troubled",
+        "unhappy"
+      ],
+      "answer": "I'm sorry you're feeling this way. You're not alone, and I'm here to listen. If you want to talk to someone, Tele-MANAS (14416) is free and available 24/7. Would you like to tell me what's happening?"
+    },
+    {
+      "id": 5,
+      "category": "small_talk",
+      "question": "Who are you?",
+      "triggers": [
+        "who are you",
+        "what is your name",
+        "tum kaun ho",
+        "aap kaun ho",
+        "tera naam kya hai",
+        "what's your name",
+        "who r u",
+        "who made you",
+        "apna naam batao",
+        "what are you",
+        "who are you and what can you do"
+      ],
+      "answer": "I'm the Beyond Identity 24/7 Assistant. I help with legal rights, inclusive jobs, housing, healthcare, government schemes and reporting discrimination."
+    },
+    {
+      "id": 6,
+      "category": "small_talk",
+      "question": "What can you do / Help",
+      "triggers": [
+        "what can you do",
+        "tum kya kar sakte ho",
+        "aap kya kar sakte ho",
+        "kya madad kar sakte ho",
+        "what can you help with",
+        "what help can you provide"
+      ],
+      "answer": "I can guide you on legal rights and ID certificate, jobs and careers, housing and shelters, healthcare and HRT, schemes and grants, reporting discrimination and emergency help."
+    },
+    {
+      "id": 7,
+      "category": "small_talk",
+      "question": "Thank you / Thanks",
+      "triggers": [
+        "thanks",
+        "thank you",
+        "shukriya",
+        "dhanyavaad",
+        "dhanyawad",
+        "thank u",
+        "thx",
+        "thanks a lot",
+        "bohot shukriya",
+        "many thanks",
+        "thank you so much",
+        "thank you so much for your help"
+      ],
+      "answer": "You're most welcome! Feel free to ask anything else anytime."
+    },
+    {
+      "id": 8,
+      "category": "small_talk",
+      "question": "Good morning / day greetings",
+      "triggers": [
+        "good morning",
+        "good night",
+        "good afternoon",
+        "good evening",
+        "shubh prabhat",
+        "shubh ratri",
+        "morning",
+        "good day"
+      ],
+      "answer": "Good morning! Hope you have a great day. How can I help you?"
+    },
+    {
+      "id": 9,
+      "category": "small_talk",
+      "question": "Goodbye / Bye",
+      "triggers": [
+        "bye",
+        "see you",
+        "alvida",
+        "phir milenge",
+        "goodbye",
+        "bye bye",
+        "cya",
+        "tata",
+        "take care"
+      ],
+      "answer": "Take care! If you ever need help, I'm here 24/7. Stay safe!"
+    },
+    {
+      "id": 10,
+      "category": "small_talk",
+      "question": "Are you human / a bot?",
+      "triggers": [
+        "are you human",
+        "are you a bot",
+        "tum insaan ho",
+        "kya tum insaan ho",
+        "bot ho",
+        "are you ai",
+        "are you real",
+        "are u human",
+        "are u a bot",
+        "kya tum bot ho"
+      ],
+      "answer": "I'm an AI assistant, not a human. I can share verified information, but for legal or medical decisions please also consult a professional."
+    },
+    {
+      "id": 11,
+      "category": "small_talk",
+      "question": "OK / Alright",
+      "triggers": [
+        "ok",
+        "okay",
+        "hmm",
+        "accha",
+        "achha",
+        "thik hai",
+        "theek hai",
+        "thik h",
+        "theek h",
+        "alright",
+        "sahi hai",
+        "cool"
+      ],
+      "answer": "Alright! Let me know if you'd like help with anything else."
+    },
+    {
+      "id": 12,
+      "category": "rights_support",
+      "question": "What rights do transgender persons have in India?",
+      "triggers": [
+        "what rights do transgender persons have in india",
+        "transgender rights in india",
+        "transgender rights",
+        "rights of transgender persons",
+        "what rights do trans people have",
+        "nalsa rights",
+        "trans rights",
+        "tg act rights",
+        "kya rights hai",
+        "transgender adhikar",
+        "legal rights in india",
+        "rights in india"
+      ],
+      "answer": "The Transgender Persons (Protection of Rights) Act, 2019 bans discrimination in education, jobs, healthcare, housing and public services. The NALSA judgment (2014) also recognised the right to self-identify one's gender."
+    },
+    {
+      "id": 13,
+      "category": "rights_support",
+      "question": "How do I get a Transgender Certificate / ID?",
+      "triggers": [
+        "how do i get a transgender certificate",
+        "how do i get a transgender certificate id",
+        "transgender certificate",
+        "transgender id",
+        "how to get tg certificate",
+        "certificate of identity",
+        "national portal transgender certificate",
+        "dm certificate",
+        "apply for transgender certificate",
+        "tg card",
+        "transgender identity card",
+        "certificate kaise banaye",
+        "id card kaise banaye",
+        "how do i get a tg certificate"
+      ],
+      "answer": "Apply on the National Portal for Transgender Persons (transgender.dosje.gov.in). The District Magistrate issues a Certificate of Identity, which you can use to update documents like Aadhaar and PAN."
+    },
+    {
+      "id": 14,
+      "category": "rights_support",
+      "question": "What can I do if I face discrimination at work?",
+      "triggers": [
+        "what can i do if i face discrimination at work",
+        "discrimination at work",
+        "workplace discrimination",
+        "job discrimination",
+        "harassed at work",
+        "fired from job for being trans",
+        "complaint officer",
+        "workplace harassment",
+        "office me discrimination",
+        "naukri me bhedbhav",
+        "discrimination at job"
+      ],
+      "answer": "Every establishment must have a Complaint Officer, so report to them in writing first. If nothing happens, approach the police or the courts. Keep emails, messages and witness details as proof."
+    },
+    {
+      "id": 15,
+      "category": "rights_support",
+      "question": "How do I report discrimination or violence?",
+      "triggers": [
+        "how do i report discrimination or violence",
+        "how do i report discrimination",
+        "how to report discrimination",
+        "report discrimination",
+        "report violence",
+        "how to report violence",
+        "file an fir",
+        "police report trans",
+        "discrimination report",
+        "violence report",
+        "fir kaise kare",
+        "report kaise kare"
+      ],
+      "answer": "Use the Report Discrimination tab here, or file an FIR at the nearest police station. In an emergency, call 112."
+    },
+    {
+      "id": 16,
+      "category": "rights_support",
+      "question": "Where can I get free legal help?",
+      "triggers": [
+        "where can i get free legal help",
+        "free legal help",
+        "free legal aid",
+        "nalsa legal aid",
+        "15100",
+        "free lawyer",
+        "district legal services authority",
+        "dlsa",
+        "muft kanooni sahayata",
+        "free vakil",
+        "legal advice free",
+        "legal help"
+      ],
+      "answer": "Call NALSA's free legal aid helpline 15100, or contact your District Legal Services Authority (DLSA)."
+    },
+    {
+      "id": 17,
+      "category": "rights_support",
+      "question": "Is there shelter or housing support?",
+      "triggers": [
+        "is there shelter or housing support",
+        "shelter or housing support",
+        "shelter support",
+        "housing support",
+        "garima greh",
+        "garima greh shelters",
+        "shelter home",
+        "emergency shelter",
+        "kicked out of home",
+        "transgender shelter",
+        "rehne ki jagah",
+        "shelter for trans",
+        "safe housing"
+      ],
+      "answer": "Yes. Under Section 12 of the Transgender Persons Act 2019, arbitrary eviction is unlawful. Garima Greh shelters under the SMILE scheme offer food, shelter and support. Check the Housing & Shelters topic to find one near you."
+    },
+    {
+      "id": 18,
+      "category": "rights_support",
+      "question": "Is there health insurance for transgender persons?",
+      "triggers": [
+        "is there health insurance for transgender persons",
+        "health insurance for transgender persons",
+        "health insurance",
+        "ayushman bharat tg plus",
+        "ayushman bharat",
+        "pm-jay transgender",
+        "pm jay",
+        "transgender health insurance",
+        "surgery cover",
+        "5 lakh insurance",
+        "swasthya bima",
+        "medical insurance"
+      ],
+      "answer": "Yes. Ayushman Bharat TG Plus covers transgender persons, including gender-affirming care. PM-JAY gives up to Rs 5 lakh per family per year for eligible families."
+    },
+    {
+      "id": 19,
+      "category": "rights_support",
+      "question": "Tell me about HRT.",
+      "triggers": [
+        "tell me about hrt",
+        "what is hrt",
+        "hrt",
+        "hormone therapy",
+        "hormone replacement therapy",
+        "hrt guidance",
+        "estrogen",
+        "testosterone",
+        "hormone kaise le",
+        "hrt doctor",
+        "start hrt",
+        "endocrinologist"
+      ],
+      "answer": "HRT should only be started under a qualified doctor, such as an endocrinologist, after proper tests. Please do not self-medicate or follow dosages from the internet. Ayushman Bharat TG Plus also covers gender-affirming care."
+    },
+    {
+      "id": 20,
+      "category": "rights_support",
+      "question": "What government schemes are available?",
+      "triggers": [
+        "what government schemes are available",
+        "government schemes",
+        "smile scheme",
+        "transgender schemes",
+        "sarkari yojana",
+        "trans scholarships",
+        "government grants",
+        "schemes and grants",
+        "welfare schemes",
+        "govt schemes"
+      ],
+      "answer": "The SMILE scheme includes scholarships, skill training, livelihood support and Garima Greh shelters. Open the Schemes & Grants topic for the full list."
+    },
+    {
+      "id": 21,
+      "category": "rights_support",
+      "question": "I'm feeling very low or unsafe.",
+      "triggers": [
+        "i'm feeling very low or unsafe",
+        "i am feeling very low or unsafe",
+        "feeling very low",
+        "feeling unsafe",
+        "feel low",
+        "feel unsafe",
+        "darr lag raha hai",
+        "bahut low feel ho raha hai",
+        "feeling helpless",
+        "lonely and unsafe",
+        "i feel unsafe",
+        "feeling low or unsafe"
+      ],
+      "answer": "You are not alone. Call Tele-MANAS 14416 (free, 24/7 mental health support). If you are in immediate danger, call 112."
+    },
+    {
+      "id": 22,
+      "category": "small_talk",
+      "question": "What are you doing?",
+      "triggers": [
+        "what are you doing",
+        "what r u doing",
+        "what are u doing",
+        "wyd",
+        "hii what are you doing",
+        "kya kar rahe ho"
+      ],
+      "answer": "I'm right here on Beyond Identity and ready to help with any transgender-related questions you have."
+    },
+    {
+      "id": 23,
+      "category": "small_talk",
+      "question": "I'm confused / I need help",
+      "triggers": [
+        "i'm confused",
+        "im confused",
+        "i need help",
+        "need help",
+        "so confused"
+      ],
+      "answer": "It is completely normal to feel confused or overwhelmed, and you do not have to have everything figured out right away. Beyond Identity provides verified guidance on gender identity, Indian legal rights, healthcare, and community support. What specific question can I help you with?"
+    },
+    {
+      "id": 24,
+      "category": "rights_support",
+      "question": "What does transgender mean?",
+      "triggers": [
+        "what does transgender mean",
+        "what is transgender",
+        "transgender meaning",
+        "transgender kya hai"
+      ],
+      "answer": "Transgender describes a person whose gender identity differs from the sex assigned to them at birth. In India, the Transgender Persons Act, 2019 and NALSA judgment (2014) protect the right to self-identify one's gender without discrimination."
+    }
+  ]
+}

@@ -117,8 +117,7 @@ def test_chatbot_chitchat_greeting():
         assert response.status_code == 200
         data = response.json()
         assert data["intent"] == "chitchat_greeting"
-        assert "Hi! I'm Beyond Identity" in data["reply"]
-        assert "website where you get verified, trustworthy information" in data["reply"]
+        assert "Namaste! Welcome to Beyond Identity" in data["reply"]
         assert len(data["suggested_prompts"]) == 0
 
 
@@ -128,7 +127,7 @@ def test_chatbot_chitchat_how_are_you():
         assert response.status_code == 200
         data = response.json()
         assert data["intent"] == "chitchat_howareyou"
-        assert "doing well, thanks" in data["reply"].lower()
+        assert "doing well, thank you" in data["reply"].lower()
 
 
 def test_chatbot_chitchat_user_good():
@@ -137,7 +136,7 @@ def test_chatbot_chitchat_user_good():
         assert response.status_code == 200
         data = response.json()
         assert data["intent"] == "chitchat_user_good"
-        assert "glad to hear that" in data["reply"].lower()
+        assert "great to hear" in data["reply"].lower() or "glad to hear" in data["reply"].lower()
 
 
 def test_chatbot_unclear_query():
@@ -178,7 +177,7 @@ def test_chatbot_out_of_scope_query():
         assert response.status_code == 200
         data = response.json()
         assert data["intent"] == "out_of_scope"
-        assert "focused on transgender-related support" in data["reply"].lower()
+        assert "verified answer" in data["reply"].lower() or "helpline" in data["reply"].lower()
 
 
 def test_chatbot_basics_and_terminology():
@@ -226,7 +225,7 @@ def test_chatbot_chitchat_identity():
     assert response.status_code == 200
     data = response.json()
     assert data["intent"] == "chitchat_identity"
-    assert "Beyond Identity Assistant" in data["reply"]
+    assert "Beyond Identity 24/7 Assistant" in data["reply"]
 
 
 def test_chatbot_chitchat_thanks():

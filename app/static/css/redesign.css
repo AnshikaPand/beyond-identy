@@ -33,16 +33,16 @@
 
   /* Neutrals & Surfaces */
   --bi-bg-base: #f8fafc;
-  --bi-surface-1: rgba(255, 255, 255, 0.92);
-  --bi-surface-2: #f1f5f9;
-  --bi-surface-card: rgba(255, 255, 255, 0.94);
-  --bi-surface-card-hover: #ffffff;
+  --bi-surface-1: rgba(255, 255, 255, 0.88);
+  --bi-surface-2: rgba(241, 245, 249, 0.85);
+  --bi-surface-card: rgba(255, 255, 255, 0.88);
+  --bi-surface-card-hover: rgba(255, 255, 255, 0.96);
 
   /* Typography */
   --bi-text-main: #0f172a;        /* Slate 900 */
   --bi-text-secondary: #334155;   /* Slate 700 */
-  --bi-text-muted: #64748b;       /* Slate 500 */
-  --bi-text-dim: #94a3b8;         /* Slate 400 */
+  --bi-text-muted: #475569;       /* Slate 600 */
+  --bi-text-dim: #64748b;         /* Slate 500 */
 
   /* Borders & Dividers */
   --bi-border-subtle: #e2e8f0;
@@ -63,8 +63,8 @@
   --bi-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
   --bi-shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
 
-  /* Background Artwork & Soft Dark-Blue Atmospheric Overlay */
-  --bi-bg-overlay: linear-gradient(180deg, rgba(240, 244, 252, 0.92) 0%, rgba(248, 250, 252, 0.96) 100%);
+  /* Background Artwork & Atmospheric Overlay (Visible Before & After Login) */
+  --bi-bg-overlay: linear-gradient(180deg, rgba(240, 244, 252, 0.76) 0%, rgba(248, 250, 252, 0.83) 100%);
   --bi-bg-image-url: url('/assets/bg.jpg');
 
   /* Standardized Border Radii */
@@ -89,18 +89,18 @@
   --pride-gradient: linear-gradient(90deg, #5bcefa 0%, #f5a9b8 25%, #ffffff 50%, #f5a9b8 75%, #5bcefa 100%);
 
   --bi-bg-base: #0b1120;          /* Deep calm midnight slate */
-  --bi-surface-1: rgba(17, 24, 39, 0.92);
-  --bi-surface-2: #1e293b;
-  --bi-surface-card: rgba(17, 24, 39, 0.9);
-  --bi-surface-card-hover: #1e293b;
+  --bi-surface-1: rgba(17, 24, 39, 0.84);
+  --bi-surface-2: rgba(30, 41, 59, 0.8);
+  --bi-surface-card: rgba(17, 24, 39, 0.84);
+  --bi-surface-card-hover: rgba(30, 41, 59, 0.9);
 
   --bi-text-main: #f8fafc;
   --bi-text-secondary: #cbd5e1;
   --bi-text-muted: #94a3b8;
   --bi-text-dim: #64748b;
 
-  --bi-border-subtle: rgba(255, 255, 255, 0.09);
-  --bi-border-highlight: rgba(255, 255, 255, 0.15);
+  --bi-border-subtle: rgba(255, 255, 255, 0.12);
+  --bi-border-highlight: rgba(255, 255, 255, 0.18);
   --bi-border-focus: #818cf8;
 
   --bi-rose: #f43f5e;
@@ -115,7 +115,7 @@
   --bi-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
   --bi-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
 
-  --bi-bg-overlay: linear-gradient(180deg, rgba(11, 17, 32, 0.88) 0%, rgba(15, 23, 42, 0.94) 100%);
+  --bi-bg-overlay: linear-gradient(180deg, rgba(11, 17, 32, 0.74) 0%, rgba(15, 23, 42, 0.82) 100%);
   --bi-bg-image-url: url('/assets/bg.jpg');
 }
 
