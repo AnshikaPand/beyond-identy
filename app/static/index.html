@@ -52,114 +52,160 @@
 <body>
 
   <!-- Emergency Crisis Helpline Top Banner -->
-  <aside class="emergency-helpline-bar" style="background: linear-gradient(90deg, #be123c, #e11d48, #9f1239); color: #ffffff; padding: 7px 16px; font-size: 13px; font-weight: 500; text-align: center; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; box-shadow: 0 2px 8px rgba(190, 18, 60, 0.25); position: sticky; top: 0; z-index: 1000;">
-    <span>🚨 <strong>24/7 Crisis & Support Helpline:</strong></span>
-    <a href="tel:868989330" style="background: #ffffff; color: #be123c; padding: 3px 12px; border-radius: 999px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.2); transition: transform 0.15s ease;">
+  <aside class="emergency-helpline-bar" aria-label="Emergency Crisis Support">
+    <span>🚨 <strong>24/7 Crisis &amp; Support Helpline:</strong></span>
+    <a href="tel:868989330" title="Call 24/7 Helpline">
       📞 868989330
     </a>
     <span style="opacity: 0.9; font-size: 12px;">| Tele-MANAS: 14416 | Free Legal Aid (NALSA): 15100</span>
   </aside>
 
-  <!-- Top Navigation -->
-  <header class="navbar">
+  <!-- Top Navigation Bar -->
+  <header class="navbar" id="main-site-navbar">
     <div class="container nav-content">
-      <a href="#" class="brand">
+      <!-- Brand Logo / Name -->
+      <a href="#" class="brand" aria-label="Beyond Identity Homepage">
         <div class="brand-icon">🏳️‍⚧️</div>
         <div class="brand-text">
           <h1>Beyond Identity</h1>
-          <span>India Rights & Welfare Redressal</span>
+          <span>Empowerment &amp; Rights Portal</span>
         </div>
       </a>
 
-      <!-- SDG Badges -->
-      <div class="sdg-badges">
-        <span class="sdg-pill sdg-10">⚖️ SDG 10: Reduced Inequalities</span>
-        <span class="sdg-pill sdg-16">🏛️ SDG 16: Peace & Justice</span>
-        <span class="sdg-pill sdg-3">🩺 SDG 3: Good Health</span>
-      </div>
+      <!-- Primary Navigation Links (Desktop) -->
+      <nav class="nav-links-menu" id="nav-links-menu" aria-label="Main Navigation">
+        <a href="#landing-hero-section" class="nav-link active">Home</a>
+        <a href="#home-video-overview" class="nav-link">Mission Video</a>
+        <a href="#guest-demo-opp-section" class="nav-link">Opportunities</a>
+        <a href="#guest-pipeline-section" class="nav-link">Redressal Process</a>
+        <a href="#guest-demo-assistant-section" class="nav-link">Legal Rights</a>
+        <a href="#main-site-footer" class="nav-link">Helplines</a>
+      </nav>
 
-      <!-- Right Header Actions: Helpline + Chat + Theme Switcher + Auth -->
-      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <!-- Direct Helpline Button -->
-        <a href="tel:868989330" class="btn btn-secondary" style="color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.35); padding: 7px 12px; font-size: 12.5px; text-decoration: none; display: flex; align-items: center; gap: 5px; font-weight: 600;" title="Call 24/7 Helpline">
-          <span>📞</span> 868989330
+      <!-- Right Utility Actions -->
+      <div class="nav-actions-group">
+        <!-- Direct Crisis Helpline Badge -->
+        <a href="tel:868989330" class="nav-helpline-link" title="Call 24/7 Helpline">
+          <span>📞</span>
+          <span>868989330</span>
         </a>
 
         <!-- Quick Chatbox Nav Launcher Button -->
-        <button type="button" class="btn btn-secondary" id="nav-open-chat-btn" style="color: var(--accent-cyan); border-color: rgba(56, 189, 248, 0.4); padding: 7px 12px; font-size: 12.5px; display: flex; align-items: center; gap: 6px; font-weight: 600; cursor: pointer;" title="Launch 24/7 Assistant Chatbox">
-          <span>🤖</span> Chat
+        <button type="button" class="nav-chat-btn" id="nav-open-chat-btn" title="Launch 24/7 Assistant Chatbox">
+          <span>🤖</span>
+          <span>Assistant</span>
         </button>
 
         <!-- Theme Switcher Segmented Control (Day / Night / System) -->
         <div class="theme-switch-group" id="theme-switch-container" title="Select Theme: Day, Night, or System">
-          <button type="button" class="theme-switch-btn" data-theme-val="light" title="Day Theme (Light)" aria-label="Day Theme">☀️ Day</button>
-          <button type="button" class="theme-switch-btn" data-theme-val="dark" title="Night Theme (Dark)" aria-label="Night Theme">🌙 Night</button>
-          <button type="button" class="theme-switch-btn active" data-theme-val="system" title="System Auto Theme" aria-label="System Theme">💻 Auto</button>
+          <button type="button" class="theme-switch-btn" data-theme-val="light" title="Day Theme (Light)" aria-label="Day Theme">☀️</button>
+          <button type="button" class="theme-switch-btn" data-theme-val="dark" title="Night Theme (Dark)" aria-label="Night Theme">🌙</button>
+          <button type="button" class="theme-switch-btn active" data-theme-val="system" title="System Auto Theme" aria-label="System Theme">💻</button>
         </div>
 
-        <!-- User Auth Profile / Actions -->
+        <!-- User Auth Action Profile / Sign In -->
         <div class="nav-actions" id="auth-actions-container">
-          <button class="btn btn-primary" id="open-login-btn">Sign In / Register</button>
+          <button class="btn btn-primary" id="open-login-btn">Sign In</button>
+        </div>
+
+        <!-- Mobile Hamburger Toggle Button -->
+        <button type="button" class="nav-mobile-toggle" id="nav-mobile-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Navigation Drawer -->
+    <div class="nav-mobile-drawer" id="nav-mobile-drawer">
+      <div class="nav-mobile-drawer-inner">
+        <a href="#landing-hero-section" class="nav-mobile-link active">Home</a>
+        <a href="#home-video-overview" class="nav-mobile-link">Mission Video</a>
+        <a href="#guest-demo-opp-section" class="nav-mobile-link">Opportunities Directory</a>
+        <a href="#guest-pipeline-section" class="nav-mobile-link">Redressal Process</a>
+        <a href="#guest-demo-assistant-section" class="nav-mobile-link">Legal Rights Engine</a>
+        <a href="#main-site-footer" class="nav-mobile-link">Crisis Helplines</a>
+        <div class="nav-mobile-divider"></div>
+        <div class="nav-mobile-actions">
+          <a href="tel:868989330" class="btn btn-secondary" style="color: var(--bi-rose); width: 100%; justify-content: center;">
+            📞 24/7 Helpline: 868989330
+          </a>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Hero Section (Visible only for guests / logged out state) -->
-  <section class="hero" id="landing-hero-section">
-    <div class="container">
-      <div class="hero-tag">🇮🇳 National Transgender Rights & Triage Portal</div>
-      <h2>Empowering Transgender & Gender-Diverse Communities in India</h2>
-      <p>Direct access to verified inclusive opportunities, Indian statutory legal rights awareness, transparent discrimination redressal, and clinically-guided health navigation.</p>
-
-      <!-- Quick 1-Click Evaluation Strip for Guests -->
-      <div id="guest-demo-strip" class="guest-demo-strip">
-        <div class="demo-strip-label">
-          ⚡ 1-Click Instant Evaluation Demo:
+  <!-- Hero Section (Visible for guests / logged-out state) -->
+  <section class="hero-section" id="landing-hero-section">
+    <div class="container hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          <span>India Rights, Dignity &amp; Welfare Platform</span>
         </div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-          <button type="button" class="btn btn-secondary demo-login-btn" data-email="user@example.com" data-password="user123" style="padding: 8px 14px; font-size: 12.5px;">
-            👤 <strong>Community Seeker</strong>
+        <h2 class="hero-title">
+          Identity, Dignity &amp; Protection for Every Individual.
+        </h2>
+        <p class="hero-description">
+          A confidential, trusted platform connecting transgender and gender-diverse communities across India to verified inclusive opportunities, Indian statutory welfare schemes, and safe discrimination redressal.
+        </p>
+
+        <!-- Clear Call-to-Action Buttons -->
+        <div class="hero-actions-row" id="guest-hero-cta">
+          <button class="btn btn-primary hero-btn guest-open-signup-btn" id="guest-hero-register-btn">
+            Get Support &amp; Join Free
           </button>
-          <button type="button" class="btn btn-secondary demo-login-btn" data-email="ngo@shreetrust.org" data-password="verifier123" style="padding: 8px 14px; font-size: 12.5px;">
-            🛡️ <strong>NGO Verifier</strong> (Case Triage)
+          <a href="#home-video-overview" class="btn btn-secondary hero-btn">
+            Watch Overview 🎬
+          </a>
+          <button class="btn btn-ghost guest-open-login-btn" id="guest-hero-login-btn" style="display: none;">
+            Sign In
           </button>
-          <button type="button" class="btn btn-secondary demo-login-btn" data-email="admin@beyondidentity.org" data-password="admin123" style="padding: 8px 14px; font-size: 12.5px;">
-            ⚡ <strong>System Admin</strong>
-          </button>
+        </div>
+
+        <!-- Clean, Understated Quick Test Evaluation Bar -->
+        <div class="hero-demo-strip" id="guest-demo-strip">
+          <span class="demo-strip-hint">Quick Test Login:</span>
+          <div class="demo-strip-buttons">
+            <button type="button" class="demo-pill-btn demo-login-btn" data-email="user@example.com" data-password="user123" title="Log in as Community Seeker">
+              👤 Seeker Demo
+            </button>
+            <button type="button" class="demo-pill-btn demo-login-btn" data-email="ngo@shreetrust.org" data-password="verifier123" title="Log in as NGO Case Verifier">
+              🛡️ NGO Verifier
+            </button>
+            <button type="button" class="demo-pill-btn demo-login-btn" data-email="admin@beyondidentity.org" data-password="admin123" title="Log in as Admin">
+              ⚡ Admin
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Guest Hero CTA Action Row -->
-      <div class="guest-cta-group" id="guest-hero-cta" style="margin-top: 20px;">
-        <button class="btn btn-primary guest-open-signup-btn" id="guest-hero-register-btn" style="padding: 12px 24px; font-size: 14.5px;">
-          🚀 Join Free — Create Account
-        </button>
-        <button class="btn btn-secondary guest-open-login-btn" id="guest-hero-login-btn" style="padding: 12px 22px; font-size: 14.5px;">
-          🔐 Sign In with Password
-        </button>
-        <a href="/login" class="btn btn-secondary" style="padding: 12px 20px; font-size: 14px;">
-          Dedicated Auth Page →
-        </a>
-      </div>
-
-      <!-- Quick Stats Bar -->
-      <div class="stats-grid" style="margin-top: 36px; margin-bottom: 0;">
-        <div class="stat-card">
-          <div class="stat-number" id="stat-listings-count">10+</div>
-          <div class="stat-label">Verified Opportunities</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">6+</div>
-          <div class="stat-label">Partner NGO Cells</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">₹5,00,000</div>
-          <div class="stat-label">PM-JAY Health Coverage</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" style="font-size: 20px;"><a href="tel:868989330" style="color: inherit; text-decoration: none;">📞 868989330</a></div>
-          <div class="stat-label">24x7 Community Helpline</div>
+      <!-- Hero Visual Stats Card (Organized, Modern, Balanced) -->
+      <div class="hero-metrics-card">
+        <div class="metrics-grid">
+          <div class="metric-item">
+            <div class="metric-num" id="stat-listings-count">10+</div>
+            <div class="metric-label">Verified Listings</div>
+            <div class="metric-sub">Jobs, Housing &amp; Clinics</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-num">6+</div>
+            <div class="metric-label">Partner NGO Desks</div>
+            <div class="metric-sub">Regional Case Verification</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-num">₹5,00,000</div>
+            <div class="metric-label">PM-JAY Health Coverage</div>
+            <div class="metric-sub">Ayushman Bharat Coverage</div>
+          </div>
+          <div class="metric-item highlight">
+            <div class="metric-num">
+              <a href="tel:868989330">868989330</a>
+            </div>
+            <div class="metric-label">24/7 Helpline</div>
+            <div class="metric-sub">Tele-MANAS: 14416</div>
+          </div>
         </div>
       </div>
     </div>
@@ -180,7 +226,7 @@
           <a href="#home-video-overview" class="guest-subnav-link"><span>🎬</span> Video Overview</a>
           <a href="#guest-demo-opp-section" class="guest-subnav-link"><span>📂</span> Opportunities Preview</a>
           <a href="#guest-pipeline-section" class="guest-subnav-link"><span>⚖️</span> Redressal Pipeline</a>
-          <a href="#guest-trust-section" class="guest-subnav-link"><span>🛡️</span> Trust & Privacy</a>
+          <a href="#guest-trust-section" class="guest-subnav-link"><span>🛡️</span> Trust &amp; Privacy</a>
         </div>
         <div class="guest-subnav-badge">
           <span>🔒 Limited Guest Demo Mode</span>
@@ -1521,5 +1567,57 @@
 
   <!-- Application Logic -->
   <script src="/static/js/app.js?v=5.0"></script>
+
+  <!-- Modern Navigation & Mobile Drawer Controller -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggleBtn = document.getElementById("nav-mobile-toggle");
+      const drawer = document.getElementById("nav-mobile-drawer");
+      if (toggleBtn && drawer) {
+        toggleBtn.addEventListener("click", function () {
+          const isOpen = drawer.classList.toggle("open");
+          toggleBtn.classList.toggle("open", isOpen);
+          toggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+
+        // Close drawer on link click
+        drawer.querySelectorAll(".nav-mobile-link").forEach(function (link) {
+          link.addEventListener("click", function () {
+            drawer.classList.remove("open");
+            toggleBtn.classList.remove("open");
+            toggleBtn.setAttribute("aria-expanded", "false");
+          });
+        });
+      }
+
+      // Active Section Scrollspy for Desktop Navigation Links
+      const navLinks = document.querySelectorAll(".nav-links-menu .nav-link");
+      if (navLinks.length > 0) {
+        const sections = Array.from(navLinks)
+          .map(link => {
+            const hash = link.getAttribute("href");
+            return hash && hash.startsWith("#") ? document.querySelector(hash) : null;
+          })
+          .filter(Boolean);
+
+        window.addEventListener("scroll", function () {
+          const scrollPos = window.scrollY + 120;
+          let currentActiveId = "";
+          sections.forEach(sec => {
+            if (sec && sec.offsetTop <= scrollPos) {
+              currentActiveId = sec.id;
+            }
+          });
+
+          if (currentActiveId) {
+            navLinks.forEach(link => {
+              const matches = link.getAttribute("href") === "#" + currentActiveId;
+              link.classList.toggle("active", matches);
+            });
+          }
+        }, { passive: true });
+      }
+    });
+  </script>
 </body>
 </html>
