@@ -6,13 +6,14 @@
   <title>Beyond Identity — India Transgender Rights, Welfare & Clinical Health Triage</title>
   <meta name="description" content="Empowering transgender and gender-diverse individuals across India with verified listings, discrimination incident reporting, legal rights awareness, and clinically guided health triage." />
 
-  <!-- Google Fonts: Inter and Outfit -->
+  <!-- Google Fonts: Inter, Outfit, and Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Application Styles -->
   <link rel="stylesheet" href="/static/css/styles.css?v=5.0" />
+  <link rel="stylesheet" href="/static/css/redesign.css?v=1.0" />
 
   <!-- Immediate Zero-Flicker Theme & Auth Layout Initializer -->
   <script>
@@ -176,6 +177,7 @@
       <div class="guest-subnav-bar">
         <div class="guest-subnav-links">
           <a href="#guest-demo-assistant-section" class="guest-subnav-link"><span>🤖</span> Assistant Demo</a>
+          <a href="#home-video-overview" class="guest-subnav-link"><span>🎬</span> Video Overview</a>
           <a href="#guest-demo-opp-section" class="guest-subnav-link"><span>📂</span> Opportunities Preview</a>
           <a href="#guest-pipeline-section" class="guest-subnav-link"><span>⚖️</span> Redressal Pipeline</a>
           <a href="#guest-trust-section" class="guest-subnav-link"><span>🛡️</span> Trust & Privacy</a>
@@ -184,6 +186,52 @@
           <span>🔒 Limited Guest Demo Mode</span>
         </div>
       </div>
+
+      <!-- ============================================== -->
+      <!-- VIDEO OVERVIEW SECTION (16:9, LAZY LOADED)     -->
+      <!-- ============================================== -->
+      <section class="home-video-section" id="home-video-overview" aria-label="Platform Mission Video Overview">
+        <div class="video-section-header">
+          <span class="video-section-badge">🎬 Platform Mission & Overview</span>
+          <h3 class="video-section-title">Confidential Rights, Welfare & Redressal in Action</h3>
+          <p class="video-section-caption">
+            Watch how Beyond Identity empowers transgender and gender-diverse citizens across India with confidential discrimination reporting, statutory scheme matching, and legal triage.
+          </p>
+        </div>
+
+        <div class="video-player-card">
+          <div class="video-responsive-wrap">
+            <video
+              id="platform-intro-video"
+              class="home-intro-video"
+              controls
+              muted
+              playsinline
+              preload="none"
+              loading="lazy"
+              poster="/assets/intro-poster.jpg"
+              title="Beyond Identity: Platform Overview & Legal Redressal Video">
+              <source src="/assets/intro.mp4" type="video/mp4" />
+              Your browser does not support HTML5 video streaming. Please explore our interactive modules below.
+            </video>
+          </div>
+
+          <div class="video-meta-bar">
+            <div class="video-feature-pill">
+              <span class="pill-dot"></span>
+              <span>🔒 100% Encrypted & Anonymous Reporting</span>
+            </div>
+            <div class="video-feature-pill">
+              <span class="pill-dot"></span>
+              <span>🏛️ Auto-Matched MoSJE & NHA Welfare Schemes</span>
+            </div>
+            <div class="video-feature-pill">
+              <span class="pill-dot"></span>
+              <span>⚖️ NALSA Section 12 Free Legal Aid Integration</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- ======================================================= -->
       <!-- LIMITED DEMO FEATURE 1: INTERACTIVE ASSISTANT SANDBOX -->
@@ -1035,6 +1083,103 @@
     </div><!-- End #authenticated-portal-view -->
 
   </main>
+
+  <!-- ========================================================================= -->
+  <!-- COMPREHENSIVE ACCESSIBLE SITE FOOTER                                      -->
+  <!-- ========================================================================= -->
+  <footer class="site-footer" id="main-site-footer" role="contentinfo">
+    <div class="footer-content">
+      <div class="footer-grid">
+        <!-- Col 1: Brand & Mission -->
+        <div class="footer-col-brand">
+          <div class="footer-brand">
+            <div class="brand-icon">🏳️‍⚧️</div>
+            <div class="brand-text">
+              <h3>Beyond Identity</h3>
+              <span>India Rights & Welfare Redressal</span>
+            </div>
+          </div>
+          <p class="footer-mission-text">
+            A secure national platform empowering transgender and gender-diverse citizens across India through verified affirmative listings, transparent discrimination incident redressal, statutory legal rights awareness, and clinical health guidance.
+          </p>
+          <div class="footer-statutory-note">
+            ⚖️ Anchored in Supreme Court of India <em>NALSA (2014)</em> &amp; <em>Transgender Persons (Protection of Rights) Act 2019</em>.
+          </div>
+        </div>
+
+        <!-- Col 2: Direct Helpline & Crisis SOS -->
+        <div>
+          <h4 class="footer-col-title">Crisis &amp; Legal Helplines</h4>
+          <ul class="footer-links-list">
+            <li>
+              <a href="tel:868989330" class="footer-helpline-link">
+                📞 868989330 <span style="font-size: 11px; opacity: 0.85;">(24/7 Community Support)</span>
+              </a>
+            </li>
+            <li>
+              <a href="tel:14416" class="footer-helpline-link">
+                🧠 14416 <span style="font-size: 11px; opacity: 0.85;">(Tele-MANAS Mental Health)</span>
+              </a>
+            </li>
+            <li>
+              <a href="tel:15100" class="footer-helpline-link">
+                ⚖️ 15100 <span style="font-size: 11px; opacity: 0.85;">(NALSA Free Legal Aid)</span>
+              </a>
+            </li>
+            <li>
+              <a href="tel:1091" class="footer-helpline-link">
+                🛡️ 1091 <span style="font-size: 11px; opacity: 0.85;">(Women &amp; Trans Helpline)</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Portal Navigation & Quick Links -->
+        <div>
+          <h4 class="footer-col-title">Platform Features</h4>
+          <ul class="footer-links-list">
+            <li><a href="#guest-demo-assistant-section">🤖 24/7 AI Legal Assistant</a></li>
+            <li><a href="#home-video-overview">🎬 Platform Mission Video</a></li>
+            <li><a href="#guest-demo-opp-section">💼 Verified Opportunities</a></li>
+            <li><a href="#guest-pipeline-section">⚖️ 4-Stage Redressal Pipeline</a></li>
+            <li><a href="#guest-trust-section">🛡️ Privacy &amp; Zero-Knowledge</a></li>
+            <li><a href="/login">🔐 Dedicated Sign In / Portal</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: UN Sustainable Development Goals -->
+        <div>
+          <h4 class="footer-col-title">UN SDG Commitments</h4>
+          <div class="footer-sdg-stack">
+            <div class="footer-sdg-card sdg-10-card">
+              <span class="sdg-tag">SDG 10</span>
+              <span>Reduced Inequalities</span>
+            </div>
+            <div class="footer-sdg-card sdg-16-card">
+              <span class="sdg-tag">SDG 16</span>
+              <span>Peace, Justice &amp; Strong Institutions</span>
+            </div>
+            <div class="footer-sdg-card sdg-3-card">
+              <span class="sdg-tag">SDG 3</span>
+              <span>Good Health &amp; Well-being</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bottom Bar -->
+      <div class="footer-bottom-bar">
+        <div>
+          © 2026 Beyond Identity Foundation. Distributed under open public interest principles.
+        </div>
+        <div class="footer-bottom-badges">
+          <span class="privacy-badge">🔒 End-to-End Encrypted Data</span>
+          <span class="privacy-badge">🇮🇳 Digital Personal Data Protection (DPDP) Aligned</span>
+          <span class="privacy-badge">🌐 Accessible &amp; Mobile-First</span>
+        </div>
+      </div>
+    </div>
+  </footer>
 
   <!-- Toast Notifications Container -->
   <div class="toast-container" id="toast-container"></div>

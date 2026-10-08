@@ -12,6 +12,7 @@ from app.routers import auth, listings, incidents, awareness, health_assistant, 
 Base.metadata.create_all(bind=engine)
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
+ASSETS_DIR = STATIC_DIR / "assets"
 INDEX_FILE = STATIC_DIR / "index.html"
 LOGIN_FILE = STATIC_DIR / "login.html"
 
@@ -34,9 +35,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static assets
+# Mount static assets & dedicated /assets route
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+if ASSETS_DIR.exists():
+    app.mount("/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
 
 app.include_router(auth.router)
 app.include_router(listings.router)
