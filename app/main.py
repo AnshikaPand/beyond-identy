@@ -73,18 +73,22 @@ def serve_app():
     return {"message": "Web frontend not found"}
 
 
+# =========================================================================
+# Unified Auth Portal Routes (Common page for Login, Register, Sign In & Sign Up)
+# =========================================================================
 @app.get("/login")
-def serve_login():
-    if LOGIN_FILE.exists():
-        return FileResponse(str(LOGIN_FILE))
-    return {"message": "Login page not found"}
-
-
+@app.get("/signin")
 @app.get("/register")
-def serve_register():
+@app.get("/signup")
+@app.get("/auth")
+@app.get("/auth-portal")
+@app.get("/register/community")
+@app.get("/register/ngo")
+def serve_auth_portal():
+    """Serves the single unified Beyond Identity Auth Portal for both Login and Register."""
     if LOGIN_FILE.exists():
         return FileResponse(str(LOGIN_FILE))
-    return {"message": "Register page not found"}
+    return {"message": "Auth portal not found"}
 
 
 @app.get("/about")
@@ -109,31 +113,11 @@ def serve_chatbot():
 
 
 @app.get("/portal")
-def serve_portal():
-    if INDEX_FILE.exists():
-        return FileResponse(str(INDEX_FILE))
-    return {"message": "Portal frontend not found"}
-
-
 @app.get("/dashboard")
-def serve_dashboard():
-    if INDEX_FILE.exists():
-        return FileResponse(str(INDEX_FILE))
-    return {"message": "Dashboard frontend not found"}
-
-
-@app.get("/register/community")
-@app.get("/register/ngo")
-def serve_register_roles():
-    if LOGIN_FILE.exists():
-        return FileResponse(str(LOGIN_FILE))
-    return {"message": "Register page not found"}
-
-
 @app.get("/dashboard/community")
 @app.get("/dashboard/ngo")
 @app.get("/report/anonymous")
-def serve_portal_redirects():
+def serve_portal_routes():
     if INDEX_FILE.exists():
         return FileResponse(str(INDEX_FILE))
     return {"message": "Portal frontend not found"}

@@ -134,8 +134,9 @@ function switchToTab(targetId) {
   const isGuest = !currentUser || !currentAuthToken;
   if (isGuest && (targetId === "tab-report" || targetId === "tab-cases")) {
     showToast("🔒 Please sign in to access confidential reporting & verification.", "info");
-    const loginModal = document.getElementById("login-modal");
-    if (loginModal) loginModal.classList.add("active");
+    setTimeout(() => {
+      window.location.href = targetId === "tab-cases" ? "/login?role=ngo" : "/login";
+    }, 450);
     return;
   }
 

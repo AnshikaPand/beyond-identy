@@ -740,9 +740,20 @@
       <div class="card">
 
         <!-- =====================================================
-             VIEW 1: AUTHENTICATION FORMS (Pre-Login)
+             VIEW 1: AUTHENTICATION FORMS (Unified Auth Portal)
              ===================================================== -->
         <div id="authFormsContainer">
+          
+          <!-- Unified Auth Mode Switcher (Sign In vs Create Account) -->
+          <div class="auth-mode-switch" style="display: flex; gap: 6px; background: #F1F5F9; border-radius: 12px; padding: 4px; margin-bottom: 22px; border: 1px solid #E2E8F0;">
+            <button type="button" id="tabSignInBtn" class="auth-mode-btn" style="flex: 1; border: 0; background: #FFFFFF; color: var(--ink); font-weight: 700; font-size: 0.92rem; padding: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: all 0.2s;">
+              🔐 Sign In
+            </button>
+            <button type="button" id="tabRegisterBtn" class="auth-mode-btn" style="flex: 1; border: 0; background: transparent; color: #64748B; font-weight: 600; font-size: 0.92rem; padding: 10px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+              ✨ Create Account
+            </button>
+          </div>
+
           <h2 id="title">Welcome back</h2>
           <p class="sub" id="sub">Apne role ke hisaab se login karein.</p>
 
@@ -1081,23 +1092,53 @@
       clearErrors();
     }
 
-    function toggleRegisterMode(e) {
-      if (e) e.preventDefault();
-      isRegisterMode = !isRegisterMode;
+    function setAuthMode(mode) {
+      isRegisterMode = mode === "register";
+
       if (isRegisterMode) {
+        $("tabRegisterBtn").style.background = "#FFFFFF";
+        $("tabRegisterBtn").style.color = "var(--ink)";
+        $("tabRegisterBtn").style.fontWeight = "700";
+        $("tabRegisterBtn").style.boxShadow = "0 2px 6px rgba(0,0,0,0.06)";
+
+        $("tabSignInBtn").style.background = "transparent";
+        $("tabSignInBtn").style.color = "#64748B";
+        $("tabSignInBtn").style.fontWeight = "600";
+        $("tabSignInBtn").style.boxShadow = "none";
+
         $("nameField").style.display = "block";
         $("rememberRow").style.display = "none";
-        $("signupLine").innerHTML = 'Pehle se account hai? <a id="loginToggleLink" href="#login">Sign In karein</a>';
-        $("loginToggleLink").onclick = toggleRegisterMode;
-        applyRole(currentRole);
+        $("signupLine").innerHTML = 'Pehle se account hai? <a id="loginToggleLink" href="/login">Sign In karein</a>';
+        $("loginToggleLink").onclick = e => { e.preventDefault(); setAuthMode("signin"); };
+        document.title = "Create Account | Beyond Identity";
       } else {
+        $("tabSignInBtn").style.background = "#FFFFFF";
+        $("tabSignInBtn").style.color = "var(--ink)";
+        $("tabSignInBtn").style.fontWeight = "700";
+        $("tabSignInBtn").style.boxShadow = "0 2px 6px rgba(0,0,0,0.06)";
+
+        $("tabRegisterBtn").style.background = "transparent";
+        $("tabRegisterBtn").style.color = "#64748B";
+        $("tabRegisterBtn").style.fontWeight = "600";
+        $("tabRegisterBtn").style.boxShadow = "none";
+
         $("rememberRow").style.display = "flex";
-        $("signupLine").innerHTML = `Naye hain? <a id="signupLink" href="#register">${ROLES[currentRole].signupText}</a>`;
-        $("signupLink").onclick = toggleRegisterMode;
-        applyRole(currentRole);
+        $("signupLine").innerHTML = `Naye hain? <a id="signupLink" href="/register">${ROLES[currentRole].signupText}</a>`;
+        $("signupLink").onclick = e => { e.preventDefault(); setAuthMode("register"); };
+        document.title = "Sign In | Beyond Identity";
       }
+
+      applyRole(currentRole);
       clearErrors();
     }
+
+    function toggleRegisterMode(e) {
+      if (e) e.preventDefault();
+      setAuthMode(isRegisterMode ? "signin" : "register");
+    }
+
+    $("tabSignInBtn").addEventListener("click", () => setAuthMode("signin"));
+    $("tabRegisterBtn").addEventListener("click", () => setAuthMode("register"));
 
     // Role button event listeners
     document.querySelectorAll(".roles button").forEach(b =>
@@ -1346,12 +1387,27 @@
       }
     });
 
-    // Check session or URL parameters on load
-    if (!checkExistingSession()) {
-      if (window.location.pathname.includes("register") || window.location.search.includes("tab=register")) {
-        toggleRegisterMode();
-      } else {
-        applyRole("community");
+    // Check initial route and params on load
+    const currentPath = window.location.pathname.toLowerCase();
+    const queryParams = new URLSearchParams(window.location.search);
+
+    // 1. Role detection from route/params
+    if (currentPath.includes("ngo") || queryParams.get("role") === "ngo" || queryParams.get("role") === "verifier") {
+      applyRole("ngo");
+    } else {
+      applyRole("community");
+    }
+
+    // 2. Mode detection (Register vs Sign In)
+    const wantsRegister = currentPath.includes("register") || currentPath.includes("signup") || queryParams.get("tab") === "register" || queryParams.get("mode") === "register";
+
+    if (wantsRegister) {
+      setAuthMode("register");
+    } else {
+      setAuthMode("signin");
+      // Check existing session only for login flow if not explicitly relogging in
+      if (!queryParams.has("relogin")) {
+        checkExistingSession();
       }
     }
   </script>
