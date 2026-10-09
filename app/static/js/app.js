@@ -53,12 +53,22 @@ document.addEventListener("DOMContentLoaded", () => {
   renderUserStatus();
   initGuestDemo();
 
-  // If already authenticated, jump straight to the 24/7 Voice Chat tab
-  if (currentUser && currentAuthToken) {
+  const params = new URLSearchParams(window.location.search);
+  const currentPath = window.location.pathname.toLowerCase();
+  const currentHash = window.location.hash.toLowerCase();
+  const requestedTab = params.get("tab")?.toLowerCase();
+
+  // Jump straight to the 24/7 Voice Chat tab if authenticated or explicitly navigating to chat
+  if (
+    currentPath === "/chat" ||
+    currentPath === "/chatbot" ||
+    requestedTab === "chat" ||
+    currentHash === "#tab-chat" ||
+    (currentUser && currentAuthToken)
+  ) {
     switchToTab("tab-chat");
   }
 
-  const params = new URLSearchParams(window.location.search);
   const isAuth = !!(currentAuthToken && currentUser);
   const isPostLoginRedirect = params.get("talk") === "1" || params.get("login") === "success";
 
@@ -118,9 +128,10 @@ function applyTheme(theme) {
 // Tabs Navigation
 // ==========================================
 function switchToTab(targetId) {
-  // Gate portal tabs: Guests must sign in to access full modules
-  if (!currentUser || !currentAuthToken) {
-    showToast("🔒 Please sign in to access full portal features.", "info");
+  // Gate only sensitive mutate/verifier tabs for guests (report incident & case triage desk)
+  const isGuest = !currentUser || !currentAuthToken;
+  if (isGuest && (targetId === "tab-report" || targetId === "tab-cases")) {
+    showToast("🔒 Please sign in to access confidential reporting & verification.", "info");
     const loginModal = document.getElementById("login-modal");
     if (loginModal) loginModal.classList.add("active");
     return;
@@ -132,7 +143,7 @@ function switchToTab(targetId) {
   const authTabsNav = document.getElementById("authenticated-tabs-nav");
   const floatingWin = document.getElementById("bi-chatbox-window");
 
-  // Portal and navigation tabs are active for authenticated members
+  // Portal and navigation tabs become active
   if (authPortal) authPortal.style.display = "block";
   if (authTabsNav) authTabsNav.style.display = "flex";
 
@@ -140,10 +151,25 @@ function switchToTab(targetId) {
   if (guestHero) guestHero.style.display = "none";
   if (guestLanding) guestLanding.style.display = "none";
 
-  // Strictly toggle tab-chat-active to hide floating widgets when on the chat tab
+  // State classes on body
+  document.body.classList.add("portal-view-active");
   document.body.classList.toggle("tab-chat-active", targetId === "tab-chat");
   if (targetId === "tab-chat" && floatingWin) {
     floatingWin.classList.remove("active");
+  }
+
+  // Update top navbar active links
+  const navChatLink = document.getElementById("nav-open-chat-btn");
+  const navMobileChatLink = document.getElementById("nav-mobile-chat-link");
+  const navHomeLinks = document.querySelectorAll('a[href="#landing-hero-section"]');
+
+  if (targetId === "tab-chat") {
+    if (navChatLink) navChatLink.classList.add("active");
+    if (navMobileChatLink) navMobileChatLink.classList.add("active");
+    navHomeLinks.forEach((l) => l.classList.remove("active"));
+  } else {
+    if (navChatLink) navChatLink.classList.remove("active");
+    if (navMobileChatLink) navMobileChatLink.classList.remove("active");
   }
 
   const tabBtns = document.querySelectorAll(".tab-btn");
@@ -181,6 +207,30 @@ function setupTabs() {
     btn.addEventListener("click", () => {
       const targetId = btn.getAttribute("data-tab");
       switchToTab(targetId);
+    });
+  });
+
+  // Home links return guests back to the landing hero
+  document.querySelectorAll('a[href="#landing-hero-section"], .nav-brand-mark').forEach((homeLink) => {
+    homeLink.addEventListener("click", (e) => {
+      if (!currentUser || !currentAuthToken) {
+        document.body.classList.remove("tab-chat-active", "portal-view-active");
+        const guestHero = document.getElementById("landing-hero-section");
+        const guestLanding = document.getElementById("guest-landing-view");
+        const authPortal = document.getElementById("authenticated-portal-view");
+        const authTabsNav = document.getElementById("authenticated-tabs-nav");
+        if (guestHero) guestHero.style.display = "block";
+        if (guestLanding) guestLanding.style.display = "block";
+        if (authPortal) authPortal.style.display = "none";
+        if (authTabsNav) authTabsNav.style.display = "none";
+      }
+      const navChatLink = document.getElementById("nav-open-chat-btn");
+      const navMobileChatLink = document.getElementById("nav-mobile-chat-link");
+      const navHomeLink = document.querySelector('.nav-links-menu a[href="#landing-hero-section"]');
+      if (navChatLink) navChatLink.classList.remove("active");
+      if (navMobileChatLink) navMobileChatLink.classList.remove("active");
+      if (navHomeLink) navHomeLink.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
 }
@@ -243,7 +293,7 @@ function setupAuthUI() {
       modalRegisterForm.style.display = "block";
       modalLoginForm.style.display = "none";
       if (modalForgotForm) modalForgotForm.style.display = "none";
-      if (modalAuthTitle) modalAuthTitle.innerText = "Join Beyond Identity";
+      if (modalAuthTitle) modalAuthTitle.innerHTML = 'Join <strong class="brand-bold">Beyond Identity</strong>';
       if (modalAuthSubtitle) modalAuthSubtitle.innerText = "Create an account for community or partner access";
     } else if (tab === "forgot") {
       modalTabSignin.classList.remove("active");
@@ -265,7 +315,7 @@ function setupAuthUI() {
       modalLoginForm.style.display = "block";
       modalRegisterForm.style.display = "none";
       if (modalForgotForm) modalForgotForm.style.display = "none";
-      if (modalAuthTitle) modalAuthTitle.innerText = "Welcome to Beyond Identity";
+      if (modalAuthTitle) modalAuthTitle.innerHTML = 'Welcome to <strong class="brand-bold">Beyond Identity</strong>';
       if (modalAuthSubtitle) modalAuthSubtitle.innerText = "Sign in to your account or use 1-click access";
     }
   }
@@ -645,10 +695,10 @@ function renderUserStatus() {
     document.body.classList.remove("user-logged-in");
     document.documentElement.classList.remove("user-logged-in");
 
-    if (guestHero) guestHero.style.display = "block";
-    if (guestLanding) guestLanding.style.display = "block";
-    if (guestHeroCta) guestHeroCta.style.display = "flex";
-    if (guestDemoStrip) guestDemoStrip.style.display = "block";
+    if (guestHero) guestHero.style.display = "flex";
+    if (guestLanding) guestLanding.style.display = "none";
+    if (guestHeroCta) guestHeroCta.style.display = "none";
+    if (guestDemoStrip) guestDemoStrip.style.display = "none";
     if (authPortal) authPortal.style.display = "none";
     if (authTabsNav) authTabsNav.style.display = "none";
 
@@ -663,21 +713,21 @@ function renderUserStatus() {
       floatingWin.classList.remove("active");
     }
 
-    // Nav chat button smoothly scrolls to guest demo section
+    // Nav chat button directly opens the full page chatbot tab
     if (navChatBtn) {
       navChatBtn.onclick = (e) => {
         e.preventDefault();
-        const demoSection =
-          document.getElementById("guest-demo-assistant-section") ||
-          document.getElementById("guest-demo-ai-section");
-        if (demoSection) {
-          demoSection.scrollIntoView({ behavior: "smooth" });
-          const demoInput = document.getElementById("guest-demo-input");
-          if (demoInput) demoInput.focus();
-        } else {
-          const loginModal = document.getElementById("login-modal");
-          if (loginModal) loginModal.classList.add("active");
-        }
+        switchToTab("tab-chat");
+      };
+    }
+
+    const mobileNavChatBtn = document.getElementById("nav-mobile-chat-link");
+    if (mobileNavChatBtn) {
+      mobileNavChatBtn.onclick = (e) => {
+        e.preventDefault();
+        const drawer = document.getElementById("nav-mobile-drawer");
+        if (drawer) drawer.classList.remove("active");
+        switchToTab("tab-chat");
       };
     }
 
@@ -701,6 +751,7 @@ function renderUserStatus() {
 function initGuestDemo() {
   const form = document.getElementById("guest-demo-form");
   const input = document.getElementById("guest-demo-input");
+  if (!form && !input) return;
   const messagesBox = document.getElementById("guest-demo-chat-messages");
   const counterText = document.getElementById("guest-demo-counter-text");
   const lockedNotice = document.getElementById("guest-demo-locked-notice");
@@ -2667,6 +2718,23 @@ function initTabChatbox() {
         bubble.appendChild(bannerCard);
       }
 
+      // Always showcase the affirming light artwork inside the initial chatbot bubble
+      if (!isUser && idx === 0) {
+        const artCard = document.createElement("div");
+        artCard.className = "tab-chat-art-welcome-card";
+        artCard.innerHTML = `
+          <div class="tab-chat-art-thumb-wrap">
+            <img src="/static/assets/chatbot-watermark.jpg" alt="Beyond Identity Sacred Light" class="tab-chat-art-thumb" />
+          </div>
+          <div class="tab-chat-art-details">
+            <span class="tab-chat-art-badge">🌈 Safe, Verified &amp; Welcoming Sanctuary</span>
+            <h4 class="tab-chat-art-title">Welcome to Beyond Identity 24/7 Sanctuary</h4>
+            <p class="tab-chat-art-text">Your safe, affirming portal for statutory Indian transgender rights, Garima Greh housing shelters, verified inclusive jobs, and PM-JAY Ayushman Bharat healthcare.</p>
+          </div>
+        `;
+        bubble.appendChild(artCard);
+      }
+
       const bodyDiv = document.createElement("div");
       bodyDiv.innerHTML = isUser ? escapeHtml(msg.content) : parseMarkdown(msg.content);
       bubble.appendChild(bodyDiv);
@@ -2950,6 +3018,17 @@ function initTabChatbox() {
     });
   }
 
+  // Quick prompt pills above input bar
+  const quickQueryPills = document.getElementById("tab-chat-quick-query-pills");
+  if (quickQueryPills) {
+    quickQueryPills.querySelectorAll(".tab-chat-quick-query-pill").forEach((pill) => {
+      pill.addEventListener("click", () => {
+        const promptText = pill.getAttribute("data-prompt") || pill.innerText.trim();
+        sendTabMessage(promptText);
+      });
+    });
+  }
+
   // Event Listeners
   if (sendBtn && input) {
     sendBtn.addEventListener("click", () => sendTabMessage(input.value));
@@ -2976,31 +3055,60 @@ function initTabChatbox() {
   if (badgeStopBtn) badgeStopBtn.addEventListener("click", stopSpeech);
   if (stopSpeakingBtn) stopSpeakingBtn.addEventListener("click", stopSpeech);
 
-  // Buttons that navigate to the tab chat or demo
+  // Full Page Toggle Button for Chatbot (#tab-chat-fullscreen-btn)
+  const fullscreenBtn = document.getElementById("tab-chat-fullscreen-btn");
+  const fullscreenLabel = document.getElementById("tab-chat-fullscreen-label");
+  const mainChatContainer = document.getElementById("tab-chat-main-container");
+
+  function toggleChatFullscreen(forceState) {
+    if (!mainChatContainer) return;
+    const isNowFull = typeof forceState === "boolean"
+      ? (forceState ? mainChatContainer.classList.add("full-page-mode") || true : (mainChatContainer.classList.remove("full-page-mode"), false))
+      : mainChatContainer.classList.toggle("full-page-mode");
+
+    document.body.classList.toggle("chatbot-fullscreen-active", isNowFull);
+
+    if (fullscreenBtn) {
+      if (isNowFull) {
+        fullscreenBtn.classList.add("active");
+        if (fullscreenLabel) fullscreenLabel.innerText = "Exit Full Page";
+        showToast("🌈 Full-Page Chatbot Active • Press Esc to Exit", "info");
+      } else {
+        fullscreenBtn.classList.remove("active");
+        if (fullscreenLabel) fullscreenLabel.innerText = "Full Page";
+      }
+    }
+
+    setTimeout(() => {
+      if (input) input.focus();
+      if (messagesContainer) messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 120);
+  }
+
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener("click", () => toggleChatFullscreen());
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && mainChatContainer && mainChatContainer.classList.contains("full-page-mode")) {
+      toggleChatFullscreen(false);
+    }
+  });
+
+  // Buttons that navigate directly to the full-page chatbot
   const navBtn = document.getElementById("nav-open-chat-btn");
+  const mobileNavBtn = document.getElementById("nav-mobile-chat-link");
   const heroBtn = document.getElementById("hero-open-chat-btn");
   const landingBtn = document.getElementById("landing-launch-chat-btn");
   const bannerBtn = document.getElementById("banner-open-chat-btn");
 
-  [navBtn, heroBtn, landingBtn, bannerBtn].forEach((btn) => {
+  [navBtn, mobileNavBtn, heroBtn, landingBtn, bannerBtn].forEach((btn) => {
     if (btn) {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
-        if (currentUser && currentAuthToken) {
-          switchToTab("tab-chat");
-        } else {
-          const demoSection =
-            document.getElementById("guest-demo-assistant-section") ||
-            document.getElementById("guest-demo-ai-section");
-          if (demoSection) {
-            demoSection.scrollIntoView({ behavior: "smooth" });
-            const inputEl = document.getElementById("guest-demo-input");
-            if (inputEl) inputEl.focus();
-          } else {
-            const loginModal = document.getElementById("login-modal");
-            if (loginModal) loginModal.classList.add("active");
-          }
-        }
+        const drawer = document.getElementById("nav-mobile-drawer");
+        if (drawer) drawer.classList.remove("active");
+        switchToTab("tab-chat");
       });
     }
   });

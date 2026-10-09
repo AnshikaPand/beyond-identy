@@ -4108,21 +4108,21 @@ body.tab-chat-active #bi-chatbox-window {
 /* ========================================================================== */
 /* Guest Landing vs Authenticated Portal State Management                     */
 /* ========================================================================== */
-body:not(.user-logged-in) #authenticated-portal-view,
-body:not(.user-logged-in) #authenticated-tabs-nav,
-body:not(.user-logged-in) .tabs-nav,
-body:not(.user-logged-in) .tab-panel,
+body:not(.user-logged-in):not(.tab-chat-active):not(.portal-view-active) #authenticated-portal-view,
+body:not(.user-logged-in):not(.tab-chat-active):not(.portal-view-active) #authenticated-tabs-nav,
+body:not(.user-logged-in):not(.tab-chat-active):not(.portal-view-active) .tabs-nav,
+body:not(.user-logged-in):not(.tab-chat-active):not(.portal-view-active) .tab-panel,
 body:not(.user-logged-in) #bi-chat-launcher,
 body:not(.user-logged-in) #bi-chat-teaser,
 body:not(.user-logged-in) #bi-chatbox-window {
   display: none !important;
 }
 
-body:not(.user-logged-in) #landing-hero-section {
+body:not(.user-logged-in):not(.tab-chat-active):not(.portal-view-active) #landing-hero-section {
   display: block !important;
 }
 
-body:not(.user-logged-in) #guest-landing-view {
+body:not(.user-logged-in):not(.tab-chat-active):not(.portal-view-active) #guest-landing-view {
   display: block !important;
 }
 

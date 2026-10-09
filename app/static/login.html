@@ -224,22 +224,25 @@
 <body>
 
   <!-- Emergency Crisis Helpline Top Banner -->
-  <aside class="emergency-helpline-bar" style="background: linear-gradient(90deg, #be123c, #e11d48, #9f1239); color: #ffffff; padding: 7px 16px; font-size: 13px; font-weight: 500; text-align: center; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; box-shadow: 0 2px 8px rgba(190, 18, 60, 0.25); position: sticky; top: 0; z-index: 1000;">
-    <span>🚨 <strong>24/7 Crisis & Support Helpline:</strong></span>
-    <a href="tel:868989330" style="background: #ffffff; color: #be123c; padding: 3px 12px; border-radius: 999px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.2); transition: transform 0.15s ease;">
+  <aside class="emergency-helpline-bar" aria-label="Emergency Crisis Support">
+    <span>🚨 <strong>24/7 Crisis &amp; Support:</strong></span>
+    <a href="tel:868989330" title="Call 24/7 Helpline">
       📞 868989330
     </a>
-    <span style="opacity: 0.9; font-size: 12px;">| Tele-MANAS: 14416 | Free Legal Aid (NALSA): 15100</span>
+    <span style="opacity: 0.9; font-size: 11.5px;">| Tele-MANAS: 14416 | Free Legal Aid (NALSA): 15100</span>
   </aside>
 
+  <!-- Subtle Pride Flag Accent Line -->
+  <div class="pride-accent-strip" aria-hidden="true"></div>
+
   <!-- Top Navigation / Return Link -->
-  <header class="navbar" style="width: 100%;">
+  <header class="navbar" id="login-navbar">
     <div class="container nav-content">
-      <a href="/" class="brand">
-        <div class="brand-icon">🏳️‍⚧️</div>
-        <div class="brand-text">
-          <h1>Beyond Identity</h1>
-          <span>National Rights & Welfare Portal</span>
+      <a href="/" class="nav-brand-mark" aria-label="Beyond Identity Home">
+        <span class="nav-pride-icon">🏳️‍⚧️</span>
+        <div class="nav-brand-text">
+          <span class="nav-brand-name"><strong class="brand-bold">Beyond Identity</strong></span>
+          <span class="nav-brand-tagline">Empowerment &amp; Rights Portal</span>
         </div>
       </a>
       <div class="nav-actions" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
@@ -254,12 +257,23 @@
           <button type="button" class="theme-switch-btn" data-theme-val="dark" title="Night Theme (Dark)" aria-label="Night Theme">🌙 Night</button>
           <button type="button" class="theme-switch-btn active" data-theme-val="system" title="System Auto Theme" aria-label="System Theme">💻 Auto</button>
         </div>
-        <a href="/" class="btn btn-secondary">← Return to Portal</a>
+        <a href="/about" class="btn btn-secondary" style="font-size: 12.5px; padding: 7px 12px;">About</a>
+        <a href="/" class="btn btn-secondary" style="font-size: 12.5px; padding: 7px 12px;">← Return to Portal</a>
       </div>
     </div>
   </header>
 
   <div class="auth-page">
+    <!-- Centered Responsive Mobile-First Hero Image -->
+    <div class="login-hero-container" style="text-align: center; margin-bottom: 24px; width: 100%; max-width: 440px; margin-left: auto; margin-right: auto;">
+      <img 
+        src="/assets/login-hero.jpg" 
+        alt="Beyond Identity" 
+        class="login-page-hero-img" 
+        style="max-width: 100%; width: 100%; height: auto; border-radius: var(--radius-lg); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4); border: 1px solid var(--border-subtle); display: block; margin: 0 auto;" 
+      />
+    </div>
+
     <div class="auth-card">
 
       <!-- Active User Banner (shown if already logged in) -->
@@ -275,7 +289,7 @@
 
       <!-- Header Icon & Title -->
       <div style="text-align: center; margin-bottom: 22px;">
-        <h2 style="font-size: 24px; margin-bottom: 6px;" id="auth-heading">Welcome to Beyond Identity</h2>
+        <h2 style="font-size: 24px; margin-bottom: 6px;" id="auth-heading">Welcome to <strong class="brand-bold">Beyond Identity</strong></h2>
         <p style="font-size: 13.5px; color: var(--text-muted);">Secure authentication for community members, verified NGOs, and advocates.</p>
       </div>
 
@@ -318,26 +332,6 @@
         <button type="submit" class="btn btn-primary" id="signin-submit-btn" style="width: 100%; padding: 14px; font-size: 15px;">
           Sign In to Portal
         </button>
-
-        <!-- Quick 1-Click Demo Accounts -->
-        <div class="demo-pills">
-          <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-cyan); font-weight: 700;">1-Click Instant Demo Access:</span>
-          
-          <button type="button" class="demo-pill-btn" data-email="ngo@shreetrust.org" data-password="verifier123">
-            <span>🛡️ <strong>NGO Verifier</strong> (Shree Trust)</span>
-            <span style="color: var(--accent-emerald); font-size: 11px;">Case Triage Desk →</span>
-          </button>
-
-          <button type="button" class="demo-pill-btn" data-email="admin@beyondidentity.org" data-password="admin123">
-            <span>⚡ <strong>System Admin</strong></span>
-            <span style="color: var(--accent-violet); font-size: 11px;">Full Access →</span>
-          </button>
-
-          <button type="button" class="demo-pill-btn" data-email="user@example.com" data-password="user123">
-            <span>👤 <strong>Demo User</strong></span>
-            <span style="color: var(--accent-cyan); font-size: 11px;">Community Access →</span>
-          </button>
-        </div>
       </form>
 
       <!-- ============================================== -->
@@ -535,7 +529,7 @@
         signupForm.style.display = "block";
         signinForm.style.display = "none";
         if (forgotForm) forgotForm.style.display = "none";
-        authHeading.innerText = "Join Beyond Identity";
+        authHeading.innerHTML = "Join <strong class=\"brand-bold\">Beyond Identity</strong>";
       } else if (tab === "forgot") {
         if (authTabs) authTabs.style.display = "none";
         signinForm.style.display = "none";

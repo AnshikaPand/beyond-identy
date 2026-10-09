@@ -15,6 +15,7 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 ASSETS_DIR = STATIC_DIR / "assets"
 INDEX_FILE = STATIC_DIR / "index.html"
 LOGIN_FILE = STATIC_DIR / "login.html"
+ABOUT_FILE = STATIC_DIR / "about.html"
 
 app = FastAPI(
     title="Beyond Identity API",
@@ -84,6 +85,13 @@ def serve_register():
     if LOGIN_FILE.exists():
         return FileResponse(str(LOGIN_FILE))
     return {"message": "Register page not found"}
+
+
+@app.get("/about")
+def serve_about():
+    if ABOUT_FILE.exists():
+        return FileResponse(str(ABOUT_FILE))
+    return {"message": "About page not found"}
 
 
 @app.get("/chat")

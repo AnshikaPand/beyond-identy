@@ -63,64 +63,63 @@
   <!-- Subtle Pride Flag Accent Line -->
   <div class="pride-accent-strip" aria-hidden="true"></div>
 
-  <!-- Center-Top Main Brand Masthead -->
-  <div class="brand-masthead">
-    <div class="container">
-      <h1 class="main-brand-title">Beyond Identity</h1>
-      <p class="main-brand-tagline">Empowerment &amp; Rights Portal</p>
-    </div>
-  </div>
-
   <!-- Single-Row Navigation Bar (Never Wrapping) -->
   <header class="navbar" id="main-site-navbar">
     <div class="container nav-content">
-      <!-- Left: Logo Mark -->
+      <!-- Left: Logo Mark & Brand Identity -->
       <a href="#landing-hero-section" class="nav-brand-mark" aria-label="Beyond Identity Home">
         <span class="nav-pride-icon">🏳️‍⚧️</span>
-        <span class="nav-brand-abbr">Beyond Identity</span>
+        <div class="nav-brand-text">
+          <span class="nav-brand-name"><strong class="brand-bold">Beyond Identity</strong></span>
+          <span class="nav-brand-tagline">Empowerment &amp; Rights Portal</span>
+        </div>
       </a>
 
       <!-- Center: Main Navigation Links + More Dropdown -->
       <nav class="nav-links-menu" id="nav-links-menu" aria-label="Main Navigation">
         <a href="#landing-hero-section" class="nav-link active">Home</a>
-        <a href="#guest-demo-opp-section" class="nav-link" id="nav-link-opportunities">Opportunities</a>
-        <a href="#guest-demo-assistant-section" class="nav-link" id="nav-link-legal">Legal Rights</a>
-        <a href="#guest-pillars-section" class="nav-link">Health &amp; Support</a>
+        <a href="#tab-chat" class="nav-link nav-chat-link" id="nav-open-chat-btn">
+          <span class="nav-chat-icon">🤖</span> <strong>Chatbot</strong>
+        </a>
 
-        <!-- More Dropdown -->
+        <!-- More Dropdown (Video, Rights, Awareness, Opportunity) -->
         <div class="nav-dropdown" id="nav-more-dropdown">
           <button type="button" class="nav-link nav-dropdown-btn" id="nav-more-toggle" aria-expanded="false" aria-haspopup="true">
             <span>More</span>
             <svg class="dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div class="nav-dropdown-menu" id="nav-more-menu" role="menu">
-            <a href="#home-video-overview" class="dropdown-item" role="menuitem">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              <span>Mission Video</span>
+            <a href="#home-video-overview" class="dropdown-item" role="menuitem" id="nav-link-video">
+              <span class="dropdown-item-icon">🎬</span>
+              <span>Video</span>
             </a>
-            <a href="#guest-pipeline-section" class="dropdown-item" role="menuitem">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h18"/></svg>
-              <span>Redressal Process</span>
+            <a href="#guest-demo-assistant-section" class="dropdown-item" role="menuitem" id="nav-link-legal">
+              <span class="dropdown-item-icon">⚖️</span>
+              <span>Rights</span>
             </a>
-            <a href="#guest-trust-section" class="dropdown-item" role="menuitem">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <span>Trust &amp; Privacy</span>
+            <a href="#guest-pillars-section" class="dropdown-item" role="menuitem" id="nav-link-awareness">
+              <span class="dropdown-item-icon">📚</span>
+              <span>Awareness</span>
             </a>
-            <a href="#main-site-footer" class="dropdown-item" role="menuitem">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              <span>Helplines &amp; NGOs</span>
+            <a href="#guest-demo-opp-section" class="dropdown-item" role="menuitem" id="nav-link-opportunities">
+              <span class="dropdown-item-icon">💼</span>
+              <span>Opportunity</span>
+            </a>
+            <a href="/about" class="dropdown-item" role="menuitem" id="nav-link-about">
+              <span class="dropdown-item-icon">ℹ️</span>
+              <span>About</span>
             </a>
           </div>
         </div>
       </nav>
 
-      <!-- Right: Theme Switcher + Auth Avatar/Button + Mobile Toggle -->
+      <!-- Right: Upper Controls: Day / Night / Auto + Sign In -->
       <div class="nav-actions-group">
-        <!-- Theme Switcher Segmented Control -->
-        <div class="theme-switch-group" id="theme-switch-container" title="Select Theme: Day, Night, or System">
-          <button type="button" class="theme-switch-btn" data-theme-val="light" title="Day Theme (Light)" aria-label="Day Theme">☀️</button>
-          <button type="button" class="theme-switch-btn" data-theme-val="dark" title="Night Theme (Dark)" aria-label="Night Theme">🌙</button>
-          <button type="button" class="theme-switch-btn active" data-theme-val="system" title="System Auto Theme" aria-label="System Theme">💻</button>
+        <!-- Theme Switcher Segmented Control (Day, Night, Auto) -->
+        <div class="theme-switch-group" id="theme-switch-container" title="Select Theme: Day, Night, or Auto">
+          <button type="button" class="theme-switch-btn" data-theme-val="light" title="Day Theme" aria-label="Day Theme">☀️ Day</button>
+          <button type="button" class="theme-switch-btn" data-theme-val="dark" title="Night Theme" aria-label="Night Theme">🌙 Night</button>
+          <button type="button" class="theme-switch-btn active" data-theme-val="system" title="Auto Theme" aria-label="Auto Theme">💻 Auto</button>
         </div>
 
         <!-- User Auth Action Profile / Sign In -->
@@ -141,87 +140,34 @@
     <div class="nav-mobile-drawer" id="nav-mobile-drawer">
       <div class="nav-mobile-drawer-inner">
         <a href="#landing-hero-section" class="nav-mobile-link active">Home</a>
-        <a href="#guest-demo-opp-section" class="nav-mobile-link">Opportunities Directory</a>
-        <a href="#guest-demo-assistant-section" class="nav-mobile-link">Legal Rights Engine</a>
-        <a href="#guest-pillars-section" class="nav-mobile-link">Health &amp; Support</a>
-        <a href="#home-video-overview" class="nav-mobile-link">Mission Video</a>
-        <a href="#guest-pipeline-section" class="nav-mobile-link">Redressal Process</a>
-        <a href="#guest-trust-section" class="nav-mobile-link">Trust &amp; Privacy</a>
-        <a href="#main-site-footer" class="nav-mobile-link">Crisis Helplines</a>
+        <a href="#tab-chat" class="nav-mobile-link nav-chat-mobile-link" id="nav-mobile-chat-link">🤖 Chatbot (Full Page)</a>
+        <a href="#home-video-overview" class="nav-mobile-link">🎬 Video</a>
+        <a href="#guest-demo-assistant-section" class="nav-mobile-link">⚖️ Rights</a>
+        <a href="#guest-pillars-section" class="nav-mobile-link">📚 Awareness</a>
+        <a href="#guest-demo-opp-section" class="nav-mobile-link">💼 Opportunity</a>
+        <a href="/about" class="nav-mobile-link" id="nav-mobile-about-link">ℹ️ About</a>
       </div>
     </div>
   </header>
 
-  <!-- Hero Section (Visible for guests / logged-out state) -->
-  <section class="hero-section" id="landing-hero-section">
-    <div class="container hero-container">
-      <div class="hero-content">
-        <div class="hero-badge">
-          <span class="hero-badge-dot"></span>
-          <span>India Rights, Dignity &amp; Welfare Platform</span>
+  <!-- ============================================== -->
+  <!-- PRE-LOGIN HERO VIEW (Center, Responsive)       -->
+  <!-- ============================================== -->
+  <section class="prelogin-hero-section" id="landing-hero-section">
+    <div class="prelogin-container">
+      <div class="prelogin-hero-card">
+        <div class="prelogin-image-frame">
+          <img 
+            src="/assets/login-hero.jpg" 
+            alt="Beyond Identity Portal" 
+            class="prelogin-hero-image" 
+            id="prelogin-hero-img"
+          />
         </div>
-        <h2 class="hero-title">
-          Identity, Dignity &amp; Protection for Every Individual.
-        </h2>
-        <p class="hero-description">
-          A confidential, trusted platform connecting transgender and gender-diverse communities across India to verified inclusive opportunities, Indian statutory welfare schemes, and safe discrimination redressal.
-        </p>
-
-        <!-- Clear Call-to-Action Buttons -->
-        <div class="hero-actions-row" id="guest-hero-cta">
-          <button class="btn btn-primary hero-btn guest-open-signup-btn" id="guest-hero-register-btn">
-            Get Support &amp; Join Free
+        <div class="prelogin-action-wrapper">
+          <button type="button" class="btn btn-primary prelogin-signin-btn guest-open-login-btn" id="guest-hero-signin-btn">
+            <span>🔐</span> Login / Sign In
           </button>
-          <a href="#home-video-overview" class="btn btn-secondary hero-btn">
-            Watch Overview 🎬
-          </a>
-          <button class="btn btn-ghost guest-open-login-btn" id="guest-hero-login-btn" style="display: none;">
-            Sign In
-          </button>
-        </div>
-
-        <!-- Clean, Understated Quick Test Evaluation Bar -->
-        <div class="hero-demo-strip" id="guest-demo-strip">
-          <span class="demo-strip-hint">Quick Test Login:</span>
-          <div class="demo-strip-buttons">
-            <button type="button" class="demo-pill-btn demo-login-btn" data-email="user@example.com" data-password="user123" title="Log in as Community Seeker">
-              👤 Seeker Demo
-            </button>
-            <button type="button" class="demo-pill-btn demo-login-btn" data-email="ngo@shreetrust.org" data-password="verifier123" title="Log in as NGO Case Verifier">
-              🛡️ NGO Verifier
-            </button>
-            <button type="button" class="demo-pill-btn demo-login-btn" data-email="admin@beyondidentity.org" data-password="admin123" title="Log in as Admin">
-              ⚡ Admin
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Hero Visual Stats Card (Organized, Modern, Balanced) -->
-      <div class="hero-metrics-card">
-        <div class="metrics-grid">
-          <div class="metric-item">
-            <div class="metric-num" id="stat-listings-count">10+</div>
-            <div class="metric-label">Verified Listings</div>
-            <div class="metric-sub">Jobs, Housing &amp; Clinics</div>
-          </div>
-          <div class="metric-item">
-            <div class="metric-num">6+</div>
-            <div class="metric-label">Partner NGO Desks</div>
-            <div class="metric-sub">Regional Case Verification</div>
-          </div>
-          <div class="metric-item">
-            <div class="metric-num">₹5,00,000</div>
-            <div class="metric-label">PM-JAY Health Coverage</div>
-            <div class="metric-sub">Ayushman Bharat Coverage</div>
-          </div>
-          <div class="metric-item highlight">
-            <div class="metric-num">
-              <a href="tel:868989330">868989330</a>
-            </div>
-            <div class="metric-label">24/7 Helpline</div>
-            <div class="metric-sub">Tele-MANAS: 14416</div>
-          </div>
         </div>
       </div>
     </div>
@@ -230,589 +176,8 @@
   <!-- Main Content Container -->
   <main class="container" style="padding-bottom: 80px;">
 
-    <!-- ============================================== -->
-    <!-- 1. GUEST LANDING VIEW (Pre-Login State)        -->
-    <!-- ============================================== -->
-    <div id="guest-landing-view" class="guest-landing">
-      
-      <!-- Quick Navigation Anchor Bar for Guests -->
-      <div class="guest-subnav-bar">
-        <div class="guest-subnav-links">
-          <a href="#heritage-ardhanarishvara-section" class="guest-subnav-link"><span>🏛️</span> Heritage</a>
-          <a href="#home-video-overview" class="guest-subnav-link"><span>🎬</span> Video Overview</a>
-          <a href="#guest-demo-opp-section" class="guest-subnav-link"><span>📂</span> Opportunities</a>
-          <a href="#guest-demo-assistant-section" class="guest-subnav-link"><span>⚖️</span> Rights Assistant</a>
-          <a href="#guest-pipeline-section" class="guest-subnav-link"><span>🛡️</span> Redressal</a>
-        </div>
-        <div class="guest-subnav-badge">
-          <span>🔒 Limited Guest Demo Mode</span>
-        </div>
-      </div>
-
-      <!-- ============================================== -->
-      <!-- ARDHANARISHVARA CIVILIZATIONAL HERITAGE        -->
-      <!-- ============================================== -->
-      <section class="heritage-showcase-section" id="heritage-ardhanarishvara-section" aria-label="Ardhanarishvara Heritage Showcase">
-        <div class="heritage-showcase-card">
-          <div class="ardhanarishvara-badge-wrap">
-            <svg class="ardhanarishvara-svg" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ardhanarishvara Sacred Emblem — Synthesis of Shiva and Shakti">
-              <circle cx="120" cy="120" r="108" fill="url(#auraGrad)" stroke="url(#prideGrad)" stroke-width="3"/>
-              <circle cx="120" cy="120" r="96" stroke="rgba(255, 255, 255, 0.15)" stroke-dasharray="4 6" stroke-width="1.5"/>
-              
-              <!-- Shiva Half Face/Silhouette (Left) -->
-              <path d="M120 40 C85 40 68 75 68 115 C68 155 88 185 120 196 Z" fill="url(#shivaGrad)" opacity="0.95"/>
-              <!-- Parvati Half Face/Silhouette (Right) -->
-              <path d="M120 40 C155 40 172 75 172 115 C172 155 152 185 120 196 Z" fill="url(#shaktiGrad)" opacity="0.95"/>
-              
-              <!-- Center Union Line of Non-Duality -->
-              <line x1="120" y1="36" x2="120" y2="200" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
-              
-              <!-- Shiva Iconography (Left Side) -->
-              <path d="M92 64 C92 56 98 50 106 48 C102 52 102 62 107 67 C100 67 92 63 92 64 Z" fill="#E2E8F0"/>
-              <path d="M84 96 L84 136 M78 104 C78 114 84 118 84 118 C84 118 90 114 90 104" stroke="#93C5FD" stroke-width="2" stroke-linecap="round"/>
-              <line x1="90" y1="84" x2="114" y2="84" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
-              <line x1="92" y1="88" x2="114" y2="88" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
-              
-              <!-- Parvati Iconography (Right Side) -->
-              <circle cx="128" cy="85" r="3.5" fill="#F43F5E"/>
-              <circle cx="152" cy="122" r="7" stroke="#FDE047" stroke-width="2.5" fill="none"/>
-              <path d="M148 100 C154 94 158 98 158 104 C158 110 150 114 148 114 C146 114 138 110 138 104 C138 98 142 94 148 100 Z" fill="#F472B6"/>
-
-              <!-- Pedestal -->
-              <path d="M72 198 C95 186 145 186 168 198 C155 210 85 210 72 198 Z" fill="url(#pedestalGrad)"/>
-
-              <defs>
-                <linearGradient id="auraGrad" x1="120" y1="12" x2="120" y2="228" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#1E1B4B" stop-opacity="0.85"/>
-                  <stop stop-color="#0F172A" stop-opacity="0.95"/>
-                </linearGradient>
-                <linearGradient id="prideGrad" x1="12" y1="120" x2="228" y2="120" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stop-color="#5BCEFA"/>
-                  <stop offset="30%" stop-color="#F5A9B8"/>
-                  <stop offset="50%" stop-color="#FFFFFF"/>
-                  <stop offset="70%" stop-color="#F5A9B8"/>
-                  <stop offset="100%" stop-color="#5BCEFA"/>
-                </linearGradient>
-                <linearGradient id="shivaGrad" x1="68" y1="118" x2="120" y2="118" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#1E3A8A"/>
-                  <stop stop-color="#3B82F6"/>
-                </linearGradient>
-                <linearGradient id="shaktiGrad" x1="120" y1="118" x2="172" y2="118" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#E11D48"/>
-                  <stop stop-color="#FB7185"/>
-                </linearGradient>
-                <linearGradient id="pedestalGrad" x1="72" y1="198" x2="168" y2="198" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#6366F1"/>
-                  <stop stop-color="#EC4899"/>
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <div>
-            <span class="heritage-badge">🏛️ Ancient Indian Civilizational Heritage</span>
-            <h3 class="heritage-title">Ardhanarishvara — Heritage of Non-Duality &amp; Sacred Wholeness</h3>
-            <p class="heritage-desc">
-              In Indian tradition, <strong>Ardhanarishvara (अर्धनारीश्वर)</strong> represents the composite synthesis of Shiva and Shakti — revealing that gender diversity, transgender inclusion, and non-duality are profound expressions of spiritual completeness rooted in India's millennia-old civilizational ethos. Beyond Identity draws inspiration from this heritage to secure fundamental constitutional rights, dignity, and affirmative welfare for every citizen.
-            </p>
-            <div class="heritage-pillars-strip">
-              <span class="heritage-pill"><span class="heritage-pill-dot"></span> Inherent Dignity</span>
-              <span class="heritage-pill"><span class="heritage-pill-dot"></span> Constitutional Equality (Art. 14 &amp; 21)</span>
-              <span class="heritage-pill"><span class="heritage-pill-dot"></span> Supreme Court NALSA (2014)</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================== -->
-      <!-- VIDEO OVERVIEW SECTION (16:9, LAZY LOADED)     -->
-      <!-- ============================================== -->
-      <section class="home-video-section" id="home-video-overview" aria-label="Platform Mission Video Overview">
-        <div class="video-section-header">
-          <span class="video-section-badge">🎬 Platform Mission & Overview</span>
-          <h3 class="video-section-title">Confidential Rights, Welfare & Redressal in Action</h3>
-          <p class="video-section-caption">
-            Watch how Beyond Identity empowers transgender and gender-diverse citizens across India with confidential discrimination reporting, statutory scheme matching, and legal triage.
-          </p>
-        </div>
-
-        <div class="video-player-card">
-          <div class="video-responsive-wrap">
-            <video
-              id="platform-intro-video"
-              class="home-intro-video"
-              controls
-              muted
-              playsinline
-              preload="none"
-              loading="lazy"
-              poster="/assets/intro-poster.jpg"
-              title="Beyond Identity: Platform Overview & Legal Redressal Video">
-              <source src="/assets/intro.mp4" type="video/mp4" />
-              Your browser does not support HTML5 video streaming. Please explore our interactive modules below.
-            </video>
-          </div>
-
-          <div class="video-meta-bar">
-            <div class="video-feature-pill">
-              <span class="pill-dot"></span>
-              <span>🔒 100% Encrypted & Anonymous Reporting</span>
-            </div>
-            <div class="video-feature-pill">
-              <span class="pill-dot"></span>
-              <span>🏛️ Auto-Matched MoSJE & NHA Welfare Schemes</span>
-            </div>
-            <div class="video-feature-pill">
-              <span class="pill-dot"></span>
-              <span>⚖️ NALSA Section 12 Free Legal Aid Integration</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ======================================================= -->
-      <!-- LIMITED DEMO FEATURE 1: INTERACTIVE ASSISTANT SANDBOX -->
-      <!-- ======================================================= -->
-      <section id="guest-demo-assistant-section" class="guest-demo-section guest-demo-assistant-card">
-        <div class="guest-demo-header">
-          <div class="guest-demo-header-info">
-            <span class="guest-demo-badge badge-cyan">🤖 Interactive Assistant — Limited Demo Sandbox</span>
-            <h3 class="guest-demo-title">Test 24/7 Transgender Rights & Healthcare</h3>
-            <p class="guest-demo-desc">
-              Experience our rights engine with <strong>2 trial questions</strong>. Full continuous two-way voice chat, microphone speech input, and caseworker triage are unlocked after login.
-            </p>
-          </div>
-          <div class="guest-demo-limit-pill" id="guest-demo-limit-pill">
-            <span class="pulse-dot-cyan"></span>
-            <span id="guest-demo-counter-text">2 Trial Queries Left</span>
-          </div>
-        </div>
-
-        <!-- Sample Starter Question Chips -->
-        <div class="guest-demo-chips-row">
-          <span style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; align-self: center;">Try Asking:</span>
-          <button type="button" class="guest-demo-chip-btn" data-query="What are my fundamental legal rights under Supreme Court NALSA 2014 judgment?">
-            ⚖️ Rights under NALSA 2014
-          </button>
-          <button type="button" class="guest-demo-chip-btn" data-query="How can I get safe accommodation at a Garima Greh shelter home?">
-            🏠 Garima Greh Shelter Access
-          </button>
-          <button type="button" class="guest-demo-chip-btn" data-query="Is HRT and gender-affirming healthcare covered under PM-JAY Ayushman Bharat?">
-            🩺 Ayushman Bharat ₹5L HRT Coverage
-          </button>
-          <button type="button" class="guest-demo-chip-btn" data-query="How do I file a confidential report if discriminated against at my workplace?">
-            🚨 Report Workplace Discrimination
-          </button>
-        </div>
-
-        <!-- Demo Chat Messages Box -->
-        <div class="guest-demo-chat-box" id="guest-demo-chat-messages">
-          <div class="guest-demo-msg assistant">
-            <div class="guest-demo-avatar">🤖</div>
-            <div class="guest-demo-bubble">
-              <strong>Beyond Identity (Guest Preview):</strong>
-              <p style="margin: 4px 0 0 0;">
-                Namaste! I am your 24/7 Assistant in <strong>Limited Demo Mode</strong>. Ask me anything about Indian statutory transgender rights, healthcare schemes (PM-JAY, HRT), or discrimination redressal.
-              </p>
-              <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
-                💡 <em>Note: Voice speech playback, audio output, and direct caseworker assignment are reserved for authenticated members.</em>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Demo Locked Notice (Hidden until limit reached) -->
-        <div id="guest-demo-locked-notice" class="guest-demo-locked-notice" style="display: none;">
-          <div class="guest-demo-locked-content">
-            <div class="guest-demo-locked-icon">🔒</div>
-            <div>
-              <div style="font-weight: 700; font-size: 14px; color: var(--text-main); margin-bottom: 3px;">
-                Demo Limit Reached — Unlock Full 24/7 Voice Assistant
-              </div>
-              <div style="font-size: 12.5px; color: var(--text-muted); line-height: 1.45;">
-                Sign in to enjoy <strong>unlimited queries</strong>, two-way vocal speech synthesis, microphone input, live directory matching, and confidential incident triage!
-              </div>
-            </div>
-          </div>
-          <div class="guest-demo-locked-actions">
-            <button type="button" class="btn btn-primary demo-login-btn" data-email="user@example.com" data-password="user123" style="padding: 7px 14px; font-size: 12.5px;">
-              👤 1-Click Seeker Login
-            </button>
-            <button type="button" class="btn btn-secondary guest-open-login-btn" style="padding: 7px 14px; font-size: 12.5px;">
-              🔐 Sign In / Register
-            </button>
-          </div>
-        </div>
-
-        <!-- Demo Chat Input Form -->
-        <form id="guest-demo-form" class="guest-demo-input-bar">
-          <input type="text" id="guest-demo-input" class="guest-demo-text-field" placeholder="Ask a question about transgender rights, health, or welfare schemes..." autocomplete="off" />
-          <button type="button" class="guest-demo-mic-locked-btn" id="guest-demo-mic-btn" title="Talking Mic Locked in Demo Mode — Click to Unlock">
-            <span>🎙️</span>
-            <span class="mic-lock-badge">🔒</span>
-          </button>
-          <button type="submit" id="guest-demo-send-btn" class="btn btn-primary guest-demo-send-btn">
-            <span>Send</span> ➔
-          </button>
-        </form>
-      </section>
-
-      <!-- ======================================================= -->
-      <!-- LIMITED DEMO FEATURE 2: OPPORTUNITIES DIRECTORY PREVIEW -->
-      <!-- ======================================================= -->
-      <section id="guest-demo-opp-section" class="guest-demo-section" style="margin-top: 36px;">
-        <div class="guest-demo-header">
-          <div class="guest-demo-header-info">
-            <span class="guest-demo-badge badge-purple">📂 Verified Opportunities Directory — Limited Demo Preview</span>
-            <h3 class="guest-demo-title">Curated Inclusive Opportunities Preview</h3>
-            <p class="guest-demo-desc">
-              Physical partner NGOs independently audit every shelter, inclusive employer, and affirmative clinic. Direct phone numbers, emails, and application links are <strong>locked for guests</strong>.
-            </p>
-          </div>
-          <div style="display: flex; gap: 8px;">
-            <button type="button" class="btn btn-secondary guest-open-login-btn" style="padding: 7px 14px; font-size: 12px;">
-              <span>🔒</span> Unlock All 99+ Listings
-            </button>
-          </div>
-        </div>
-
-        <!-- Category Teaser Pills -->
-        <div class="guest-opp-filter-strip">
-          <button type="button" class="guest-opp-filter-btn active" data-cat="all">All Previews (3)</button>
-          <button type="button" class="guest-opp-filter-btn" data-cat="housing">🏠 Safe Housing (1)</button>
-          <button type="button" class="guest-opp-filter-btn" data-cat="jobs">💼 Inclusive Jobs (1)</button>
-          <button type="button" class="guest-opp-filter-btn" data-cat="healthcare">🩺 Healthcare & HRT (1)</button>
-        </div>
-
-        <!-- 3 Curated Demo Cards Grid -->
-        <div class="guest-demo-opp-grid">
-
-          <!-- Card 1: Safe Housing -->
-          <div class="guest-demo-opp-card" data-cat="housing">
-            <div class="guest-demo-opp-top">
-              <span class="pillar-preview-badge badge-purple">🏠 Housing & Shelter</span>
-              <span class="pillar-preview-badge badge-success">✓ NGO Verified</span>
-            </div>
-            <h4 class="guest-demo-opp-title">Garima Greh Transgender Safe Shelter Network</h4>
-            <div class="guest-demo-opp-org">🏛️ Ministry of Social Justice & Empowerment / Shree Trust</div>
-            <div class="guest-demo-opp-loc">📍 New Delhi, Delhi NCR</div>
-            <p class="guest-demo-opp-summary">
-              24/7 emergency and long-term accommodation, nutritional food, medical care, and skill training for transgender persons facing familial eviction or violence.
-            </p>
-            <div class="guest-demo-opp-masked-contact">
-              <div class="masked-row">
-                <span class="masked-icon">📞</span>
-                <span class="masked-text">+91 98765 •••••</span>
-                <span class="masked-pill">🔒 Locked</span>
-              </div>
-              <div class="masked-row">
-                <span class="masked-icon">✉️</span>
-                <span class="masked-text">garimagreh@••••••••••.gov.in</span>
-                <span class="masked-pill">🔒 Locked</span>
-              </div>
-            </div>
-            <button type="button" class="guest-opp-lock-btn guest-open-login-btn">
-              <span>🔒</span> Sign In to View Direct Contacts & Apply
-            </button>
-          </div>
-
-          <!-- Card 2: Inclusive Jobs -->
-          <div class="guest-demo-opp-card" data-cat="jobs">
-            <div class="guest-demo-opp-top">
-              <span class="pillar-preview-badge badge-info">💼 Inclusive Employment</span>
-              <span class="pillar-preview-badge badge-success">✓ NGO Verified</span>
-            </div>
-            <h4 class="guest-demo-opp-title">Nazariya Affirmative Workplace Careers</h4>
-            <div class="guest-demo-opp-org">🏢 Nazariya Corporate Diversity Cell</div>
-            <div class="guest-demo-opp-loc">📍 Bengaluru, Karnataka (Hybrid)</div>
-            <p class="guest-demo-opp-summary">
-              Affirmative full-time and apprenticeship roles in software operations, customer support, and administrative management with gender-neutral facilities & affirmative health cover.
-            </p>
-            <div class="guest-demo-opp-masked-contact">
-              <div class="masked-row">
-                <span class="masked-icon">📞</span>
-                <span class="masked-text">+91 80 4123 •••••</span>
-                <span class="masked-pill">🔒 Locked</span>
-              </div>
-              <div class="masked-row">
-                <span class="masked-icon">✉️</span>
-                <span class="masked-text">careers@••••••••••.org</span>
-                <span class="masked-pill">🔒 Locked</span>
-              </div>
-            </div>
-            <button type="button" class="guest-opp-lock-btn guest-open-login-btn">
-              <span>🔒</span> Sign In to View Direct Contacts & Apply
-            </button>
-          </div>
-
-          <!-- Card 3: Healthcare -->
-          <div class="guest-demo-opp-card" data-cat="healthcare">
-            <div class="guest-demo-opp-top">
-              <span class="pillar-preview-badge badge-danger">🩺 Healthcare & HRT</span>
-              <span class="pillar-preview-badge badge-success">✓ NGO Verified</span>
-            </div>
-            <h4 class="guest-demo-opp-title">Mitra Gender-Affirming Healthcare Clinic</h4>
-            <div class="guest-demo-opp-org">🏥 Mitra Clinical Health Network</div>
-            <div class="guest-demo-opp-loc">📍 Hyderabad, Telangana</div>
-            <p class="guest-demo-opp-summary">
-              Clinical endocrinology consultation, safe Hormone Replacement Therapy (HRT) protocols, mental health triage, and PM-JAY ₹5,00,000 Ayushman package claim desk.
-            </p>
-            <div class="guest-demo-opp-masked-contact">
-              <div class="masked-row">
-                <span class="masked-icon">📞</span>
-                <span class="masked-text">+91 40 2345 •••••</span>
-                <span class="masked-pill">🔒 Locked</span>
-              </div>
-              <div class="masked-row">
-                <span class="masked-icon">✉️</span>
-                <span class="masked-text">clinical@••••••••••.in</span>
-                <span class="masked-pill">🔒 Locked</span>
-              </div>
-            </div>
-            <button type="button" class="guest-opp-lock-btn guest-open-login-btn">
-              <span>🔒</span> Sign In to Book Clinical Consultation
-            </button>
-          </div>
-
-        </div>
-
-        <!-- Unlock All 99+ Listings Teaser Strip -->
-        <div class="guest-demo-unlock-strip">
-          <div class="guest-demo-unlock-left">
-            <span class="unlock-star-icon">✨</span>
-            <div>
-              <strong>95+ More Verified Opportunities Across 18 Indian States</strong>
-              <div style="font-size: 12.5px; opacity: 0.9; margin-top: 2px;">
-                Sign in or use 1-Click Evaluation to search by state, filter by category, view unmasked telephone & email contacts, and apply directly.
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button type="button" class="btn btn-secondary demo-login-btn" data-email="user@example.com" data-password="user123" style="padding: 7px 14px; font-size: 12px; background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.3);">
-              👤 1-Click Seeker Demo
-            </button>
-            <button type="button" class="btn btn-primary guest-open-login-btn" style="padding: 7px 16px; font-size: 12px;">
-              Sign In to Unlock Directory →
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ======================================================= -->
-      <!-- 4 PILLARS STATUTORY ECOSYSTEM PREVIEW                   -->
-      <!-- ======================================================= -->
-      <!-- ======================================================= -->
-      <!-- 4 PILLARS STATUTORY ECOSYSTEM PREVIEW                   -->
-      <!-- ======================================================= -->
-      <section class="preview-grid-header" id="guest-pillars-section" style="margin-top: 50px;">
-        <div class="guest-hero-badge">🏛️ Statutory Legal Rights &amp; Community Protection</div>
-        <h3>Explore Our Comprehensive Rights &amp; Redressal Ecosystem</h3>
-        <p>A safe, encrypted platform built for transgender and gender-diverse Indians. Preview core services below and sign in to unlock interactive access.</p>
-
-        <!-- 4 Pillars Preview Grid -->
-        <div class="pillars-preview-grid">
-          
-          <!-- Pillar 1: Verified Opportunities -->
-          <div class="pillar-preview-card">
-            <div>
-              <div class="pillar-icon-svg-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-              </div>
-              <div class="pillar-title">Verified Opportunities Directory</div>
-              <div class="pillar-desc">
-                Browse vetted education programs, affirmative workplaces, secure housing shelters, and healthcare providers physically audited by NGO partners.
-              </div>
-              <div class="pillar-preview-items">
-                <div class="pillar-preview-row">
-                  <span>🎓 Shree Education Trust (Distance Learning)</span>
-                  <span class="pillar-preview-badge badge-success">Verified NGO</span>
-                </div>
-                <div class="pillar-preview-row">
-                  <span>💼 Nazariya Inclusive Workplace Jobs</span>
-                  <span class="pillar-preview-badge badge-info">Inclusive</span>
-                </div>
-                <div class="pillar-preview-row">
-                  <span>🏠 Garima Greh Safe Shelter Network</span>
-                  <span class="pillar-preview-badge badge-purple">Govt Scheme</span>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="lock-cta-btn guest-open-login-btn">
-              <span>🔒</span> Sign In to Unlock Direct Contacts &amp; Apply
-            </button>
-          </div>
-
-          <!-- Pillar 2: Discrimination Incident Redressal -->
-          <div class="pillar-preview-card">
-            <div>
-              <div class="pillar-icon-svg-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
-              </div>
-              <div class="pillar-title">Confidential Discrimination Redressal</div>
-              <div class="pillar-desc">
-                Submit confidential or anonymous reports for workplace bias, hospital refusal, or unlawful eviction. Our system automatically matches statutory welfare schemes.
-              </div>
-              <div class="pillar-preview-items">
-                <div class="pillar-preview-row">
-                  <span>🏛️ SMILE Scheme Legal Redressal</span>
-                  <span class="pillar-preview-badge badge-primary">Govt Scheme</span>
-                </div>
-                <div class="pillar-preview-row">
-                  <span>⚖️ NALSA Free Legal Aid Assignment</span>
-                  <span class="pillar-preview-badge badge-success">Statutory</span>
-                </div>
-                <div class="pillar-preview-row">
-                  <span>🛡️ Partner NGO Crisis Escrow Desk</span>
-                  <span class="pillar-preview-badge badge-danger">Crisis Triage</span>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="lock-cta-btn guest-open-login-btn">
-              <span>🔒</span> Sign In to File Confidential Report
-            </button>
-          </div>
-
-          <!-- Pillar 3: Legal Rights Awareness -->
-          <div class="pillar-preview-card">
-            <div>
-              <div class="pillar-icon-svg-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h18"/></svg>
-              </div>
-              <div class="pillar-title">Legal Rights Awareness Engine</div>
-              <div class="pillar-desc">
-                Contextual guidance on the Transgender Persons Act 2019, Supreme Court NALSA landmark judgment, police arrest procedures, and workplace protection.
-              </div>
-              <div class="pillar-preview-items">
-                <div class="pillar-preview-row">
-                  <span>📖 Right to Self-Perceived Gender Identity</span>
-                  <span class="pillar-preview-badge badge-info">NALSA 2014</span>
-                </div>
-                <div class="pillar-preview-row">
-                  <span>🛡️ Protection against Harassment &amp; Extortion</span>
-                  <span class="pillar-preview-badge badge-purple">Act Sec 18</span>
-                </div>
-                <div class="pillar-preview-row">
-                  <span>📜 District Magistrate Certificate Procedure</span>
-                  <span class="pillar-preview-badge badge-success">Statutory</span>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="lock-cta-btn guest-open-login-btn">
-              <span>🔒</span> Sign In to Ask Custom Legal Questions
-            </button>
-          </div>
-
-          <!-- Pillar 4: Health Assistant & Triage -->
-          <div class="pillar-preview-card">
-            <div>
-              <div class="pillar-icon-svg-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h4.28"/></svg>
-              </div>
-              <div class="pillar-title">Clinical Health Assistant</div>
-              <div class="pillar-desc">
-                Confidential clinical decision tree guidance for gender-affirming healthcare, mental wellness crisis triage, and direct Indian emergency helpline connections.
-              </div>
-              <div class="pillar-preview-items">
-                <div class="pillar-preview-row">
-                  <span>📞 24/7 Tele-MANAS (14416) Integration</span>
-                  <span class="pillar-preview-badge badge-danger">24x7 SOS</span>
-                </div>
-                <div class="pillar-preview-row">
-                  <span>💳 PM-JAY ₹5,00,000 Transgender Health Package</span>
-                  <span class="pillar-preview-badge badge-success">National</span>
-                </div>
-                <div class="pillar-preview-row">
-                  <span>🏥 Hormone Therapy (HRT) Safety Protocol</span>
-                  <span class="pillar-preview-badge badge-primary">Clinical</span>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="lock-cta-btn guest-open-login-btn">
-              <span>🔒</span> Sign In to Start Clinical Triage
-            </button>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- How Redressal Works Pipeline -->
-      <div class="pipeline-section" id="guest-pipeline-section">
-        <div style="text-align: center; max-width: 650px; margin: 0 auto;">
-          <h3 class="pipeline-heading" style="font-size: 22px; margin-bottom: 6px;">How the Beyond Identity Redressal Pipeline Works</h3>
-          <p class="pipeline-subheading" style="font-size: 13.5px;">A safe, end-to-end bridge from reporting an incident to statutory legal aid and rehabilitation.</p>
-        </div>
-        <div class="pipeline-grid">
-          <div class="pipeline-step">
-            <div class="pipeline-step-num">1</div>
-            <h4>Confidential Intake</h4>
-            <p>File a report with exact incident details, location, and severity. Anonymous reporting is fully supported.</p>
-          </div>
-          <div class="pipeline-step">
-            <div class="pipeline-step-num">2</div>
-            <h4>Automated Scheme Match</h4>
-            <p>Our intelligent engine instantly maps statutory Indian schemes (SMILE, PM-JAY, Garima Greh, NALSA Legal Aid).</p>
-          </div>
-          <div class="pipeline-step">
-            <div class="pipeline-step-num">3</div>
-            <h4>NGO Partner Triage</h4>
-            <p>Verified NGO partners review the case in their moderation desk, assign caseworkers, and escalate to legal aid.</p>
-          </div>
-          <div class="pipeline-step">
-            <div class="pipeline-step-num">4</div>
-            <h4>Redressal & Follow-up</h4>
-            <p>Transparent status tracking ensures the complaint does not fall through the cracks and receives real support.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Trust Guarantees Grid -->
-      <div class="trust-grid" id="guest-trust-section">
-        <div class="trust-item">
-          <div class="trust-icon">🔒</div>
-          <div>
-            <h4>Statutory Privacy Protection</h4>
-            <p>Built strictly according to Indian data protection and Transgender Persons Act 2019 safeguards. Your identity is never revealed without consent.</p>
-          </div>
-        </div>
-        <div class="trust-item">
-          <div class="trust-icon">⚖️</div>
-          <div>
-            <h4>NALSA Legal Services Integration</h4>
-            <p>Direct alignment with State Legal Services Authorities ensuring zero-cost legal representation for discrimination victims.</p>
-          </div>
-        </div>
-        <div class="trust-item">
-          <div class="trust-icon">🛡️</div>
-          <div>
-            <h4>Physically Verified Partners</h4>
-            <p>Every listed job, shelter, and school is independently inspected and certified safe by regional transgender-led NGOs.</p>
-          </div>
-        </div>
-        <div class="trust-item">
-          <div class="trust-icon">🩺</div>
-          <div>
-            <h4>Evidence-Based Healthcare</h4>
-            <p>Clinical decision trees reviewed against WPATH standards and Ministry of Health Tele-MANAS guidelines.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Final Call to Action Box -->
-      <div class="guest-cta-banner">
-        <h3 class="cta-banner-heading" style="font-size: 24px; margin-bottom: 8px;">Ready to Access Beyond Identity?</h3>
-        <p class="cta-banner-subheading" style="font-size: 14px; max-width: 540px; margin: 0 auto 24px;">
-          Create your account in under 30 seconds or sign in with an instant 1-click demo to test the platform.
-        </p>
-        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-          <button type="button" class="btn btn-primary guest-open-signup-btn" style="padding: 12px 26px; font-size: 14px;">
-            Create Free Account
-          </button>
-          <button type="button" class="btn btn-secondary guest-open-login-btn" style="padding: 12px 24px; font-size: 14px;">
-            Sign In with Password
-          </button>
-        </div>
-      </div>
-
-    </div>
+    <!-- Hidden guest landing placeholder for DOM compatibility -->
+    <div id="guest-landing-view" class="guest-landing" style="display: none;"></div>
 
     <!-- ============================================== -->
     <!-- 2. PORTAL MODULES VIEW (Interactive Portal)    -->
@@ -823,7 +188,7 @@
       <div class="auth-welcome-strip" id="auth-member-banner">
         <div class="welcome-strip-left">
           <div class="user-avatar-sm" id="member-banner-avatar">👤</div>
-          <span class="welcome-user-greeting" id="member-banner-greeting">Welcome to Beyond Identity</span>
+          <span class="welcome-user-greeting" id="member-banner-greeting">Welcome to <strong class="brand-bold">Beyond Identity</strong></span>
           <span class="user-role-badge" id="member-banner-role-badge">COMMUNITY USER</span>
         </div>
         <div class="welcome-strip-right">
@@ -855,25 +220,46 @@
 
       <!-- TAB: Chat Assistant (Embedded Full-Width Chat Box - Primary Tab) -->
       <section class="tab-panel active" id="tab-chat">
-        <div class="tab-chat-container">
-          <!-- Chat Header (Compact: Avatar, Title, Online Badge, Voice & Clear actions) -->
+        <div class="tab-chat-container" id="tab-chat-main-container">
+          <!-- Top Rainbow Pride Ribbon -->
+          <div class="tab-chat-rainbow-ribbon" aria-hidden="true"></div>
+
+          <!-- Ambient Decorative Glowing Rainbow Orbs -->
+          <div class="tab-chat-ambient-aura" aria-hidden="true">
+            <span class="chat-orb orb-rainbow-1"></span>
+            <span class="chat-orb orb-rainbow-2"></span>
+            <span class="chat-orb orb-rainbow-3"></span>
+            <span class="chat-orb orb-rainbow-4"></span>
+          </div>
+
+          <!-- Ethereal Light Background Watermark Inside Chatbot -->
+          <div class="tab-chat-bg-watermark" aria-hidden="true">
+            <img src="/static/assets/chatbot-watermark.jpg" alt="Beyond Identity Sacred Light Watermark" class="tab-chat-watermark-img" />
+          </div>
+
+          <!-- Chat Header (Creative Holographic Avatar, Spark Title, Voice & Full Page actions) -->
           <div class="tab-chat-header">
             <div class="tab-chat-header-main">
               <div class="tab-chat-avatar-glow" id="tab-chat-avatar-box">
+                <span class="tab-chat-avatar-holo-ring"></span>
                 <span class="tab-chat-avatar-icon">🤖</span>
                 <span class="tab-chat-status-pulse" id="tab-chat-status-dot" title="Assistant Online &amp; Ready"></span>
               </div>
               <div class="tab-chat-header-text">
                 <div class="tab-chat-title-row">
-                  <h3 class="tab-chat-title">Beyond Identity 24/7 Assistant</h3>
+                  <h3 class="tab-chat-title"><strong class="brand-bold">Beyond Identity</strong> 24/7 Assistant</h3>
+                  <span class="tab-chat-rainbow-pill">🌈 Rainbow Sanctuary</span>
+                  <span class="tab-chat-companion-pill">✨ AI Companion</span>
                   <span class="tab-chat-live-badge" id="tab-chat-live-badge">🟢 Online</span>
                   <div class="tab-chat-speaking-badge" id="tab-chat-speaking-badge" style="display: none;">
                     <div class="voice-waves animating">
                       <span class="voice-wave-bar"></span>
                       <span class="voice-wave-bar"></span>
                       <span class="voice-wave-bar"></span>
+                      <span class="voice-wave-bar"></span>
+                      <span class="voice-wave-bar"></span>
                     </div>
-                    <span>Speaking...</span>
+                    <span>Speaking Aloud...</span>
                     <button type="button" class="tab-chat-stop-speech-btn" id="tab-chat-badge-stop-btn" title="Stop Voice Speech">⏹️ Stop</button>
                   </div>
                 </div>
@@ -881,6 +267,9 @@
               </div>
             </div>
             <div class="tab-chat-header-controls">
+              <button type="button" class="tab-chat-control-btn" id="tab-chat-fullscreen-btn" title="Toggle Full Page Chatbot View">
+                <span>⛶</span> <span class="tab-chat-btn-text" id="tab-chat-fullscreen-label">Full Page</span>
+              </button>
               <button type="button" class="tab-chat-control-btn active" id="tab-chat-voice-toggle" title="Toggle Auto-Speech Aloud (Voice Output)">
                 <span id="tab-chat-voice-icon">🔊</span> <span class="tab-chat-btn-text" id="tab-chat-voice-label">Voice: ON</span>
               </button>
@@ -893,49 +282,60 @@
             </div>
           </div>
 
-          <!-- Topic Filter Bar (Single Horizontal Row) -->
+          <!-- Topic Filter Bar (Clean Primary Categories) -->
           <div class="tab-chat-categories" id="tab-chat-category-bar">
             <button type="button" class="tab-chat-cat-btn active" data-cat="">✨ All Topics</button>
-            <button type="button" class="tab-chat-cat-btn" data-cat="employment">💼 Jobs</button>
-            <button type="button" class="tab-chat-cat-btn" data-cat="housing">🏠 Housing</button>
-            <button type="button" class="tab-chat-cat-btn" data-cat="healthcare">🩺 Healthcare</button>
             <button type="button" class="tab-chat-cat-btn" data-cat="legal">⚖️ Rights &amp; ID</button>
-            <button type="button" class="tab-chat-cat-btn" data-cat="scholarships">🎓 Schemes</button>
-            <button type="button" class="tab-chat-cat-btn" data-cat="crisis">🚨 Emergency</button>
+            <button type="button" class="tab-chat-cat-btn" data-cat="housing">🏠 Housing &amp; Jobs</button>
+            <button type="button" class="tab-chat-cat-btn" data-cat="healthcare">🩺 Health &amp; Schemes</button>
           </div>
 
-          <!-- Suggested Starter Prompts (Connected to Built-in Q&A Knowledge Base) -->
+          <!-- Suggested Starter Cards (Creative Spark Launchpad Cards) -->
           <div class="tab-chat-quick-prompts-container" id="tab-chat-quick-prompts-container">
             <div class="tab-chat-starter-grid" id="tab-chat-starter-prompts">
               <button type="button" class="tab-chat-starter-chip" data-prompt="Hello">
-                <span>👋</span> <span>Hello / Namaste</span>
+                <span class="chip-kicker">⚡ Quick Start</span>
+                <div class="chip-main-row">
+                  <span class="chip-icon">👋</span>
+                  <div class="chip-content">
+                    <span class="chip-title">Namaste / Welcome</span>
+                    <span class="chip-sub">Learn what Beyond Identity offers</span>
+                  </div>
+                  <span class="chip-arrow">→</span>
+                </div>
               </button>
               <button type="button" class="tab-chat-starter-chip" data-prompt="What rights do transgender persons have in India?">
-                <span>⚖️</span> <span>Rights under TG Act 2019 &amp; NALSA</span>
-              </button>
-              <button type="button" class="tab-chat-starter-chip" data-prompt="How do I get a Transgender Certificate / ID?">
-                <span>🪪</span> <span>TG Certificate &amp; ID Card Guide</span>
-              </button>
-              <button type="button" class="tab-chat-starter-chip" data-prompt="What can I do if I face discrimination at work?">
-                <span>💼</span> <span>Workplace Rights &amp; Complaint Officer</span>
-              </button>
-              <button type="button" class="tab-chat-starter-chip" data-prompt="Where can I get free legal help?">
-                <span>⚖️</span> <span>Free Legal Aid Helpline 15100 (NALSA)</span>
+                <span class="chip-kicker">⚖️ Statutory Law</span>
+                <div class="chip-main-row">
+                  <span class="chip-icon">⚖️</span>
+                  <div class="chip-content">
+                    <span class="chip-title">Legal Rights &amp; TG ID Card</span>
+                    <span class="chip-sub">TG Act 2019 &amp; National Portal</span>
+                  </div>
+                  <span class="chip-arrow">→</span>
+                </div>
               </button>
               <button type="button" class="tab-chat-starter-chip" data-prompt="Is there shelter or housing support?">
-                <span>🏠</span> <span>Garima Greh Shelters &amp; Housing</span>
+                <span class="chip-kicker">🏠 Safe Transit</span>
+                <div class="chip-main-row">
+                  <span class="chip-icon">🏠</span>
+                  <div class="chip-content">
+                    <span class="chip-title">Garima Greh Shelters &amp; Housing</span>
+                    <span class="chip-sub">Safe transit housing &amp; nutrition</span>
+                  </div>
+                  <span class="chip-arrow">→</span>
+                </div>
               </button>
               <button type="button" class="tab-chat-starter-chip" data-prompt="Is there health insurance for transgender persons?">
-                <span>🩺</span> <span>Ayushman Bharat TG Plus ₹5L Cover</span>
-              </button>
-              <button type="button" class="tab-chat-starter-chip" data-prompt="Tell me about HRT.">
-                <span>💊</span> <span>About HRT (Hormone Therapy)</span>
-              </button>
-              <button type="button" class="tab-chat-starter-chip" data-prompt="What government schemes are available?">
-                <span>🏛️</span> <span>SMILE Scheme &amp; Govt Grants</span>
-              </button>
-              <button type="button" class="tab-chat-starter-chip" data-prompt="I'm feeling very low or unsafe.">
-                <span>🚨</span> <span>Feeling Low or Unsafe (Tele-MANAS 14416)</span>
+                <span class="chip-kicker">🩺 Health &amp; HRT</span>
+                <div class="chip-main-row">
+                  <span class="chip-icon">🩺</span>
+                  <div class="chip-content">
+                    <span class="chip-title">Ayushman Bharat &amp; HRT</span>
+                    <span class="chip-sub">₹5L health coverage &amp; hormone care</span>
+                  </div>
+                  <span class="chip-arrow">→</span>
+                </div>
               </button>
             </div>
           </div>
@@ -946,44 +346,47 @@
               <div class="tab-chat-msg-avatar">🤖</div>
               <div class="tab-chat-bubble-wrap">
                 <div class="tab-chat-bubble">
+                  <div class="chat-bot-brand-tag">
+                    <span>🤖</span> <strong>Beyond Identity Intel</strong> <span class="tag-verified">✓ Verified Law &amp; Healthcare</span>
+                  </div>
+
+                  <!-- Welcoming Light Art Card Inside Chatbot Bubble -->
+                  <div class="tab-chat-art-welcome-card">
+                    <div class="tab-chat-art-thumb-wrap">
+                      <img src="/static/assets/chatbot-watermark.jpg" alt="Beyond Identity Sacred Light" class="tab-chat-art-thumb" />
+                    </div>
+                    <div class="tab-chat-art-details">
+                      <span class="tab-chat-art-badge">🌈 Safe, Verified &amp; Welcoming</span>
+                      <h4 class="tab-chat-art-title">Welcome to Beyond Identity 24/7 Sanctuary</h4>
+                      <p class="tab-chat-art-text">Your safe, affirming portal for statutory Indian transgender rights, Garima Greh housing shelters, verified inclusive jobs, and PM-JAY Ayushman Bharat healthcare.</p>
+                    </div>
+                  </div>
+
                   <div>
-                    <h4 style="margin: 4px 0 8px; color: var(--accent-cyan); font-size: 15px;" id="tab-chat-initial-heading">👋 Hello &amp; Welcome to Beyond Identity!</h4>
+                    <h4 style="margin: 4px 0 8px; color: var(--bi-primary); font-size: 15px;" id="tab-chat-initial-heading">👋 Hello &amp; Welcome to Beyond Identity!</h4>
                     <p style="margin: 6px 0; font-size: 13.5px; line-height: 1.55;">
                       I am your 24/7 Rights and Empowerment Assistant. Ask me anything about Indian transgender laws, verified inclusive jobs, safe housing, healthcare, or government schemes.
                     </p>
-                    <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.45; color: var(--text-muted);">What would you like to know today?</p>
+                    <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.45; color: var(--bi-text-muted);">What would you like to know today?</p>
                   </div>
                 </div>
                 <div class="tab-chat-actions-row">
                   <button type="button" class="tab-chat-action-btn tab-chat-static-listen-btn"><span>🔊</span> Listen</button>
                   <button type="button" class="tab-chat-action-btn tab-chat-static-copy-btn"><span>📋</span> Copy</button>
                 </div>
-                <div class="tab-chat-bubble-prompts">
-                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="Hello">
-                    <span>👋 Hello</span> <span>→</span>
-                  </button>
-                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="What rights do transgender persons have in India?">
-                    <span>⚖️ Rights in India</span> <span>→</span>
-                  </button>
-                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="How do I get a Transgender Certificate / ID?">
-                    <span>🪪 TG Certificate &amp; ID</span> <span>→</span>
-                  </button>
-                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="Is there shelter or housing support?">
-                    <span>🏠 Garima Greh Shelters</span> <span>→</span>
-                  </button>
-                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="Is there health insurance for transgender persons?">
-                    <span>🩺 Ayushman Bharat ₹5L</span> <span>→</span>
-                  </button>
-                  <button type="button" class="tab-chat-bubble-prompt-btn" data-prompt="What government schemes are available?">
-                    <span>🏛️ SMILE Govt Schemes</span> <span>→</span>
-                  </button>
-                </div>
               </div>
             </div>
           </div>
 
-          <!-- Chat Input Bar -->
+          <!-- Chat Input Bar & Quick Prompt Pills -->
           <div class="tab-chat-input-container">
+            <div class="tab-chat-quick-query-pills" id="tab-chat-quick-query-pills">
+              <button type="button" class="tab-chat-quick-query-pill" data-prompt="How do I apply for a Transgender Certificate of Identity in India?">🪪 TG Certificate Portal</button>
+              <button type="button" class="tab-chat-quick-query-pill" data-prompt="Is gender-affirming surgery or HRT covered under Ayushman Bharat PM-JAY?">🩺 Ayushman PM-JAY ₹5L</button>
+              <button type="button" class="tab-chat-quick-query-pill" data-prompt="Where are Garima Greh shelter homes located and what support do they provide?">🏠 Garima Shelters</button>
+              <button type="button" class="tab-chat-quick-query-pill" data-prompt="What legal protections exist under the Transgender Persons Act 2019?">⚖️ TG Act 2019 Rights</button>
+              <button type="button" class="tab-chat-quick-query-pill" data-prompt="What is the 24/7 crisis helpline number for transgender persons?">🚨 24/7 Helpline (868989330)</button>
+            </div>
             <div class="tab-chat-input-bar">
               <button type="button" class="tab-chat-mic-button" id="tab-chat-mic-btn" title="Speak question into microphone (Speech-to-Text)">
                 🎙️
@@ -1235,102 +638,6 @@
 
   </main>
 
-  <!-- ========================================================================= -->
-  <!-- COMPREHENSIVE ACCESSIBLE SITE FOOTER                                      -->
-  <!-- ========================================================================= -->
-  <footer class="site-footer" id="main-site-footer" role="contentinfo">
-    <div class="footer-content">
-      <div class="footer-grid">
-        <!-- Col 1: Brand & Mission -->
-        <div class="footer-col-brand">
-          <div class="footer-brand">
-            <div class="brand-icon">🏳️‍⚧️</div>
-            <div class="brand-text">
-              <h3>Beyond Identity</h3>
-              <span>India Rights & Welfare Redressal</span>
-            </div>
-          </div>
-          <p class="footer-mission-text">
-            A secure national platform empowering transgender and gender-diverse citizens across India through verified affirmative listings, transparent discrimination incident redressal, statutory legal rights awareness, and clinical health guidance.
-          </p>
-          <div class="footer-statutory-note">
-            ⚖️ Anchored in Supreme Court of India <em>NALSA (2014)</em> &amp; <em>Transgender Persons (Protection of Rights) Act 2019</em>.
-          </div>
-        </div>
-
-        <!-- Col 2: Direct Helpline & Crisis SOS -->
-        <div>
-          <h4 class="footer-col-title">Crisis &amp; Legal Helplines</h4>
-          <ul class="footer-links-list">
-            <li>
-              <a href="tel:868989330" class="footer-helpline-link">
-                📞 868989330 <span style="font-size: 11px; opacity: 0.85;">(24/7 Community Support)</span>
-              </a>
-            </li>
-            <li>
-              <a href="tel:14416" class="footer-helpline-link">
-                🧠 14416 <span style="font-size: 11px; opacity: 0.85;">(Tele-MANAS Mental Health)</span>
-              </a>
-            </li>
-            <li>
-              <a href="tel:15100" class="footer-helpline-link">
-                ⚖️ 15100 <span style="font-size: 11px; opacity: 0.85;">(NALSA Free Legal Aid)</span>
-              </a>
-            </li>
-            <li>
-              <a href="tel:1091" class="footer-helpline-link">
-                🛡️ 1091 <span style="font-size: 11px; opacity: 0.85;">(Women &amp; Trans Helpline)</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Col 3: Portal Navigation & Quick Links -->
-        <div>
-          <h4 class="footer-col-title">Platform Features</h4>
-          <ul class="footer-links-list">
-            <li><a href="#guest-demo-assistant-section">🤖 24/7 AI Legal Assistant</a></li>
-            <li><a href="#home-video-overview">🎬 Platform Mission Video</a></li>
-            <li><a href="#guest-demo-opp-section">💼 Verified Opportunities</a></li>
-            <li><a href="#guest-pipeline-section">⚖️ 4-Stage Redressal Pipeline</a></li>
-            <li><a href="#guest-trust-section">🛡️ Privacy &amp; Zero-Knowledge</a></li>
-            <li><a href="/login">🔐 Dedicated Sign In / Portal</a></li>
-          </ul>
-        </div>
-
-        <!-- Col 4: UN Sustainable Development Goals -->
-        <div>
-          <h4 class="footer-col-title">UN SDG Commitments</h4>
-          <div class="footer-sdg-stack">
-            <div class="footer-sdg-card sdg-10-card">
-              <span class="sdg-tag">SDG 10</span>
-              <span>Reduced Inequalities</span>
-            </div>
-            <div class="footer-sdg-card sdg-16-card">
-              <span class="sdg-tag">SDG 16</span>
-              <span>Peace, Justice &amp; Strong Institutions</span>
-            </div>
-            <div class="footer-sdg-card sdg-3-card">
-              <span class="sdg-tag">SDG 3</span>
-              <span>Good Health &amp; Well-being</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Footer Bottom Bar -->
-      <div class="footer-bottom-bar">
-        <div>
-          © 2026 Beyond Identity Foundation. Distributed under open public interest principles.
-        </div>
-        <div class="footer-bottom-badges">
-          <span class="privacy-badge">🔒 End-to-End Encrypted Data</span>
-          <span class="privacy-badge">🇮🇳 Digital Personal Data Protection (DPDP) Aligned</span>
-          <span class="privacy-badge">🌐 Accessible &amp; Mobile-First</span>
-        </div>
-      </div>
-    </div>
-  </footer>
 
   <!-- Toast Notifications Container -->
   <div class="toast-container" id="toast-container"></div>
@@ -1342,7 +649,7 @@
       
       <div style="text-align: center; margin-bottom: 16px;">
         <div style="font-size: 28px; margin-bottom: 4px;">🔐</div>
-        <h3 style="font-size: 20px;" id="modal-auth-title">Welcome to Beyond Identity</h3>
+        <h3 style="font-size: 20px;" id="modal-auth-title">Welcome to <strong class="brand-bold">Beyond Identity</strong></h3>
         <p style="color: var(--text-muted); font-size: 13px;" id="modal-auth-subtitle">Sign in to your account or join our community portal</p>
       </div>
 
@@ -1631,7 +938,7 @@
           <span class="online-badge"></span>
         </div>
         <div class="bi-chat-header-info">
-          <h3>Beyond Identity <span class="bi-chat-live-badge">24/7 Live</span></h3>
+          <h3><strong class="brand-bold">Beyond Identity</strong> <span class="bi-chat-live-badge">24/7 Live</span></h3>
           <p>Verified Database & Legal Assistant</p>
         </div>
       </div>
@@ -1743,6 +1050,37 @@
             const tabBtn = document.querySelector('.tab-btn[data-tab="tab-awareness"]');
             if (tabBtn) tabBtn.click();
             window.scrollTo({ top: authView.offsetTop - 80, behavior: "smooth" });
+          }
+        });
+      }
+
+      // 1-Click Share Portal Handler
+      const shareBtn = document.getElementById("btn-share-portal");
+      if (shareBtn) {
+        shareBtn.addEventListener("click", async function () {
+          const shareUrl = window.location.origin || window.location.href;
+          const shareData = {
+            title: "Beyond Identity",
+            text: "Beyond Identity — India's Empowerment & Rights Portal for the Transgender Community",
+            url: shareUrl,
+          };
+
+          if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
+            try {
+              await navigator.share(shareData);
+              return;
+            } catch (err) {}
+          }
+
+          try {
+            await navigator.clipboard.writeText(shareUrl);
+            if (typeof showToast === "function") {
+              showToast("🔗 Portal link copied to clipboard! Share it with friends and community.", "success");
+            } else {
+              alert("Portal link copied: " + shareUrl);
+            }
+          } catch (e) {
+            prompt("Copy this link to share Beyond Identity:", shareUrl);
           }
         });
       }
