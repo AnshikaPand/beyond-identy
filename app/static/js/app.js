@@ -507,15 +507,13 @@ function setupAuthUI() {
   // Wire up guest landing and modal trigger buttons
   document.querySelectorAll(".guest-open-login-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      switchModalTab("signin");
-      loginModal.classList.add("active");
+      window.location.href = "/login";
     });
   });
 
   document.querySelectorAll(".guest-open-signup-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      switchModalTab("register");
-      loginModal.classList.add("active");
+      window.location.href = "/login?tab=register";
     });
   });
 
@@ -735,14 +733,9 @@ function renderUserStatus() {
 
     if (container) {
       container.innerHTML = `
-        <button class="btn btn-primary" id="open-login-btn" style="padding: 8px 16px; font-size: 13px;">Sign In / Register</button>
-        <a href="/login" class="btn btn-secondary" style="padding: 8px 14px; font-size: 13px;">Auth Portal →</a>
+        <a href="/login" class="btn btn-primary" id="open-login-btn" style="padding: 8px 16px; font-size: 13px; text-decoration: none;">Sign In</a>
+        <a href="/login?tab=register" class="btn btn-secondary" style="padding: 8px 14px; font-size: 13px; text-decoration: none;">Register</a>
       `;
-
-      document.getElementById("open-login-btn").addEventListener("click", () => {
-        const loginModal = document.getElementById("login-modal");
-        if (loginModal) loginModal.classList.add("active");
-      });
     }
   }
 }

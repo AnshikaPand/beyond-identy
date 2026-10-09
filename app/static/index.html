@@ -68,10 +68,10 @@
     <div class="container nav-content">
       <!-- Left: Logo Mark & Brand Identity -->
       <a href="#landing-hero-section" class="nav-brand-mark" aria-label="Beyond Identity Home">
-        <span class="nav-pride-icon">🏳️‍⚧️</span>
+        <img src="/assets/beyond_identity_1_circles.svg" alt="Beyond Identity Logo" style="width: 32px; height: 32px; border-radius: 8px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" />
         <div class="nav-brand-text">
           <span class="nav-brand-name"><strong class="brand-bold">Beyond Identity</strong></span>
-          <span class="nav-brand-tagline">Empowerment &amp; Rights Portal</span>
+          <span class="nav-brand-tagline">Labels se pare, har insaan barabar</span>
         </div>
       </a>
 
@@ -124,7 +124,7 @@
 
         <!-- User Auth Action Profile / Sign In -->
         <div class="nav-actions" id="auth-actions-container">
-          <button class="btn btn-primary" id="open-login-btn">Sign In</button>
+          <a href="/login" class="btn btn-primary" id="open-login-btn" style="text-decoration: none; padding: 8px 18px; font-size: 13.5px;">Sign In</a>
         </div>
 
         <!-- Mobile Hamburger Toggle Button -->
@@ -155,19 +155,26 @@
   <!-- ============================================== -->
   <section class="prelogin-hero-section" id="landing-hero-section">
     <div class="prelogin-container">
-      <div class="prelogin-hero-card">
-        <div class="prelogin-image-frame">
+      <div class="prelogin-hero-card" style="max-width: 480px; margin: 0 auto; background: rgba(24, 21, 63, 0.85); border: 1px solid rgba(165, 180, 252, 0.2); backdrop-filter: blur(12px); border-radius: 24px; padding: 18px 20px 24px;">
+        <div class="prelogin-image-frame" style="background: transparent; box-shadow: none; max-width: 420px; margin: 0 auto;">
           <img 
-            src="/assets/login-hero.jpg" 
-            alt="Beyond Identity Portal" 
+            src="/assets/beyond_identity_1_circles.svg" 
+            alt="Beyond Identity — Labels se pare, har insaan barabar" 
             class="prelogin-hero-image" 
             id="prelogin-hero-img"
+            style="width: 100%; height: auto; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.45); display: block;"
           />
         </div>
-        <div class="prelogin-action-wrapper">
-          <button type="button" class="btn btn-primary prelogin-signin-btn guest-open-login-btn" id="guest-hero-signin-btn">
-            <span>🔐</span> Login / Sign In
-          </button>
+        <div class="prelogin-action-wrapper" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 20px;">
+          <a href="/login?role=community" class="btn btn-primary" style="padding: 12px 22px; font-size: 14px; text-decoration: none; font-weight: 700; border-radius: 10px; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);">
+            <span>🌈</span> Community Login
+          </a>
+          <a href="/login?role=ngo" class="btn btn-secondary" style="padding: 12px 20px; font-size: 14px; text-decoration: none; font-weight: 600; border-radius: 10px;">
+            <span>🏢</span> NGO Partner Login
+          </a>
+          <a href="/report/anonymous" class="btn btn-secondary" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(244, 63, 94, 0.35); color: #FB7185; border-radius: 10px;">
+            <span>🚨</span> Anonymous Report
+          </a>
         </div>
       </div>
     </div>
