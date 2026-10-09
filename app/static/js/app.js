@@ -73,6 +73,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const isPostLoginRedirect = params.get("talk") === "1" || params.get("login") === "success";
 
   if (isAuth && isPostLoginRedirect) {
+    const netBanner = document.getElementById("post-login-network-banner");
+    if (netBanner) netBanner.style.display = "flex";
     window.history.replaceState({}, document.title, window.location.pathname);
     setTimeout(() => {
       if (typeof window.triggerPostLoginChatGreeting === "function") {

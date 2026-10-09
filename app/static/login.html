@@ -82,7 +82,7 @@
     }
 
     /* =========================================================
-       Left Panel: Artwork (Matches beyond_identity_1_circles.svg)
+       Left Panel: Artwork (Pre-Login: Circles | Post-Login: Network)
        ========================================================= */
     .art {
       position: relative;
@@ -95,6 +95,12 @@
       padding: 48px 32px;
       overflow: hidden;
       user-select: none;
+      transition: background 0.6s ease;
+    }
+
+    /* Post-login forest-teal background variant */
+    .art.network-mode {
+      background: radial-gradient(circle at 50% 36%, #164E48 0%, #0B3330 60%, #072422 100%);
     }
 
     /* Ambient background nebula effect */
@@ -118,7 +124,7 @@
       max-width: 440px;
       height: auto;
       filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.45));
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
     }
     .art-svg-card:hover {
       transform: scale(1.015);
@@ -407,6 +413,173 @@
     }
     .foot p { margin: 6px 0; }
 
+    /* =========================================================
+       POST-LOGIN NETWORK STATE VIEW (beyond_identity_4_network.svg)
+       ========================================================= */
+    .post-login-container {
+      display: none;
+      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: center;
+    }
+    .post-login-container.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .network-badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      color: #047857;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+    .pulse-dot-green {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: greenPulse 2s infinite;
+    }
+    @keyframes greenPulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .network-artwork-frame {
+      position: relative;
+      width: 100%;
+      max-width: 330px;
+      margin: 0 auto 18px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 16px 36px -8px rgba(11, 51, 48, 0.4);
+      border: 1px solid rgba(144, 205, 197, 0.3);
+      background: #0B3330;
+      transition: transform 0.25s ease;
+    }
+    .network-artwork-frame:hover {
+      transform: scale(1.02);
+    }
+    .network-artwork-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .post-login-welcome-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin: 0 0 6px;
+      letter-spacing: -0.02em;
+    }
+    .post-login-tagline-sub {
+      color: #0D9488;
+      font-weight: 700;
+      font-size: 0.98rem;
+      margin: 0 0 10px;
+    }
+    .post-login-desc {
+      color: #64748B;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin: 0 0 22px;
+    }
+
+    .post-login-actions-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .btn-portal-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #0F766E 0%, #115E59 100%);
+      color: #FFFFFF !important;
+      font-weight: 700;
+      font-size: 0.98rem;
+      padding: 13px 20px;
+      border-radius: 10px;
+      border: 0;
+      cursor: pointer;
+      text-decoration: none !important;
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .btn-portal-primary:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+    .btn-portal-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #F1F5F9;
+      color: #334155 !important;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none !important;
+      border: 1px solid #E2E8F0;
+      transition: background 0.15s;
+    }
+    .btn-portal-secondary:hover {
+      background: #E2E8F0;
+    }
+    .btn-portal-signout {
+      background: transparent;
+      border: 0;
+      color: #94A3B8;
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 6px;
+      margin-top: 4px;
+      transition: color 0.15s;
+    }
+    .btn-portal-signout:hover {
+      color: #E11D48;
+    }
+
+    .redirect-countdown-pill {
+      font-size: 0.82rem;
+      color: #475569;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 20px;
+      padding: 5px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .countdown-cancel-btn {
+      background: none;
+      border: 0;
+      color: #0F766E;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.78rem;
+      padding: 0 2px;
+      text-decoration: underline;
+    }
+
     /* Modal for Password Reset */
     .modal-backdrop {
       display: none;
@@ -477,10 +650,14 @@
   <div class="layout">
 
     <!-- =========================================================
-         LEFT ARTWORK PANEL: Exactly matching beyond_identity_1_circles.svg
+         LEFT ARTWORK PANEL
+         - Pre-Login: beyond_identity_1_circles.svg (Labels se pare)
+         - Post-Login: beyond_identity_4_network.svg (Sab jude, sab barabar)
          ========================================================= -->
-    <aside class="art" aria-label="Beyond Identity Visual Artwork">
-      <div class="art-svg-card">
+    <aside class="art" id="artPanel" aria-label="Beyond Identity Visual Artwork">
+
+      <!-- PRE-LOGIN ARTWORK (1_circles) -->
+      <div class="art-svg-card" id="artPreLogin">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 580" width="100%" height="100%">
           <defs>
             <radialGradient id="card-glow" cx="50%" cy="38%" r="65%">
@@ -548,94 +725,156 @@
           <rect x="216" y="478" width="68" height="4" rx="2" fill="#F59E0B" />
         </svg>
       </div>
+
+      <!-- POST-LOGIN ARTWORK (4_network: Sab jude, sab barabar) -->
+      <div class="art-svg-card" id="artPostLogin" style="display: none;">
+        <img src="/assets/beyond_identity_4_network.svg" alt="Beyond Identity Community Network - Sab jude, sab barabar" style="width: 100%; height: auto; border-radius: 28px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45); display: block;" />
+      </div>
+
     </aside>
 
     <!-- =========================================================
-         RIGHT PANEL: Interactive Form Card
+         RIGHT PANEL: Interactive Form Card & Post-Login State
          ========================================================= -->
     <main class="panel">
       <div class="card">
-        <h2 id="title">Welcome back</h2>
-        <p class="sub" id="sub">Apne role ke hisaab se login karein.</p>
 
-        <!-- Role Selector Switcher -->
-        <div class="roles" role="radiogroup" aria-label="Select Login Role">
-          <button type="button" role="radio" aria-checked="true" data-role="community" id="role-community-btn">
-            <span>🌈</span> Community member
-          </button>
-          <button type="button" role="radio" aria-checked="false" data-role="ngo" id="role-ngo-btn">
-            <span>🏢</span> NGO partner
-          </button>
-        </div>
+        <!-- =====================================================
+             VIEW 1: AUTHENTICATION FORMS (Pre-Login)
+             ===================================================== -->
+        <div id="authFormsContainer">
+          <h2 id="title">Welcome back</h2>
+          <p class="sub" id="sub">Apne role ke hisaab se login karein.</p>
 
-        <!-- 1-Click Fast Demo Credentials Pill Bar -->
-        <div class="demo-bar">
-          <div class="demo-bar-title">⚡ 1-Click Demo Accounts:</div>
-          <div class="demo-pills">
-            <button type="button" class="demo-pill" onclick="fillDemo('user@example.com', 'user123', 'community', 'Demo User')">
-              👤 Community
+          <!-- Role Selector Switcher -->
+          <div class="roles" role="radiogroup" aria-label="Select Login Role">
+            <button type="button" role="radio" aria-checked="true" data-role="community" id="role-community-btn">
+              <span>🌈</span> Community member
             </button>
-            <button type="button" class="demo-pill" onclick="fillDemo('ngo@shreetrust.org', 'verifier123', 'ngo', 'Shree Trust')">
-              🏢 NGO Partner
-            </button>
-            <button type="button" class="demo-pill" onclick="fillDemo('admin@beyondidentity.org', 'admin123', 'community', 'Admin User')">
-              🛡️ Admin
+            <button type="button" role="radio" aria-checked="false" data-role="ngo" id="role-ngo-btn">
+              <span>🏢</span> NGO partner
             </button>
           </div>
-        </div>
 
-        <!-- Status Alerts -->
-        <div class="form-err" id="formErr" role="alert"></div>
-        <div class="form-success" id="formSuccess" role="status"></div>
-
-        <!-- ============================================== -->
-        <!-- SIGN IN / REGISTER FORM                       -->
-        <!-- ============================================== -->
-        <form id="form" novalidate>
-          <div class="field" id="nameField">
-            <label for="name">
-              <span id="nameLabel">Name</span>
-              <span class="hint" id="nameHint">(jo naam aap use karna chahein)</span>
-            </label>
-            <input type="text" id="name" autocomplete="name" aria-describedby="nameErr" placeholder="Aapka chosen naam" />
-            <p class="err" id="nameErr" aria-live="polite"></p>
-          </div>
-
-          <div class="field">
-            <label for="email">Gmail / Email</label>
-            <input type="email" id="email" placeholder="you@gmail.com" autocomplete="email" aria-describedby="emailErr" required />
-            <p class="err" id="emailErr" aria-live="polite"></p>
-          </div>
-
-          <div class="field">
-            <label for="password">Password</label>
-            <div class="pw">
-              <input type="password" id="password" autocomplete="current-password" aria-describedby="passwordErr" required />
-              <button type="button" id="toggle" aria-label="Show password">Show</button>
+          <!-- 1-Click Fast Demo Credentials Pill Bar -->
+          <div class="demo-bar">
+            <div class="demo-bar-title">⚡ 1-Click Demo Accounts:</div>
+            <div class="demo-pills">
+              <button type="button" class="demo-pill" onclick="fillDemo('user@example.com', 'user123', 'community', 'Demo User')">
+                👤 Community
+              </button>
+              <button type="button" class="demo-pill" onclick="fillDemo('ngo@shreetrust.org', 'verifier123', 'ngo', 'Shree Trust')">
+                🏢 NGO Partner
+              </button>
+              <button type="button" class="demo-pill" onclick="fillDemo('admin@beyondidentity.org', 'admin123', 'community', 'Admin User')">
+                🛡️ Admin
+              </button>
             </div>
-            <p class="err" id="passwordErr" aria-live="polite"></p>
           </div>
 
-          <div class="row" id="rememberRow">
-            <label>
-              <input type="checkbox" id="remember" checked />
-              Remember me
-            </label>
-            <a href="#forgot" id="forgotLink">Forgot password?</a>
+          <!-- Status Alerts -->
+          <div class="form-err" id="formErr" role="alert"></div>
+          <div class="form-success" id="formSuccess" role="status"></div>
+
+          <!-- Form Element -->
+          <form id="form" novalidate>
+            <div class="field" id="nameField">
+              <label for="name">
+                <span id="nameLabel">Name</span>
+                <span class="hint" id="nameHint">(jo naam aap use karna chahein)</span>
+              </label>
+              <input type="text" id="name" autocomplete="name" aria-describedby="nameErr" placeholder="Aapka chosen naam" />
+              <p class="err" id="nameErr" aria-live="polite"></p>
+            </div>
+
+            <div class="field">
+              <label for="email">Gmail / Email</label>
+              <input type="email" id="email" placeholder="you@gmail.com" autocomplete="email" aria-describedby="emailErr" required />
+              <p class="err" id="emailErr" aria-live="polite"></p>
+            </div>
+
+            <div class="field">
+              <label for="password">Password</label>
+              <div class="pw">
+                <input type="password" id="password" autocomplete="current-password" aria-describedby="passwordErr" required />
+                <button type="button" id="toggle" aria-label="Show password">Show</button>
+              </div>
+              <p class="err" id="passwordErr" aria-live="polite"></p>
+            </div>
+
+            <div class="row" id="rememberRow">
+              <label>
+                <input type="checkbox" id="remember" checked />
+                Remember me
+              </label>
+              <a href="#forgot" id="forgotLink">Forgot password?</a>
+            </div>
+
+            <button class="submit" id="submit" type="submit">Login as community member</button>
+          </form>
+
+          <!-- Footer Navigation Links -->
+          <div class="foot">
+            <p id="signupLine">
+              Naye hain? <a id="signupLink" href="#register">Account banayein</a>
+            </p>
+            <p id="extraLine">
+              <a href="/?tab=report&anon=1">Bina login ke anonymously report karein</a>
+            </p>
           </div>
-
-          <button class="submit" id="submit" type="submit">Login as community member</button>
-        </form>
-
-        <!-- Footer Navigation Links -->
-        <div class="foot">
-          <p id="signupLine">
-            Naye hain? <a id="signupLink" href="#register">Account banayein</a>
-          </p>
-          <p id="extraLine">
-            <a href="/?tab=report&anon=1">Bina login ke anonymously report karein</a>
-          </p>
         </div>
+
+        <!-- =====================================================
+             VIEW 2: POST-LOGIN STATE (FEATURING beyond_identity_4_network.svg)
+             ===================================================== -->
+        <div class="post-login-container" id="postLoginContainer">
+          
+          <div class="network-badge-status">
+            <span class="pulse-dot-green"></span> Connected to Community Network
+          </div>
+
+          <!-- Exact Artwork: beyond_identity_4_network.svg -->
+          <div class="network-artwork-frame">
+            <img 
+              src="/assets/beyond_identity_4_network.svg" 
+              alt="Beyond Identity Network - Sab jude, sab barabar" 
+              class="network-artwork-img" 
+              id="networkPostLoginImg" 
+            />
+          </div>
+
+          <h2 class="post-login-welcome-title">
+            Welcome, <span id="postLoginName">Friend</span>!
+          </h2>
+          <p class="post-login-tagline-sub">
+            Sab jude, sab barabar
+          </p>
+          <p class="post-login-desc" id="postLoginDesc">
+            Aap Beyond Identity ke safe network se jud chuke hain. Verified opportunities, legal awareness, aur 24/7 AI chat ready hain.
+          </p>
+
+          <div class="post-login-actions-grid">
+            <a href="/" class="btn-portal-primary" id="continueToPortalBtn">
+              🚀 Continue to Community Portal →
+            </a>
+            <a href="/?tab=chat&talk=1" class="btn-portal-secondary">
+              💬 Open 24/7 Voice Assistant
+            </a>
+            <a href="/?tab=listings" class="btn-portal-secondary">
+              💼 Browse Verified Listings &amp; Schemes
+            </a>
+            <button type="button" class="btn-portal-signout" id="switchAccountBtn">
+              🔓 Sign Out / Switch Account
+            </button>
+          </div>
+
+          <div class="redirect-countdown-pill" id="countdownPill">
+            <span>⏱️ Redirecting in <strong id="countdownSeconds">3</strong>s...</span>
+            <button type="button" class="countdown-cancel-btn" id="pauseCountdownBtn">Pause</button>
+          </div>
+
+        </div>
+
       </div>
     </main>
 
@@ -710,6 +949,8 @@
 
     let currentRole = "community";
     let isRegisterMode = false;
+    let redirectTimer = null;
+    let countdownRemaining = 3;
 
     const $ = id => document.getElementById(id);
     const f = {
@@ -717,6 +958,98 @@
       email: $("email"),
       password: $("password")
     };
+
+    // =========================================================
+    // POST-LOGIN VIEW CONTROLLER
+    // Reveals beyond_identity_4_network.svg and user details
+    // =========================================================
+    function showPostLoginView(userData, autoRedirect = true) {
+      // 1. Hide authentication form, show post-login network card
+      $("authFormsContainer").style.display = "none";
+      $("postLoginContainer").classList.add("active");
+
+      // 2. Set user details
+      const userName = userData.name || (userData.email ? userData.email.split("@")[0] : "Friend");
+      $("postLoginName").textContent = userName;
+
+      const isNgo = userData.role === "verifier" || currentRole === "ngo";
+      $("postLoginDesc").textContent = isNgo
+        ? "Aap Beyond Identity verified partner network se jud chuke hain. Opportunities manage karein aur community triage mein sahayata karein."
+        : "Aap Beyond Identity ke safe network se jud chuke hain. Verified opportunities, legal awareness, aur 24/7 AI chat ready hain.";
+
+      // 3. Switch Left Artwork to beyond_identity_4_network.svg
+      $("artPreLogin").style.display = "none";
+      $("artPostLogin").style.display = "block";
+      $("artPanel").classList.add("network-mode");
+
+      // 4. Start auto-redirect countdown
+      if (autoRedirect) {
+        countdownRemaining = 3;
+        $("countdownSeconds").textContent = countdownRemaining;
+        $("countdownPill").style.display = "inline-flex";
+
+        if (redirectTimer) clearInterval(redirectTimer);
+        redirectTimer = setInterval(() => {
+          countdownRemaining--;
+          if ($("countdownSeconds")) $("countdownSeconds").textContent = countdownRemaining;
+          if (countdownRemaining <= 0) {
+            clearInterval(redirectTimer);
+            window.location.href = `/?tab=chat&talk=1&login=success&role=${userData.role || currentRole}`;
+          }
+        }, 1000);
+      } else {
+        $("countdownPill").style.display = "none";
+      }
+    }
+
+    // Pause/Resume Countdown
+    $("pauseCountdownBtn").addEventListener("click", () => {
+      if (redirectTimer) {
+        clearInterval(redirectTimer);
+        redirectTimer = null;
+        $("countdownPill").innerHTML = "<span>Auto-redirect paused.</span>";
+      }
+    });
+
+    // Sign Out / Switch Account
+    $("switchAccountBtn").addEventListener("click", () => {
+      if (redirectTimer) clearInterval(redirectTimer);
+      localStorage.removeItem("bi_token");
+      localStorage.removeItem("bi_user");
+      sessionStorage.removeItem("bi_token");
+      sessionStorage.removeItem("bi_user");
+
+      // Restore form view
+      $("postLoginContainer").classList.remove("active");
+      $("authFormsContainer").style.display = "block";
+
+      // Restore artwork 1
+      $("artPostLogin").style.display = "none";
+      $("artPreLogin").style.display = "block";
+      $("artPanel").classList.remove("network-mode");
+
+      clearErrors();
+      f.password.value = "";
+    });
+
+    // Check if user is already logged in on initial page load
+    function checkExistingSession() {
+      const token = localStorage.getItem("bi_token") || sessionStorage.getItem("bi_token");
+      const userStr = localStorage.getItem("bi_user") || sessionStorage.getItem("bi_user");
+      const urlParams = new URLSearchParams(window.location.search);
+
+      if (token && userStr && !urlParams.has("relogin")) {
+        try {
+          const userObj = JSON.parse(userStr);
+          // Show post login view without instant redirect so they can choose
+          showPostLoginView(userObj, false);
+          return true;
+        } catch (e) {
+          console.warn("Invalid user session object:", e);
+        }
+      }
+      return false;
+    }
 
     function applyRole(r) {
       currentRole = r;
@@ -848,9 +1181,6 @@
             const errData = await regRes.json().catch(() => ({}));
             throw new Error(errData.detail || "Account register nahi ho paya. Email shayad already registered hai.");
           }
-
-          $("formSuccess").textContent = "Account safaltapoorvak ban gaya! Logging you in...";
-          $("formSuccess").classList.add("show");
         }
 
         // ===============================
@@ -890,12 +1220,8 @@
           localStorage.setItem("bi_user", JSON.stringify(data.user));
         }
 
-        btn.textContent = "Login Successful! Redirecting...";
-
-        // Redirect to portal with welcome voice prompt
-        setTimeout(() => {
-          window.location.href = `/?tab=chat&talk=1&login=success&role=${currentRole}`;
-        }, 500);
+        // Trigger the Post-Login Network State View with beyond_identity_4_network.svg!
+        showPostLoginView(data.user || { name: f.name.value.trim(), email: f.email.value.trim(), role: ROLES[currentRole].backendRole }, true);
 
       } catch (err) {
         $("formErr").textContent = err instanceof TypeError
@@ -1020,11 +1346,13 @@
       }
     });
 
-    // Check if URL has ?tab=register or /register
-    if (window.location.pathname.includes("register") || window.location.search.includes("tab=register")) {
-      toggleRegisterMode();
-    } else {
-      applyRole("community");
+    // Check session or URL parameters on load
+    if (!checkExistingSession()) {
+      if (window.location.pathname.includes("register") || window.location.search.includes("tab=register")) {
+        toggleRegisterMode();
+      } else {
+        applyRole("community");
+      }
     }
   </script>
 </body>

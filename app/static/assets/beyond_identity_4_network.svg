@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 580" width="100%" height="100%">
+  <defs>
+    <radialGradient id="network-bg" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#11423E" />
+      <stop offset="65%" stop-color="#0B3330" />
+      <stop offset="100%" stop-color="#072422" />
+    </radialGradient>
+    <style>
+      .net-line { stroke: rgba(144, 205, 197, 0.42); stroke-width: 1.8; stroke-linecap: round; }
+      .title { font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif; font-weight: 700; font-size: 34px; fill: #FFFFFF; letter-spacing: -0.02em; }
+      .tagline { font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif; font-weight: 400; font-size: 16px; fill: #80B8B2; letter-spacing: 0.01em; }
+    </style>
+  </defs>
+
+  <!-- Deep Dark Forest Teal Card Background -->
+  <rect width="500" height="580" rx="28" fill="url(#network-bg)" />
+
+  <!-- Connecting Network Lines -->
+  <g class="network-lines">
+    <!-- Lines from Center to 6 Primary Inner Nodes -->
+    <line x1="250" y1="210" x2="202" y2="135" class="net-line" />
+    <line x1="250" y1="210" x2="298" y2="135" class="net-line" />
+    <line x1="250" y1="210" x2="348" y2="210" class="net-line" />
+    <line x1="250" y1="210" x2="298" y2="285" class="net-line" />
+    <line x1="250" y1="210" x2="202" y2="285" class="net-line" />
+    <line x1="250" y1="210" x2="152" y2="210" class="net-line" />
+
+    <!-- Branches from Node 1 (Coral - top-left) -->
+    <line x1="202" y1="135" x2="204" y2="60" class="net-line" />
+    <line x1="202" y1="135" x2="118" y2="92" class="net-line" />
+
+    <!-- Branches from Node 2 (Mint - top-right) -->
+    <line x1="298" y1="135" x2="296" y2="60" class="net-line" />
+    <line x1="298" y1="135" x2="382" y2="92" class="net-line" />
+
+    <!-- Branches from Node 3 (Amber - right) -->
+    <line x1="348" y1="210" x2="430" y2="158" class="net-line" />
+    <line x1="348" y1="210" x2="430" y2="262" class="net-line" />
+
+    <!-- Branches from Node 4 (Cyan - bottom-right) -->
+    <line x1="298" y1="285" x2="382" y2="328" class="net-line" />
+    <line x1="298" y1="285" x2="296" y2="360" class="net-line" />
+
+    <!-- Branches from Node 5 (Pink - bottom-left) -->
+    <line x1="202" y1="285" x2="204" y2="360" class="net-line" />
+    <line x1="202" y1="285" x2="118" y2="328" class="net-line" />
+
+    <!-- Branches from Node 6 (Purple - left) -->
+    <line x1="152" y1="210" x2="70" y2="262" class="net-line" />
+    <line x1="152" y1="210" x2="70" y2="158" class="net-line" />
+  </g>
+
+  <!-- Outer 12 Satellite Nodes -->
+  <g class="outer-nodes">
+    <!-- Top-Left Branch Outer Nodes -->
+    <circle cx="204" cy="60" r="9.5" fill="#FB7185" />
+    <circle cx="118" cy="92" r="9" fill="#2DD4BF" />
+
+    <!-- Top-Right Branch Outer Nodes -->
+    <circle cx="296" cy="60" r="9.5" fill="#818CF8" />
+    <circle cx="382" cy="92" r="9" fill="#FB7185" />
+
+    <!-- Right Branch Outer Nodes -->
+    <circle cx="430" cy="158" r="9" fill="#2DD4BF" />
+    <circle cx="430" cy="262" r="9.5" fill="#F59E0B" />
+
+    <!-- Bottom-Right Branch Outer Nodes -->
+    <circle cx="382" cy="328" r="9" fill="#14B8A6" />
+    <circle cx="296" cy="360" r="9.5" fill="#EC4899" />
+
+    <!-- Bottom-Left Branch Outer Nodes -->
+    <circle cx="204" cy="360" r="9.5" fill="#818CF8" />
+    <circle cx="118" cy="328" r="9" fill="#FB7185" />
+
+    <!-- Left Branch Outer Nodes -->
+    <circle cx="70" cy="262" r="9" fill="#2DD4BF" />
+    <circle cx="70" cy="158" r="9.5" fill="#F59E0B" />
+  </g>
+
+  <!-- 6 Primary Inner Orbit Nodes -->
+  <g class="inner-nodes">
+    <!-- Node 1: Coral / Rose (top-left) -->
+    <circle cx="202" cy="135" r="16.5" fill="#FB7185" />
+
+    <!-- Node 2: Vibrant Mint / Emerald (top-right) -->
+    <circle cx="298" cy="135" r="16.5" fill="#34D399" />
+
+    <!-- Node 3: Golden Orange / Amber (right) -->
+    <circle cx="348" cy="210" r="16.5" fill="#F59E0B" />
+
+    <!-- Node 4: Vibrant Cyan / Teal (bottom-right) -->
+    <circle cx="298" cy="285" r="16.5" fill="#14B8A6" />
+
+    <!-- Node 5: Vivid Pink / Magenta (bottom-left) -->
+    <circle cx="202" cy="285" r="16.5" fill="#EC4899" />
+
+    <!-- Node 6: Soft Periwinkle / Purple (left) -->
+    <circle cx="152" cy="210" r="16.5" fill="#818CF8" />
+  </g>
+
+  <!-- Central Hub: Solid White Circle with Dark Silhouette -->
+  <g class="central-hub">
+    <!-- White Circle Frame -->
+    <circle cx="250" cy="210" r="33" fill="#FFFFFF" />
+
+    <!-- Dark Green Person Silhouette inside Hub -->
+    <circle cx="250" cy="201" r="10.5" fill="#0B3330" />
+    <path d="M 233 227 C 233 213, 267 213, 267 227 Z" fill="#0B3330" />
+  </g>
+
+  <!-- Branding Typography -->
+  <text x="250" y="440" text-anchor="middle" class="title">Beyond Identity</text>
+  <text x="250" y="475" text-anchor="middle" class="tagline">Sab jude, sab barabar</text>
+</svg>
