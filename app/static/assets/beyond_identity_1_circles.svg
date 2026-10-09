@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 580" width="100%" height="100%">
+  <defs>
+    <style>
+      .title { font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700; font-size: 34px; fill: #FFFFFF; letter-spacing: -0.02em; }
+      .tagline { font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 400; font-size: 16px; fill: #C7C3E5; letter-spacing: 0.01em; }
+      .orbit { fill: none; stroke: rgba(165, 180, 252, 0.14); stroke-width: 1.2; }
+    </style>
+    <radialGradient id="space-glow" cx="50%" cy="38%" r="60%">
+      <stop offset="0%" stop-color="#231D56" />
+      <stop offset="70%" stop-color="#18153F" />
+      <stop offset="100%" stop-color="#141133" />
+    </radialGradient>
+  </defs>
+
+  <!-- Dark Background Canvas with subtle depth -->
+  <rect width="500" height="580" rx="28" fill="url(#space-glow)" />
+
+  <!-- Concentric Orbital Rings centered at (250, 205) -->
+  <g class="orbits">
+    <circle cx="250" cy="205" r="72" class="orbit" stroke-opacity="0.12" />
+    <circle cx="250" cy="205" r="118" class="orbit" stroke-opacity="0.15" />
+    <circle cx="250" cy="205" r="165" class="orbit" stroke-opacity="0.18" />
+    <circle cx="250" cy="205" r="212" class="orbit" stroke-opacity="0.16" />
+    <circle cx="250" cy="205" r="255" class="orbit" stroke-opacity="0.10" />
+  </g>
+
+  <!-- Planetary Celestial Dots along the Orbits -->
+  <!-- Outer ring dots -->
+  <circle cx="250" cy="40" r="4.5" fill="#FFFFFF" />
+  <circle cx="372" cy="72" r="4" fill="#F59E0B" />
+  <circle cx="438" cy="148" r="4.5" fill="#14B8A6" />
+  <circle cx="456" cy="254" r="5" fill="#F59E0B" />
+  <circle cx="420" cy="336" r="5" fill="#EC4899" />
+  <circle cx="82" cy="352" r="5.5" fill="#14B8A6" />
+  <circle cx="46" cy="245" r="5" fill="#EC4899" />
+  <circle cx="62" cy="140" r="5" fill="#F59E0B" />
+  <circle cx="135" cy="82" r="4" fill="#14B8A6" />
+
+  <!-- Inner orbit accent dot -->
+  <circle cx="288" cy="90" r="2.5" fill="#FFFFFF" opacity="0.8" />
+
+  <!-- Three Overlapping Circles (Venn) -->
+  <g id="venn-circles">
+    <!-- Top-Left Circle (Warm Amber) -->
+    <circle cx="196" cy="168" r="82" fill="#E89C1D" opacity="0.88" />
+
+    <!-- Top-Right Circle (Vibrant Teal) -->
+    <circle cx="304" cy="168" r="82" fill="#14B8A6" opacity="0.88" />
+
+    <!-- Bottom-Center Circle (Vivid Magenta / Pink) -->
+    <circle cx="250" cy="252" r="82" fill="#D9387E" opacity="0.88" />
+  </g>
+
+  <!-- Human Silhouette in Clean White -->
+  <g id="avatar-silhouette">
+    <!-- Head -->
+    <circle cx="250" cy="198" r="27" fill="#FFFFFF" />
+    <!-- Torso / Shoulders -->
+    <path d="M 192 292 C 192 236, 308 236, 308 292 Z" fill="#FFFFFF" />
+  </g>
+
+  <!-- Branding Typography -->
+  <text x="250" y="420" text-anchor="middle" class="title">Beyond Identity</text>
+  <text x="250" y="456" text-anchor="middle" class="tagline">Labels se pare, har insaan barabar</text>
+
+  <!-- Amber Accent Bar -->
+  <rect x="216" y="478" width="68" height="4" rx="2" fill="#F59E0B" />
+</svg>

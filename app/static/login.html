@@ -3,811 +3,961 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign In & Register — Beyond Identity</title>
-  <meta name="description" content="Sign in or register your account on Beyond Identity to access verified community listings, confidential discrimination reporting, legal guidance, and case triage." />
+  <title>Login | Beyond Identity</title>
+  <meta name="description" content="Sign in to Beyond Identity — Safe space for community members, verified NGOs, and legal rights advocates." />
 
-  <!-- Google Fonts: Inter, Outfit, and Plus Jakarta Sans -->
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- Application Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css?v=3.2" />
-  <link rel="stylesheet" href="/static/css/redesign.css?v=1.0" />
-
-  <!-- Immediate Zero-Flicker Theme Initializer -->
-  <script>
-    (function() {
-      const savedTheme = localStorage.getItem("bi_theme") || "system";
-      let active = savedTheme;
-      if (savedTheme === "system") {
-        active = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      }
-      document.documentElement.setAttribute("data-theme", active);
-    })();
-  </script>
   <style>
-    .auth-page {
+    :root {
+      --ink: #1F1B4D;
+      --paper: #F8F7FF;
+      --saffron: #F59E0B;
+      --teal: #14B8A6;
+      --pink: #EC4899;
+      --muted: #64748B;
+      --line: #E2E8F0;
+      --accent: #0F766E;
+      --error: #E11D48;
+      --dark-space: #16133B;
+      --dark-deep: #120F31;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 32px 16px;
+      font-family: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
     }
-    .auth-card {
-      background: var(--bi-surface-card, rgba(255, 255, 255, 0.9));
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--bi-border-highlight, #e2e8f0);
-      border-radius: 18px;
-      max-width: 480px;
-      width: 100%;
-      padding: 36px 32px;
-      box-shadow: var(--bi-shadow-xl, 0 20px 25px -5px rgba(15, 23, 42, 0.1));
-      position: relative;
-    }
-    .auth-tabs {
-      display: flex;
-      background: rgba(18, 24, 41, 0.7);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 4px;
-      margin-bottom: 24px;
-      gap: 4px;
-    }
-    [data-theme="light"] .auth-tabs {
-      background: #f1f5f9;
-      border-color: rgba(15, 23, 42, 0.12);
-    }
-    .auth-tab-btn {
-      flex: 1;
-      padding: 10px 16px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 600;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: var(--transition-fast);
-      text-align: center;
-    }
-    .auth-tab-btn.active {
-      background: linear-gradient(135deg, var(--primary), #4f46e5);
-      color: white;
-      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.35);
-    }
-    .role-select-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-    .role-option {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 14px 12px;
-      cursor: pointer;
-      transition: var(--transition-fast);
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-    [data-theme="light"] .role-option {
-      background: #ffffff;
-      border-color: rgba(15, 23, 42, 0.12);
-    }
-    .role-option:hover {
-      border-color: var(--accent-cyan);
-      background: rgba(56, 189, 248, 0.06);
-    }
-    .role-option.selected {
-      border-color: var(--primary);
-      background: rgba(99, 102, 241, 0.15);
-      box-shadow: 0 0 0 2px var(--primary-glow);
-    }
-    [data-theme="light"] .role-option.selected {
-      background: rgba(79, 70, 229, 0.08);
-      border-color: #4f46e5;
-    }
-    .role-option input[type="radio"] {
-      display: none;
-    }
-    .role-icon {
-      font-size: 24px;
-    }
-    .role-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-    .role-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-      line-height: 1.3;
-    }
-    .input-wrapper {
-      position: relative;
-    }
-    .pass-toggle-btn {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 16px;
-      padding: 4px;
-    }
-    .pass-toggle-btn:hover {
-      color: var(--text-main);
-    }
-    .alert-box {
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      margin-bottom: 16px;
-      display: none;
-    }
-    .alert-box.alert-error {
-      display: block;
-      background: rgba(244, 63, 94, 0.15);
-      border: 1px solid rgba(244, 63, 94, 0.4);
-      color: #fecdd3;
-    }
-    [data-theme="light"] .alert-box.alert-error {
-      background: #fff1f2;
-      border-color: #fecdd3;
-      color: #9f1239;
-      font-weight: 500;
-    }
-    .alert-box.alert-success {
-      display: block;
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      color: #a7f3d0;
-    }
-    [data-theme="light"] .alert-box.alert-success {
-      background: #ecfdf5;
-      border-color: #a7f3d0;
-      color: #065f46;
-      font-weight: 500;
-    }
-    .demo-pills {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border-subtle);
-    }
-    .demo-pill-btn {
+
+    /* Top Emergency Crisis Bar */
+    .crisis-strip {
+      background: #111827;
+      color: #F3F4F6;
+      padding: 8px 16px;
+      font-size: 0.82rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 8px 12px;
-      color: var(--text-main);
-      font-size: 12.5px;
+      flex-wrap: wrap;
+      gap: 8px;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .crisis-strip a {
+      color: #38BDF8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .crisis-strip a:hover {
+      text-decoration: underline;
+    }
+    .crisis-strip .back-link {
+      color: #F8FAFC;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 3px 10px;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .crisis-strip .back-link:hover {
+      background: rgba(255, 255, 255, 0.2);
+      text-decoration: none;
+    }
+
+    /* Main Split Layout */
+    .layout {
+      min-height: calc(100vh - 38px);
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+    }
+
+    /* =========================================================
+       Left Panel: Artwork (Matches beyond_identity_1_circles.svg)
+       ========================================================= */
+    .art {
+      position: relative;
+      background: radial-gradient(circle at 50% 36%, #251F5E 0%, #18153F 60%, #120F30 100%);
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 32px;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Ambient background nebula effect */
+    .art::before {
+      content: "";
+      position: absolute;
+      top: -10%;
+      left: -10%;
+      width: 120%;
+      height: 120%;
+      background: radial-gradient(circle at 75% 20%, rgba(20, 184, 166, 0.12) 0%, transparent 40%),
+                  radial-gradient(circle at 25% 65%, rgba(245, 158, 11, 0.12) 0%, transparent 45%),
+                  radial-gradient(circle at 50% 85%, rgba(236, 72, 153, 0.14) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* Central SVG Artwork Container */
+    .art-svg-card {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      height: auto;
+      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.45));
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .art-svg-card:hover {
+      transform: scale(1.015);
+    }
+
+    /* Orbit pulse animation */
+    @keyframes orbitPulse {
+      0%, 100% { opacity: 0.15; }
+      50% { opacity: 0.28; }
+    }
+    .art svg .orbit {
+      animation: orbitPulse 6s ease-in-out infinite;
+    }
+    .art svg .orbit:nth-child(2) { animation-delay: 1.5s; }
+    .art svg .orbit:nth-child(3) { animation-delay: 3s; }
+
+    /* Floating subtle dot animation */
+    @keyframes dotFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .art svg .float-dot {
+      animation: dotFloat 4s ease-in-out infinite;
+    }
+
+    /* =========================================================
+       Right Panel: Authentication Form
+       ========================================================= */
+    .panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      background: #FAFAFC;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 450px;
+      background: #FFFFFF;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 10px 30px -5px rgba(31, 27, 77, 0.06), 0 20px 25px -5px rgba(0, 0, 0, 0.03);
+      position: relative;
+    }
+
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .card .sub {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    /* Role Switcher Tabs */
+    .roles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 5px;
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      margin-bottom: 22px;
+    }
+    .roles button {
+      border: 0;
+      background: transparent;
+      color: #64748B;
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.92rem;
+      padding: 10px 8px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
     }
-    [data-theme="light"] .demo-pill-btn {
-      background: #ffffff;
-      border-color: rgba(15, 23, 42, 0.12);
-      color: #0f172a;
+    .roles button[aria-checked="true"] {
+      background: var(--accent);
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.25);
     }
-    .demo-pill-btn:hover {
-      background: rgba(99, 102, 241, 0.12);
-      border-color: var(--border-glow);
+
+    /* 1-Click Fast Demo Credentials Pill Bar */
+    .demo-bar {
+      background: #F8FAFC;
+      border: 1px dashed #CBD5E1;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 20px;
+      font-size: 0.8rem;
     }
-    [data-theme="light"] .demo-pill-btn:hover {
-      background: #f1f5f9;
-      border-color: #4f46e5;
+    .demo-bar-title {
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
-    .auth-footer-note {
+    .demo-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .demo-pill {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .demo-pill:hover {
+      background: #F1F5F9;
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Form Fields */
+    .field { margin-bottom: 16px; }
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.88rem;
+      margin-bottom: 6px;
+      color: #1E293B;
+    }
+    .hint {
+      font-weight: 400;
+      color: #64748B;
+      font-size: 0.8rem;
+      margin-left: 4px;
+    }
+    input[type="text"], input[type="email"], input[type="password"] {
+      width: 100%;
+      font: inherit;
+      padding: 12px 14px;
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      background: #FFFFFF;
+      color: var(--ink);
+      font-size: 0.95rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+    }
+    input[aria-invalid="true"] {
+      border-color: var(--error) !important;
+      background: #FFF1F2;
+    }
+    .err {
+      color: var(--error);
+      font-size: 0.82rem;
+      margin: 5px 0 0;
+      min-height: 0;
+      font-weight: 500;
+    }
+    .err:empty { display: none; }
+
+    .pw { position: relative; }
+    .pw input { padding-right: 74px; }
+    .pw button {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.84rem;
+      padding: 8px 10px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .pw button:hover {
+      background: rgba(15, 118, 110, 0.08);
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 6px 0 20px;
+      font-size: 0.88rem;
+    }
+    .row label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 400;
+      margin: 0;
+      color: #475569;
+      cursor: pointer;
+    }
+    a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .submit {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 13px;
+      font: inherit;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #FFFFFF;
+      background: var(--accent);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s, opacity 0.15s;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+    }
+    .submit:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+    .submit:active {
+      transform: translateY(0);
+    }
+    .submit[disabled] {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Global Alert Box */
+    .form-err {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      color: #B91C1C;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      margin-bottom: 18px;
+      display: none;
+      font-weight: 500;
+    }
+    .form-err.show { display: block; }
+
+    .form-success {
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      color: #15803D;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      margin-bottom: 18px;
+      display: none;
+      font-weight: 500;
+    }
+    .form-success.show { display: block; }
+
+    /* Foot Links */
+    .foot {
       text-align: center;
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-top: 20px;
+      margin: 22px 0 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+      border-top: 1px solid #F1F5F9;
+      padding-top: 16px;
+    }
+    .foot p { margin: 6px 0; }
+
+    /* Modal for Password Reset */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: 18px;
+      padding: 28px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .modal-header h3 { margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--ink); }
+    .modal-close {
+      background: transparent;
+      border: 0;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: #64748B;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .art { padding: 36px 20px 24px; min-height: 380px; }
+      .art-svg-card { max-width: 340px; }
+      .panel { padding: 24px 16px; }
+      .card { padding: 28px 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Emergency Crisis Helpline Top Banner -->
-  <aside class="emergency-helpline-bar" aria-label="Emergency Crisis Support">
-    <span>🚨 <strong>24/7 Crisis &amp; Support:</strong></span>
-    <a href="tel:868989330" title="Call 24/7 Helpline">
-      📞 868989330
-    </a>
-    <span style="opacity: 0.9; font-size: 11.5px;">| Tele-MANAS: 14416 | Free Legal Aid (NALSA): 15100</span>
+  <!-- Top 24/7 Crisis Helpline & Portal Return Navigation -->
+  <aside class="crisis-strip" aria-label="Emergency Support & Navigation">
+    <div>
+      🚨 <strong>24/7 Crisis Helpline:</strong>
+      <a href="tel:868989330">📞 868989330</a>
+      <span style="opacity: 0.6; margin: 0 6px;">|</span>
+      <span>Tele-MANAS: <a href="tel:14416">14416</a></span>
+      <span style="opacity: 0.6; margin: 0 6px;">|</span>
+      <span>Legal Aid: <a href="tel:15100">15100</a></span>
+    </div>
+    <div>
+      <a href="/" class="back-link">← Return to Portal</a>
+    </div>
   </aside>
 
-  <!-- Subtle Pride Flag Accent Line -->
-  <div class="pride-accent-strip" aria-hidden="true"></div>
+  <!-- Split Screen Layout -->
+  <div class="layout">
 
-  <!-- Top Navigation / Return Link -->
-  <header class="navbar" id="login-navbar">
-    <div class="container nav-content">
-      <a href="/" class="nav-brand-mark" aria-label="Beyond Identity Home">
-        <span class="nav-pride-icon">🏳️‍⚧️</span>
-        <div class="nav-brand-text">
-          <span class="nav-brand-name"><strong class="brand-bold">Beyond Identity</strong></span>
-          <span class="nav-brand-tagline">Empowerment &amp; Rights Portal</span>
-        </div>
-      </a>
-      <div class="nav-actions" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <!-- Direct Helpline Button -->
-        <a href="tel:868989330" class="btn btn-secondary" style="color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.35); padding: 7px 12px; font-size: 12.5px; text-decoration: none; display: flex; align-items: center; gap: 5px; font-weight: 600;" title="Call 24/7 Helpline">
-          <span>📞</span> 868989330
-        </a>
+    <!-- =========================================================
+         LEFT ARTWORK PANEL: Exactly matching beyond_identity_1_circles.svg
+         ========================================================= -->
+    <aside class="art" aria-label="Beyond Identity Visual Artwork">
+      <div class="art-svg-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 580" width="100%" height="100%">
+          <defs>
+            <radialGradient id="card-glow" cx="50%" cy="38%" r="65%">
+              <stop offset="0%" stop-color="#241E5C" />
+              <stop offset="70%" stop-color="#18153F" />
+              <stop offset="100%" stop-color="#120F30" />
+            </radialGradient>
+          </defs>
 
-        <!-- Theme Switcher Segmented Control -->
-        <div class="theme-switch-group" id="login-theme-switch-container" title="Select Theme: Day, Night, or System">
-          <button type="button" class="theme-switch-btn" data-theme-val="light" title="Day Theme (Light)" aria-label="Day Theme">☀️ Day</button>
-          <button type="button" class="theme-switch-btn" data-theme-val="dark" title="Night Theme (Dark)" aria-label="Night Theme">🌙 Night</button>
-          <button type="button" class="theme-switch-btn active" data-theme-val="system" title="System Auto Theme" aria-label="System Theme">💻 Auto</button>
-        </div>
-        <a href="/about" class="btn btn-secondary" style="font-size: 12.5px; padding: 7px 12px;">About</a>
-        <a href="/" class="btn btn-secondary" style="font-size: 12.5px; padding: 7px 12px;">← Return to Portal</a>
+          <!-- Deep Dark Navy Card Background -->
+          <rect width="500" height="580" rx="28" fill="url(#card-glow)" />
+
+          <!-- Concentric Orbital Rings centered at (250, 205) -->
+          <g class="orbit-group" fill="none" stroke="rgba(165, 180, 252, 0.16)" stroke-width="1.2">
+            <circle cx="250" cy="205" r="72" class="orbit" />
+            <circle cx="250" cy="205" r="118" class="orbit" />
+            <circle cx="250" cy="205" r="165" class="orbit" />
+            <circle cx="250" cy="205" r="212" class="orbit" />
+            <circle cx="250" cy="205" r="255" class="orbit" stroke-opacity="0.10" />
+          </g>
+
+          <!-- Planetary Celestial Dots along the Orbits -->
+          <circle cx="250" cy="40" r="4.5" fill="#FFFFFF" class="float-dot" />
+          <circle cx="372" cy="72" r="4" fill="#F59E0B" class="float-dot" />
+          <circle cx="438" cy="148" r="4.5" fill="#14B8A6" class="float-dot" />
+          <circle cx="456" cy="254" r="5" fill="#F59E0B" class="float-dot" />
+          <circle cx="420" cy="336" r="5" fill="#EC4899" class="float-dot" />
+          <circle cx="82" cy="352" r="5.5" fill="#14B8A6" class="float-dot" />
+          <circle cx="46" cy="245" r="5" fill="#EC4899" class="float-dot" />
+          <circle cx="62" cy="140" r="5" fill="#F59E0B" class="float-dot" />
+          <circle cx="135" cy="82" r="4" fill="#14B8A6" class="float-dot" />
+          <circle cx="288" cy="90" r="2.5" fill="#FFFFFF" opacity="0.8" />
+
+          <!-- Three Overlapping Circles (Amber, Teal, Pink) -->
+          <g id="venn-circles">
+            <!-- Top-Left Circle (Warm Amber) -->
+            <circle cx="196" cy="168" r="82" fill="#E89C1D" opacity="0.88" />
+
+            <!-- Top-Right Circle (Vibrant Teal) -->
+            <circle cx="304" cy="168" r="82" fill="#14B8A6" opacity="0.88" />
+
+            <!-- Bottom-Center Circle (Vivid Magenta / Pink) -->
+            <circle cx="250" cy="252" r="82" fill="#D9387E" opacity="0.88" />
+          </g>
+
+          <!-- Human Silhouette in Clean White -->
+          <g id="avatar-figure">
+            <!-- Head Circle -->
+            <circle cx="250" cy="198" r="27" fill="#FFFFFF" />
+            <!-- Curved Shoulder Torso Shape -->
+            <path d="M 192 292 C 192 236, 308 236, 308 292 Z" fill="#FFFFFF" />
+          </g>
+
+          <!-- Typography: Beyond Identity -->
+          <text x="250" y="420" text-anchor="middle" fill="#FFFFFF" font-family="'Plus Jakarta Sans', -apple-system, sans-serif" font-size="34" font-weight="700" letter-spacing="-0.02em">
+            Beyond Identity
+          </text>
+
+          <!-- Tagline: Labels se pare, har insaan barabar -->
+          <text x="250" y="456" text-anchor="middle" fill="#C7C3E5" font-family="'Plus Jakarta Sans', -apple-system, sans-serif" font-size="16" font-weight="400" letter-spacing="0.01em">
+            Labels se pare, har insaan barabar
+          </text>
+
+          <!-- Saffron Accent Bar -->
+          <rect x="216" y="478" width="68" height="4" rx="2" fill="#F59E0B" />
+        </svg>
       </div>
-    </div>
-  </header>
+    </aside>
 
-  <div class="auth-page">
-    <!-- Centered Responsive Mobile-First Hero Image -->
-    <div class="login-hero-container" style="text-align: center; margin-bottom: 24px; width: 100%; max-width: 440px; margin-left: auto; margin-right: auto;">
-      <img 
-        src="/assets/login-hero.jpg" 
-        alt="Beyond Identity" 
-        class="login-page-hero-img" 
-        style="max-width: 100%; width: 100%; height: auto; border-radius: var(--radius-lg); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4); border: 1px solid var(--border-subtle); display: block; margin: 0 auto;" 
-      />
-    </div>
+    <!-- =========================================================
+         RIGHT PANEL: Interactive Form Card
+         ========================================================= -->
+    <main class="panel">
+      <div class="card">
+        <h2 id="title">Welcome back</h2>
+        <p class="sub" id="sub">Apne role ke hisaab se login karein.</p>
 
-    <div class="auth-card">
-
-      <!-- Active User Banner (shown if already logged in) -->
-      <div id="already-logged-in-box" style="display: none; text-align: center; margin-bottom: 24px; padding: 18px; background: rgba(99, 102, 241, 0.12); border: 1px solid var(--border-glow); border-radius: var(--radius-md);">
-        <div style="font-size: 28px; margin-bottom: 6px;">👤</div>
-        <h3 style="font-size: 17px; margin-bottom: 4px;" id="active-user-name">Welcome Back!</h3>
-        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;" id="active-user-role-badge">Signed in as User</p>
-        <div style="display: flex; gap: 10px; justify-content: center;">
-          <a href="/" class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;">Continue to Portal →</a>
-          <button class="btn btn-outline-danger" id="auth-page-logout-btn" style="padding: 6px 14px; font-size: 13px;">Sign Out</button>
-        </div>
-      </div>
-
-      <!-- Header Icon & Title -->
-      <div style="text-align: center; margin-bottom: 22px;">
-        <h2 style="font-size: 24px; margin-bottom: 6px;" id="auth-heading">Welcome to <strong class="brand-bold">Beyond Identity</strong></h2>
-        <p style="font-size: 13.5px; color: var(--text-muted);">Secure authentication for community members, verified NGOs, and advocates.</p>
-      </div>
-
-      <!-- Auth Switcher Tabs -->
-      <div class="auth-tabs">
-        <button type="button" class="auth-tab-btn active" id="tab-login-btn">Sign In</button>
-        <button type="button" class="auth-tab-btn" id="tab-register-btn">Create Account</button>
-      </div>
-
-      <!-- Alert Box for Validation & Errors -->
-      <div id="auth-alert" class="alert-box"></div>
-
-      <!-- ============================================== -->
-      <!-- 1. SIGN IN FORM                                -->
-      <!-- ============================================== -->
-      <form id="signin-form">
-        <div class="form-group">
-          <label for="login-email">Email Address</label>
-          <input type="email" id="login-email" placeholder="name@example.org" required autocomplete="email" />
-        </div>
-
-        <div class="form-group">
-          <label for="login-password">Password</label>
-          <div class="input-wrapper">
-            <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password" />
-            <button type="button" class="pass-toggle-btn" id="login-pass-toggle" title="Show/Hide password">👁️</button>
-          </div>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 13px;">
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 0;">
-            <input type="checkbox" id="login-remember" checked style="width: 16px; height: 16px;" />
-            <span style="color: var(--text-muted);">Keep me signed in</span>
-          </label>
-          <button type="button" id="forgot-password-link" style="background: none; border: none; color: var(--accent-cyan); cursor: pointer; font-size: 12.5px; font-weight: 500; text-decoration: underline; padding: 0;">
-            Forgot Password?
+        <!-- Role Selector Switcher -->
+        <div class="roles" role="radiogroup" aria-label="Select Login Role">
+          <button type="button" role="radio" aria-checked="true" data-role="community" id="role-community-btn">
+            <span>🌈</span> Community member
+          </button>
+          <button type="button" role="radio" aria-checked="false" data-role="ngo" id="role-ngo-btn">
+            <span>🏢</span> NGO partner
           </button>
         </div>
 
-        <button type="submit" class="btn btn-primary" id="signin-submit-btn" style="width: 100%; padding: 14px; font-size: 15px;">
-          Sign In to Portal
-        </button>
-      </form>
-
-      <!-- ============================================== -->
-      <!-- 2. REGISTER FORM                               -->
-      <!-- ============================================== -->
-      <form id="signup-form" style="display: none;">
-        <div class="form-group">
-          <label for="reg-name">Full Name or Preferred Name *</label>
-          <input type="text" id="reg-name" placeholder="e.g., Aarav Sharma / Maya" required autocomplete="name" />
-        </div>
-
-        <div class="form-group">
-          <label for="reg-email">Email Address *</label>
-          <input type="email" id="reg-email" placeholder="e.g., yourname@domain.com" required autocomplete="email" />
-        </div>
-
-        <!-- Account Role Selection -->
-        <div class="form-group">
-          <label>Select Account Type *</label>
-          <div class="role-select-grid">
-            <div class="role-option selected" data-role="user" id="role-opt-user">
-              <input type="radio" name="reg-role" value="user" checked />
-              <div class="role-icon">👤</div>
-              <div class="role-title">Community Seeker</div>
-              <div class="role-desc">File reports, browse opportunities, consult rights & health triage</div>
-            </div>
-
-            <div class="role-option" data-role="verifier" id="role-opt-verifier">
-              <input type="radio" name="reg-role" value="verifier" />
-              <div class="role-icon">🛡️</div>
-              <div class="role-title">NGO Partner</div>
-              <div class="role-desc">Triage reported discrimination cases, legal aid, verify listings</div>
-            </div>
+        <!-- 1-Click Fast Demo Credentials Pill Bar -->
+        <div class="demo-bar">
+          <div class="demo-bar-title">⚡ 1-Click Demo Accounts:</div>
+          <div class="demo-pills">
+            <button type="button" class="demo-pill" onclick="fillDemo('user@example.com', 'user123', 'community', 'Demo User')">
+              👤 Community
+            </button>
+            <button type="button" class="demo-pill" onclick="fillDemo('ngo@shreetrust.org', 'verifier123', 'ngo', 'Shree Trust')">
+              🏢 NGO Partner
+            </button>
+            <button type="button" class="demo-pill" onclick="fillDemo('admin@beyondidentity.org', 'admin123', 'community', 'Admin User')">
+              🛡️ Admin
+            </button>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="reg-password">Create Password (min. 6 characters) *</label>
-          <div class="input-wrapper">
-            <input type="password" id="reg-password" placeholder="Create a secure password" required autocomplete="new-password" />
-            <button type="button" class="pass-toggle-btn" id="reg-pass-toggle" title="Show/Hide password">👁️</button>
+        <!-- Status Alerts -->
+        <div class="form-err" id="formErr" role="alert"></div>
+        <div class="form-success" id="formSuccess" role="status"></div>
+
+        <!-- ============================================== -->
+        <!-- SIGN IN / REGISTER FORM                       -->
+        <!-- ============================================== -->
+        <form id="form" novalidate>
+          <div class="field" id="nameField">
+            <label for="name">
+              <span id="nameLabel">Name</span>
+              <span class="hint" id="nameHint">(jo naam aap use karna chahein)</span>
+            </label>
+            <input type="text" id="name" autocomplete="name" aria-describedby="nameErr" placeholder="Aapka chosen naam" />
+            <p class="err" id="nameErr" aria-live="polite"></p>
           </div>
-          <div class="password-strength-container" id="pass-strength-container" style="display: none;">
-            <div class="strength-bar-bg">
-              <div class="strength-bar-fill" id="strength-bar-fill"></div>
-            </div>
-            <div class="strength-text">
-              <span id="strength-label">Strength: Weak</span>
-              <span id="strength-hint">Min 6 chars; mix letters & numbers</span>
-            </div>
+
+          <div class="field">
+            <label for="email">Gmail / Email</label>
+            <input type="email" id="email" placeholder="you@gmail.com" autocomplete="email" aria-describedby="emailErr" required />
+            <p class="err" id="emailErr" aria-live="polite"></p>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="reg-confirm-password">Confirm Password *</label>
-          <input type="password" id="reg-confirm-password" placeholder="Re-enter your password" required autocomplete="new-password" />
-        </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="pw">
+              <input type="password" id="password" autocomplete="current-password" aria-describedby="passwordErr" required />
+              <button type="button" id="toggle" aria-label="Show password">Show</button>
+            </div>
+            <p class="err" id="passwordErr" aria-live="polite"></p>
+          </div>
 
-        <div style="background: rgba(99, 102, 241, 0.08); border-left: 3px solid var(--accent-cyan); padding: 10px 14px; border-radius: 4px; font-size: 12px; color: #cbd5e1; margin-bottom: 20px;">
-          🔒 <strong>Confidentiality Commitment:</strong> Beyond Identity does not share your identity without explicit consent. Incident reports can also be submitted anonymously.
-        </div>
+          <div class="row" id="rememberRow">
+            <label>
+              <input type="checkbox" id="remember" checked />
+              Remember me
+            </label>
+            <a href="#forgot" id="forgotLink">Forgot password?</a>
+          </div>
 
-        <button type="submit" class="btn btn-primary" id="signup-submit-btn" style="width: 100%; padding: 14px; font-size: 15px;">
-          Create Account & Sign In
-        </button>
-      </form>
+          <button class="submit" id="submit" type="submit">Login as community member</button>
+        </form>
 
-      <!-- ============================================== -->
-      <!-- 3. FORGOT / RESET PASSWORD FORM                -->
-      <!-- ============================================== -->
-      <form id="forgot-password-form" style="display: none;">
-        <div style="text-align: center; margin-bottom: 18px;">
-          <div style="font-size: 26px; margin-bottom: 4px;">🔑</div>
-          <h3 style="font-size: 18px; margin-bottom: 4px;">Reset Account Password</h3>
-          <p style="font-size: 13px; color: var(--text-muted);">
-            Enter your registered email address to request a secure reset token.
+        <!-- Footer Navigation Links -->
+        <div class="foot">
+          <p id="signupLine">
+            Naye hain? <a id="signupLink" href="#register">Account banayein</a>
+          </p>
+          <p id="extraLine">
+            <a href="/?tab=report&anon=1">Bina login ke anonymously report karein</a>
           </p>
         </div>
-
-        <!-- Step 1: Request Reset Token -->
-        <div id="forgot-step-1">
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label for="forgot-email">Account Email Address *</label>
-            <input type="email" id="forgot-email" placeholder="name@example.org" required autocomplete="email" />
-          </div>
-          <button type="submit" class="btn btn-primary" id="forgot-request-btn" style="width: 100%; padding: 13px; font-size: 14.5px;">
-            Request Reset Token
-          </button>
-        </div>
-
-        <!-- Step 2: Set New Password -->
-        <div id="forgot-step-2" style="display: none; margin-top: 14px;">
-          <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 10px 12px; font-size: 12.5px; color: #a7f3d0; margin-bottom: 14px;">
-            ✅ Reset token generated and verified! Enter your new password below.
-          </div>
-
-          <div class="form-group" style="margin-bottom: 12px;">
-            <label for="reset-token-input">Password Reset Token *</label>
-            <input type="text" id="reset-token-input" placeholder="Paste or verify reset token" required />
-          </div>
-
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label for="reset-new-password">New Password (min. 6 characters) *</label>
-            <div class="input-wrapper">
-              <input type="password" id="reset-new-password" placeholder="Enter new secure password" required minlength="6" />
-              <button type="button" class="pass-toggle-btn" id="reset-pass-toggle" title="Show/Hide password">👁️</button>
-            </div>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 16px;">
-            <label for="reset-confirm-password">Confirm New Password *</label>
-            <input type="password" id="reset-confirm-password" placeholder="Re-enter new password" required minlength="6" />
-          </div>
-
-          <button type="button" class="btn btn-primary" id="reset-submit-btn" style="width: 100%; padding: 13px; font-size: 14.5px;">
-            Confirm & Save New Password
-          </button>
-        </div>
-
-        <div style="text-align: center; margin-top: 20px;">
-          <button type="button" id="back-to-signin-btn" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px;">
-            ← Return to Sign In
-          </button>
-        </div>
-      </form>
-
-      <div class="auth-footer-note">
-        Protected under statutory Indian data protection & Transgender Persons Act 2019 safeguards.
       </div>
+    </main>
+
+  </div>
+
+  <!-- Forgot Password Recovery Modal -->
+  <div class="modal-backdrop" id="forgotModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">Reset Password</h3>
+        <button type="button" class="modal-close" id="closeForgotModal" aria-label="Close modal">&times;</button>
+      </div>
+      <p style="font-size: 0.9rem; color: var(--muted); margin: 0 0 16px;">
+        Apna registered email address enter karein taaki hum aapko password reset token provide kar sakein.
+      </p>
+      <div class="form-err" id="modalErr"></div>
+      <div class="form-success" id="modalSuccess"></div>
+      <form id="forgotForm">
+        <div class="field">
+          <label for="forgotEmail">Email Address</label>
+          <input type="email" id="forgotEmail" placeholder="you@domain.com" required />
+        </div>
+        <div id="resetStep2" style="display: none;">
+          <div class="field">
+            <label for="resetToken">Reset Token</label>
+            <input type="text" id="resetToken" placeholder="Paste reset token" />
+          </div>
+          <div class="field">
+            <label for="newPassword">New Password (Min 6 chars)</label>
+            <input type="password" id="newPassword" placeholder="Enter new password" />
+          </div>
+        </div>
+        <button type="submit" class="submit" id="forgotSubmitBtn" style="margin-top: 8px;">
+          Send Recovery Token
+        </button>
+      </form>
     </div>
   </div>
 
   <script>
-    const API_BASE = "";
-    let selectedRole = "user";
+    // Automatic API Base detection: handles localhost:8000, 127.0.0.1, and cloud deployment
+    const API_BASE = window.location.protocol.startsWith("http") ? "" : "http://127.0.0.1:8000";
 
-    // Theme Management
-    function initTheme() {
-      const savedTheme = localStorage.getItem("bi_theme") || "system";
-      applyTheme(savedTheme);
-
-      document.querySelectorAll(".theme-switch-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const val = btn.getAttribute("data-theme-val");
-          localStorage.setItem("bi_theme", val);
-          applyTheme(val);
-        });
-      });
-
-      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
-        const currentTheme = localStorage.getItem("bi_theme") || "system";
-        if (currentTheme === "system") {
-          document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
-        }
-      });
-    }
-
-    function applyTheme(theme) {
-      let active = theme;
-      if (theme === "system") {
-        active = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    const ROLES = {
+      community: {
+        accent: "#0F766E",
+        backendRole: "user",
+        title: "Welcome back",
+        sub: "Aapki pehchaan, aapka decision. Safe space mein login karein.",
+        nameLabel: "Name",
+        nameHint: "(jo naam aap use karna chahein)",
+        namePlaceholder: "Aapka chosen naam",
+        button: "Login as community member",
+        signupText: "Account banayein",
+        extra: '<a href="/?tab=report&anon=1">Bina login ke anonymously report karein</a>',
+        redirect: "/?login=success&role=community"
+      },
+      ngo: {
+        accent: "#1F1B4D",
+        backendRole: "verifier",
+        title: "NGO partner login",
+        sub: "Apni organisation ke account se login karein.",
+        nameLabel: "Contact person name",
+        nameHint: "(authorised representative)",
+        namePlaceholder: "Aapka naam",
+        button: "Login as NGO partner",
+        signupText: "Partner ke roop mein register karein",
+        extra: 'Account approval mein madad chahiye? <a href="/about">Hum se baat karein</a>',
+        redirect: "/?login=success&role=ngo"
       }
-      document.documentElement.setAttribute("data-theme", active);
+    };
 
-      document.querySelectorAll(".theme-switch-btn").forEach(btn => {
-        if (btn.getAttribute("data-theme-val") === theme) {
-          btn.classList.add("active");
-        } else {
-          btn.classList.remove("active");
-        }
+    let currentRole = "community";
+    let isRegisterMode = false;
+
+    const $ = id => document.getElementById(id);
+    const f = {
+      name: $("name"),
+      email: $("email"),
+      password: $("password")
+    };
+
+    function applyRole(r) {
+      currentRole = r;
+      const c = ROLES[r];
+      document.documentElement.style.setProperty("--accent", c.accent);
+
+      document.querySelectorAll(".roles button").forEach(b => {
+        const isMatch = b.dataset.role === r;
+        b.setAttribute("aria-checked", String(isMatch));
       });
-    }
-    initTheme();
 
-    // Tab Navigation Elements
-    const tabLoginBtn = document.getElementById("tab-login-btn");
-    const tabRegisterBtn = document.getElementById("tab-register-btn");
-    const signinForm = document.getElementById("signin-form");
-    const signupForm = document.getElementById("signup-form");
-    const forgotForm = document.getElementById("forgot-password-form");
-    const forgotLink = document.getElementById("forgot-password-link");
-    const backToSigninBtn = document.getElementById("back-to-signin-btn");
-    const authTabs = document.querySelector(".auth-tabs");
-    const authHeading = document.getElementById("auth-heading");
-    const authAlert = document.getElementById("auth-alert");
-
-    function switchTab(tab) {
-      authAlert.className = "alert-box";
-      authAlert.innerText = "";
-      authAlert.style.display = "none";
-      if (tab === "register") {
-        if (authTabs) authTabs.style.display = "flex";
-        tabRegisterBtn.classList.add("active");
-        tabLoginBtn.classList.remove("active");
-        signupForm.style.display = "block";
-        signinForm.style.display = "none";
-        if (forgotForm) forgotForm.style.display = "none";
-        authHeading.innerHTML = "Join <strong class=\"brand-bold\">Beyond Identity</strong>";
-      } else if (tab === "forgot") {
-        if (authTabs) authTabs.style.display = "none";
-        signinForm.style.display = "none";
-        signupForm.style.display = "none";
-        if (forgotForm) {
-          forgotForm.style.display = "block";
-          document.getElementById("forgot-step-1").style.display = "block";
-          document.getElementById("forgot-step-2").style.display = "none";
-        }
-        authHeading.innerText = "Password Recovery";
+      if (!isRegisterMode) {
+        $("title").textContent = c.title;
+        $("sub").textContent = c.sub;
+        $("submit").textContent = c.button;
+        $("signupLink").textContent = c.signupText;
+        $("signupLine").innerHTML = `Naye hain? <a id="signupLink" href="#register">${c.signupText}</a>`;
+        $("signupLink").onclick = toggleRegisterMode;
       } else {
-        if (authTabs) authTabs.style.display = "flex";
-        tabLoginBtn.classList.add("active");
-        tabRegisterBtn.classList.remove("active");
-        signinForm.style.display = "block";
-        signupForm.style.display = "none";
-        if (forgotForm) forgotForm.style.display = "none";
-        authHeading.innerText = "Welcome Back";
+        $("title").textContent = r === "community" ? "Naya Account Banayein" : "Register NGO Partner";
+        $("sub").textContent = r === "community" ? "Safe & confidential space for you." : "List opportunities & verify resources.";
+        $("submit").textContent = r === "community" ? "Register as Community Member" : "Register as NGO Partner";
       }
+
+      $("nameLabel").textContent = c.nameLabel;
+      $("nameHint").textContent = c.nameHint;
+      f.name.placeholder = c.namePlaceholder;
+      $("extraLine").innerHTML = c.extra;
+      clearErrors();
     }
 
-    tabLoginBtn.addEventListener("click", () => switchTab("login"));
-    tabRegisterBtn.addEventListener("click", () => switchTab("register"));
-    if (forgotLink) forgotLink.addEventListener("click", () => switchTab("forgot"));
-    if (backToSigninBtn) backToSigninBtn.addEventListener("click", () => switchTab("login"));
-
-    // Check URL path and query parameters (e.g. /register or /login?tab=register)
-    const urlParams = new URLSearchParams(window.location.search);
-    const isRegisterRoute = window.location.pathname.endsWith("/register") || urlParams.get("tab") === "register";
-    if (isRegisterRoute) {
-      switchTab("register");
+    function toggleRegisterMode(e) {
+      if (e) e.preventDefault();
+      isRegisterMode = !isRegisterMode;
+      if (isRegisterMode) {
+        $("nameField").style.display = "block";
+        $("rememberRow").style.display = "none";
+        $("signupLine").innerHTML = 'Pehle se account hai? <a id="loginToggleLink" href="#login">Sign In karein</a>';
+        $("loginToggleLink").onclick = toggleRegisterMode;
+        applyRole(currentRole);
+      } else {
+        $("rememberRow").style.display = "flex";
+        $("signupLine").innerHTML = `Naye hain? <a id="signupLink" href="#register">${ROLES[currentRole].signupText}</a>`;
+        $("signupLink").onclick = toggleRegisterMode;
+        applyRole(currentRole);
+      }
+      clearErrors();
     }
 
-    // Role Selection
-    document.querySelectorAll(".role-option").forEach(opt => {
-      opt.addEventListener("click", () => {
-        document.querySelectorAll(".role-option").forEach(o => o.classList.remove("selected"));
-        opt.classList.add("selected");
-        selectedRole = opt.getAttribute("data-role");
-        const radio = opt.querySelector("input[type='radio']");
-        if (radio) radio.checked = true;
-      });
+    // Role button event listeners
+    document.querySelectorAll(".roles button").forEach(b =>
+      b.addEventListener("click", () => applyRole(b.dataset.role))
+    );
+
+    // Show / Hide Password toggle
+    $("toggle").addEventListener("click", () => {
+      const show = f.password.type === "password";
+      f.password.type = show ? "text" : "password";
+      $("toggle").textContent = show ? "Hide" : "Show";
+      $("toggle").setAttribute("aria-label", show ? "Hide password" : "Show password");
     });
 
-    // Password Show/Hide Toggle
-    function setupToggle(toggleId, inputId) {
-      const btn = document.getElementById(toggleId);
-      const input = document.getElementById(inputId);
-      if (!btn || !input) return;
-      btn.addEventListener("click", () => {
-        if (input.type === "password") {
-          input.type = "text";
-          btn.innerText = "🙈";
-        } else {
-          input.type = "password";
-          btn.innerText = "👁️";
-        }
-      });
-    }
-    setupToggle("login-pass-toggle", "login-password");
-    setupToggle("reg-pass-toggle", "reg-password");
-
-    // Dynamic Password Strength Meter
-    const regPassInput = document.getElementById("reg-password");
-    const strengthContainer = document.getElementById("pass-strength-container");
-    const strengthBarFill = document.getElementById("strength-bar-fill");
-    const strengthLabel = document.getElementById("strength-label");
-    const strengthHint = document.getElementById("strength-hint");
-
-    if (regPassInput && strengthContainer) {
-      regPassInput.addEventListener("input", () => {
-        const val = regPassInput.value;
-        if (!val) {
-          strengthContainer.style.display = "none";
-          return;
-        }
-        strengthContainer.style.display = "block";
-        let score = 0;
-        if (val.length >= 6) score++;
-        if (val.length >= 9) score++;
-        if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
-        if (/[0-9]/.test(val)) score++;
-        if (/[^A-Za-z0-9]/.test(val)) score++;
-
-        if (score <= 2) {
-          strengthBarFill.className = "strength-bar-fill strength-weak";
-          strengthLabel.innerText = "Strength: Weak";
-          strengthHint.innerText = "Add mix of numbers & capitals";
-        } else if (score <= 4) {
-          strengthBarFill.className = "strength-bar-fill strength-medium";
-          strengthLabel.innerText = "Strength: Medium";
-          strengthHint.innerText = "Add symbols or extra length";
-        } else {
-          strengthBarFill.className = "strength-bar-fill strength-strong";
-          strengthLabel.innerText = "Strength: Strong";
-          strengthHint.innerText = "Excellent password security!";
-        }
-      });
+    function setErr(key, msg) {
+      const el = $(key + "Err");
+      if (el) el.textContent = msg;
+      if (f[key]) f[key].setAttribute("aria-invalid", msg ? "true" : "false");
     }
 
-    // Display Alert
-    function showAlert(msg, isError = true) {
-      authAlert.className = isError ? "alert-box alert-error" : "alert-box alert-success";
-      authAlert.innerText = msg;
-      authAlert.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    function clearErrors() {
+      ["name", "email", "password"].forEach(k => setErr(k, ""));
+      $("formErr").textContent = "";
+      $("formErr").classList.remove("show");
+      $("formSuccess").textContent = "";
+      $("formSuccess").classList.remove("show");
     }
 
-    // Check Existing Session
-    async function checkCurrentSession() {
-      const token = localStorage.getItem("bi_token");
-      if (!token) return;
+    Object.keys(f).forEach(k => f[k].addEventListener("input", () => setErr(k, "")));
 
-      try {
-        const res = await fetch(`${API_BASE}/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (res.ok) {
-          const user = await res.json();
-          document.getElementById("already-logged-in-box").style.display = "block";
-          document.getElementById("active-user-name").innerText = `Welcome back, ${user.name}!`;
-          document.getElementById("active-user-role-badge").innerText = `Signed in as ${user.role.toUpperCase()} (${user.email})`;
-        } else {
-          localStorage.removeItem("bi_token");
-          localStorage.removeItem("bi_user");
-        }
-      } catch (e) {
-        console.error(e);
+    function validate() {
+      let ok = true;
+      if (isRegisterMode && f.name.value.trim().length < 2) {
+        setErr("name", "Naam kam se kam 2 letters ka likhein.");
+        ok = false;
       }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim())) {
+        setErr("email", "Sahi email address likhein, jaise you@gmail.com");
+        ok = false;
+      }
+      if (f.password.value.length < 6) {
+        setErr("password", "Password kam se kam 6 characters ka hona chahiye.");
+        ok = false;
+      }
+      return ok;
     }
-    checkCurrentSession();
 
-    // Logout button on auth page
-    document.getElementById("auth-page-logout-btn")?.addEventListener("click", () => {
-      localStorage.removeItem("bi_token");
-      localStorage.removeItem("bi_user");
-      document.getElementById("already-logged-in-box").style.display = "none";
-      showAlert("Logged out successfully.", false);
-    });
-
-    // Sign In Submission via proper JSON API
-    signinForm.addEventListener("submit", async (e) => {
+    // Form Submit (Handles both Login and Registration via FastAPI)
+    $("form").addEventListener("submit", async e => {
       e.preventDefault();
-      const email = document.getElementById("login-email").value.trim();
-      const password = document.getElementById("login-password").value;
-      const submitBtn = document.getElementById("signin-submit-btn");
+      clearErrors();
 
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="btn-spinner"></span> Authenticating...';
+      if (!validate()) {
+        const first = Object.values(f).find(i => i.getAttribute("aria-invalid") === "true");
+        if (first) first.focus();
+        return;
+      }
+
+      const btn = $("submit");
+      const label = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = isRegisterMode ? "Creating account..." : "Logging in...";
 
       try {
-        const res = await fetch(`${API_BASE}/auth/login-json`, {
+        if (isRegisterMode) {
+          // ===============================
+          // 1. REGISTRATION (/auth/register)
+          // ===============================
+          const regRes = await fetch(`${API_BASE}/auth/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: f.name.value.trim(),
+              email: f.email.value.trim().toLowerCase(),
+              password: f.password.value,
+              role: ROLES[currentRole].backendRole
+            })
+          });
+
+          if (!regRes.ok) {
+            const errData = await regRes.json().catch(() => ({}));
+            throw new Error(errData.detail || "Account register nahi ho paya. Email shayad already registered hai.");
+          }
+
+          $("formSuccess").textContent = "Account safaltapoorvak ban gaya! Logging you in...";
+          $("formSuccess").classList.add("show");
+        }
+
+        // ===============================
+        // 2. AUTHENTICATION (/auth/login-json)
+        // ===============================
+        const loginRes = await fetch(`${API_BASE}/auth/login-json`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({
+            email: f.email.value.trim().toLowerCase(),
+            password: f.password.value
+          })
         });
 
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.detail || "Incorrect email or password");
+        if (loginRes.status === 401 || loginRes.status === 403) {
+          throw new Error("Email ya password galat hai. Dobara check karein.");
+        }
+        if (!loginRes.ok) {
+          const errData = await loginRes.json().catch(() => ({}));
+          throw new Error(errData.detail || "Login nahi ho paya. Kripya dobara try karein.");
         }
 
-        const data = await res.json();
+        const data = await loginRes.json();
+
+        // Secure Session Storage
+        const store = $("remember").checked ? localStorage : sessionStorage;
+        store.setItem("bi_token", data.access_token);
+        store.setItem("bi_role", ROLES[currentRole].backendRole);
+
+        if (data.user) {
+          store.setItem("bi_user", JSON.stringify(data.user));
+        }
+
+        // Also sync localStorage so app.js and index.html instantly recognize user
         localStorage.setItem("bi_token", data.access_token);
         if (data.user) {
           localStorage.setItem("bi_user", JSON.stringify(data.user));
         }
 
-        showAlert("Login successful! Launching Talking Chat Assistant...", false);
+        btn.textContent = "Login Successful! Redirecting...";
+
+        // Redirect to portal with welcome voice prompt
         setTimeout(() => {
-          window.location.href = "/?tab=chat&talk=1&login=success";
-        }, 800);
+          window.location.href = `/?tab=chat&talk=1&login=success&role=${currentRole}`;
+        }, 500);
 
       } catch (err) {
-        showAlert(err.message, true);
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = "Sign In to Portal";
+        $("formErr").textContent = err instanceof TypeError
+          ? "Backend server se connect nahi ho paya. Make sure FastAPI server port 8000 par running hai."
+          : err.message;
+        $("formErr").classList.add("show");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = label;
       }
     });
 
-    // Sign Up Registration Submission via proper API
-    signupForm.addEventListener("submit", async (e) => {
+    // 1-Click Fast Demo Credentials Filler
+    window.fillDemo = function(email, password, roleKey, name) {
+      applyRole(roleKey);
+      f.email.value = email;
+      f.password.value = password;
+      if (name) f.name.value = name;
+      clearErrors();
+      $("formSuccess").textContent = `Filled credentials for ${roleKey === "ngo" ? "NGO Partner" : "Community"}! Click Submit to sign in.`;
+      $("formSuccess").classList.add("show");
+    };
+
+    // =========================================================
+    // Forgot Password Flow Modal Handlers
+    // =========================================================
+    const modal = $("forgotModal");
+    $("forgotLink").addEventListener("click", e => {
       e.preventDefault();
-      const name = document.getElementById("reg-name").value.trim();
-      const email = document.getElementById("reg-email").value.trim();
-      const password = document.getElementById("reg-password").value;
-      const confirmPassword = document.getElementById("reg-confirm-password").value;
-      const submitBtn = document.getElementById("signup-submit-btn");
-
-      if (password.length < 6) {
-        showAlert("Password must be at least 6 characters long.", true);
-        return;
-      }
-      if (password !== confirmPassword) {
-        showAlert("Passwords do not match. Please re-check.", true);
-        return;
-      }
-
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="btn-spinner"></span> Creating Account...';
-
-      try {
-        const payload = {
-          name: name,
-          email: email,
-          password: password,
-          role: selectedRole
-        };
-
-        const res = await fetch(`${API_BASE}/auth/register`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.detail || "Registration failed. Email may already be registered.");
-        }
-
-        const newUser = await res.json();
-        showAlert(`Account created for ${newUser.name}! Signing you in...`, false);
-
-        // Automatically log in with new credentials via login-json
-        const loginRes = await fetch(`${API_BASE}/auth/login-json`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
-        });
-
-        if (loginRes.ok) {
-          const tokenData = await loginRes.json();
-          localStorage.setItem("bi_token", tokenData.access_token);
-          localStorage.setItem("bi_user", JSON.stringify(tokenData.user || newUser));
-          setTimeout(() => {
-            window.location.href = "/?tab=chat&talk=1&login=success";
-          }, 900);
-        } else {
-          switchTab("login");
-          document.getElementById("login-email").value = email;
-          showAlert("Account created! Please sign in with your credentials.", false);
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = "Create Account & Sign In";
-        }
-
-      } catch (err) {
-        showAlert(err.message, true);
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = "Create Account & Sign In";
-      }
+      modal.classList.add("active");
+      $("modalErr").textContent = "";
+      $("modalErr").classList.remove("show");
+      $("modalSuccess").textContent = "";
+      $("modalSuccess").classList.remove("show");
+      $("resetStep2").style.display = "none";
+      $("forgotSubmitBtn").textContent = "Send Recovery Token";
+      if (f.email.value) $("forgotEmail").value = f.email.value;
     });
 
-    // 1-Click Demo Login Pills
-    document.querySelectorAll(".demo-pill-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const email = btn.getAttribute("data-email");
-        const password = btn.getAttribute("data-password");
-        switchTab("login");
-        document.getElementById("login-email").value = email;
-        document.getElementById("login-password").value = password;
-        document.getElementById("signin-form").dispatchEvent(new Event("submit"));
-      });
+    $("closeForgotModal").addEventListener("click", () => {
+      modal.classList.remove("active");
     });
 
-    // Forgot Password & Reset Handlers
-    setupToggle("reset-pass-toggle", "reset-new-password");
+    modal.addEventListener("click", e => {
+      if (e.target === modal) modal.classList.remove("active");
+    });
 
-    let currentResetEmail = "";
-    if (forgotForm) {
-      forgotForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const email = document.getElementById("forgot-email").value.trim();
-        const requestBtn = document.getElementById("forgot-request-btn");
-        if (!email) return;
+    let passwordResetStage = 1;
 
-        requestBtn.disabled = true;
-        requestBtn.innerText = "Generating Reset Token...";
+    $("forgotForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const email = $("forgotEmail").value.trim().toLowerCase();
+      const errBox = $("modalErr");
+      const succBox = $("modalSuccess");
+      errBox.classList.remove("show");
+      succBox.classList.remove("show");
 
+      if (passwordResetStage === 1) {
         try {
+          $("forgotSubmitBtn").disabled = true;
+          $("forgotSubmitBtn").textContent = "Verifying email...";
+
           const res = await fetch(`${API_BASE}/auth/forgot-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -815,48 +965,33 @@
           });
 
           const data = await res.json();
-          if (!res.ok) {
-            throw new Error(data.detail || "Unable to request password reset");
-          }
+          if (!res.ok) throw new Error(data.detail || "Email registered nahi mila.");
 
-          currentResetEmail = email;
-          document.getElementById("reset-token-input").value = data.reset_token || "";
-          document.getElementById("forgot-step-1").style.display = "none";
-          document.getElementById("forgot-step-2").style.display = "block";
-          showAlert("Reset token generated! Enter your new password below.", false);
+          succBox.textContent = "Token generated! Demo Token copied to field below.";
+          succBox.classList.add("show");
+          $("resetStep2").style.display = "block";
+          $("resetToken").value = data.reset_token;
+          $("forgotSubmitBtn").textContent = "Set New Password";
+          passwordResetStage = 2;
         } catch (err) {
-          showAlert(err.message, true);
+          errBox.textContent = err.message;
+          errBox.classList.add("show");
         } finally {
-          requestBtn.disabled = false;
-          requestBtn.innerText = "Request Reset Token";
+          $("forgotSubmitBtn").disabled = false;
         }
-      });
-    }
-
-    const resetSubmitBtn = document.getElementById("reset-submit-btn");
-    if (resetSubmitBtn) {
-      resetSubmitBtn.addEventListener("click", async () => {
-        const token = document.getElementById("reset-token-input").value.trim();
-        const newPassword = document.getElementById("reset-new-password").value;
-        const confirmPassword = document.getElementById("reset-confirm-password").value;
-
-        if (!token) {
-          showAlert("Please enter your reset token.", true);
-          return;
-        }
+      } else {
+        const token = $("resetToken").value.trim();
+        const newPassword = $("newPassword").value;
         if (newPassword.length < 6) {
-          showAlert("New password must be at least 6 characters long.", true);
+          errBox.textContent = "New password kam se kam 6 characters ka hona chahiye.";
+          errBox.classList.add("show");
           return;
         }
-        if (newPassword !== confirmPassword) {
-          showAlert("Passwords do not match. Please re-enter.", true);
-          return;
-        }
-
-        resetSubmitBtn.disabled = true;
-        resetSubmitBtn.innerText = "Updating Password...";
 
         try {
+          $("forgotSubmitBtn").disabled = true;
+          $("forgotSubmitBtn").textContent = "Updating password...";
+
           const res = await fetch(`${API_BASE}/auth/reset-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -864,23 +999,32 @@
           });
 
           const data = await res.json();
-          if (!res.ok) {
-            throw new Error(data.detail || "Failed to reset password");
-          }
+          if (!res.ok) throw new Error(data.detail || "Password reset nahi ho paya.");
 
-          switchTab("login");
-          if (currentResetEmail) {
-            document.getElementById("login-email").value = currentResetEmail;
-          }
-          document.getElementById("login-password").value = "";
-          showAlert("✅ Password reset successfully! Please sign in with your new password.", false);
+          succBox.textContent = "Password updated successfully! Ab naye password se login karein.";
+          succBox.classList.add("show");
+
+          setTimeout(() => {
+            modal.classList.remove("active");
+            f.password.value = newPassword;
+            f.email.value = email;
+            passwordResetStage = 1;
+            $("forgotSubmitBtn").textContent = "Send Recovery Token";
+          }, 1500);
         } catch (err) {
-          showAlert(err.message, true);
+          errBox.textContent = err.message;
+          errBox.classList.add("show");
         } finally {
-          resetSubmitBtn.disabled = false;
-          resetSubmitBtn.innerText = "Confirm & Save New Password";
+          $("forgotSubmitBtn").disabled = false;
         }
-      });
+      }
+    });
+
+    // Check if URL has ?tab=register or /register
+    if (window.location.pathname.includes("register") || window.location.search.includes("tab=register")) {
+      toggleRegisterMode();
+    } else {
+      applyRole("community");
     }
   </script>
 </body>

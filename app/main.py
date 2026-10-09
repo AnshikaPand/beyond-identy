@@ -115,3 +115,29 @@ def serve_portal():
     return {"message": "Portal frontend not found"}
 
 
+@app.get("/dashboard")
+def serve_dashboard():
+    if INDEX_FILE.exists():
+        return FileResponse(str(INDEX_FILE))
+    return {"message": "Dashboard frontend not found"}
+
+
+@app.get("/register/community")
+@app.get("/register/ngo")
+def serve_register_roles():
+    if LOGIN_FILE.exists():
+        return FileResponse(str(LOGIN_FILE))
+    return {"message": "Register page not found"}
+
+
+@app.get("/dashboard/community")
+@app.get("/dashboard/ngo")
+@app.get("/report/anonymous")
+def serve_portal_redirects():
+    if INDEX_FILE.exists():
+        return FileResponse(str(INDEX_FILE))
+    return {"message": "Portal frontend not found"}
+
+
+
+
