@@ -78,32 +78,32 @@
       <!-- Center: Main Navigation Links + More Dropdown -->
       <nav class="nav-links-menu" id="nav-links-menu" aria-label="Main Navigation">
         <a href="#landing-hero-section" class="nav-link active">Home</a>
-        <a href="#tab-chat" class="nav-link nav-chat-link" id="nav-open-chat-btn">
+        <a href="#tab-chat" class="nav-link nav-chat-link auth-only-nav" id="nav-open-chat-btn">
           <span class="nav-chat-icon">🤖</span> <strong>Chatbot</strong>
         </a>
 
-        <!-- More Dropdown (Video, Rights, Awareness, Opportunity) -->
-        <div class="nav-dropdown" id="nav-more-dropdown">
+        <!-- More Dropdown (Opportunity, Rights, Health, Report, About) -->
+        <div class="nav-dropdown auth-only-nav" id="nav-more-dropdown">
           <button type="button" class="nav-link nav-dropdown-btn" id="nav-more-toggle" aria-expanded="false" aria-haspopup="true">
             <span>More</span>
             <svg class="dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div class="nav-dropdown-menu" id="nav-more-menu" role="menu">
-            <a href="#home-video-overview" class="dropdown-item" role="menuitem" id="nav-link-video">
-              <span class="dropdown-item-icon">🎬</span>
-              <span>Video</span>
-            </a>
-            <a href="#guest-demo-assistant-section" class="dropdown-item" role="menuitem" id="nav-link-legal">
-              <span class="dropdown-item-icon">⚖️</span>
-              <span>Rights</span>
-            </a>
-            <a href="#guest-pillars-section" class="dropdown-item" role="menuitem" id="nav-link-awareness">
-              <span class="dropdown-item-icon">📚</span>
-              <span>Awareness</span>
-            </a>
-            <a href="#guest-demo-opp-section" class="dropdown-item" role="menuitem" id="nav-link-opportunities">
+            <a href="#tab-listings" class="dropdown-item" role="menuitem" id="nav-link-opportunities">
               <span class="dropdown-item-icon">💼</span>
               <span>Opportunity</span>
+            </a>
+            <a href="#tab-awareness" class="dropdown-item" role="menuitem" id="nav-link-legal">
+              <span class="dropdown-item-icon">⚖️</span>
+              <span>Rights Awareness</span>
+            </a>
+            <a href="#tab-health" class="dropdown-item" role="menuitem" id="nav-link-health">
+              <span class="dropdown-item-icon">🩺</span>
+              <span>Health Assistant</span>
+            </a>
+            <a href="#tab-report" class="dropdown-item" role="menuitem" id="nav-link-report">
+              <span class="dropdown-item-icon">🚨</span>
+              <span>Report Incident</span>
             </a>
             <a href="/about" class="dropdown-item" role="menuitem" id="nav-link-about">
               <span class="dropdown-item-icon">ℹ️</span>
@@ -140,12 +140,13 @@
     <div class="nav-mobile-drawer" id="nav-mobile-drawer">
       <div class="nav-mobile-drawer-inner">
         <a href="#landing-hero-section" class="nav-mobile-link active">Home</a>
-        <a href="#tab-chat" class="nav-mobile-link nav-chat-mobile-link" id="nav-mobile-chat-link">🤖 Chatbot (Full Page)</a>
-        <a href="#home-video-overview" class="nav-mobile-link">🎬 Video</a>
-        <a href="#guest-demo-assistant-section" class="nav-mobile-link">⚖️ Rights</a>
-        <a href="#guest-pillars-section" class="nav-mobile-link">📚 Awareness</a>
-        <a href="#guest-demo-opp-section" class="nav-mobile-link">💼 Opportunity</a>
-        <a href="/about" class="nav-mobile-link" id="nav-mobile-about-link">ℹ️ About</a>
+        <a href="/login" class="nav-mobile-link guest-only-nav" style="font-weight: 700; color: #14B8A6;">🔐 Sign In</a>
+        <a href="#tab-chat" class="nav-mobile-link nav-chat-mobile-link auth-only-nav" id="nav-mobile-chat-link">🤖 Chatbot (Voice)</a>
+        <a href="#tab-listings" class="nav-mobile-link auth-only-nav" id="nav-mobile-listings-link">💼 Opportunity</a>
+        <a href="#tab-awareness" class="nav-mobile-link auth-only-nav" id="nav-mobile-awareness-link">⚖️ Rights</a>
+        <a href="#tab-health" class="nav-mobile-link auth-only-nav" id="nav-mobile-health-link">🩺 Health Assistant</a>
+        <a href="#tab-report" class="nav-mobile-link auth-only-nav" id="nav-mobile-report-link">🚨 Report Incident</a>
+        <a href="/about" class="nav-mobile-link auth-only-nav" id="nav-mobile-about-link">ℹ️ About</a>
       </div>
     </div>
   </header>
@@ -908,32 +909,34 @@
         });
       }
 
-      // Smart Opportunities and Legal Navigation when Authenticated
-      const oppLink = document.getElementById("nav-link-opportunities");
-      if (oppLink) {
-        oppLink.addEventListener("click", function (e) {
-          const authView = document.getElementById("authenticated-portal-view");
-          if (authView && authView.style.display !== "none") {
-            e.preventDefault();
-            const tabBtn = document.querySelector('.tab-btn[data-tab="tab-listings"]');
-            if (tabBtn) tabBtn.click();
-            window.scrollTo({ top: authView.offsetTop - 80, behavior: "smooth" });
-          }
-        });
+      // Smart Tab Navigation for Authenticated Portal Dropdown & Drawer
+      function bindAuthNavLink(selector, tabId) {
+        const el = document.querySelector(selector);
+        if (el) {
+          el.addEventListener("click", function (e) {
+            const authView = document.getElementById("authenticated-portal-view");
+            if (authView && authView.style.display !== "none") {
+              e.preventDefault();
+              if (typeof switchToTab === "function") {
+                switchToTab(tabId);
+              } else {
+                const tabBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
+                if (tabBtn) tabBtn.click();
+              }
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          });
+        }
       }
 
-      const legalLink = document.getElementById("nav-link-legal");
-      if (legalLink) {
-        legalLink.addEventListener("click", function (e) {
-          const authView = document.getElementById("authenticated-portal-view");
-          if (authView && authView.style.display !== "none") {
-            e.preventDefault();
-            const tabBtn = document.querySelector('.tab-btn[data-tab="tab-awareness"]');
-            if (tabBtn) tabBtn.click();
-            window.scrollTo({ top: authView.offsetTop - 80, behavior: "smooth" });
-          }
-        });
-      }
+      bindAuthNavLink("#nav-link-opportunities", "tab-listings");
+      bindAuthNavLink("#nav-link-legal", "tab-awareness");
+      bindAuthNavLink("#nav-link-health", "tab-health");
+      bindAuthNavLink("#nav-link-report", "tab-report");
+      bindAuthNavLink("#nav-mobile-listings-link", "tab-listings");
+      bindAuthNavLink("#nav-mobile-awareness-link", "tab-awareness");
+      bindAuthNavLink("#nav-mobile-health-link", "tab-health");
+      bindAuthNavLink("#nav-mobile-report-link", "tab-report");
 
       // 1-Click Share Portal Handler
       const shareBtn = document.getElementById("btn-share-portal");

@@ -4114,7 +4114,15 @@ body:not(.user-logged-in):not(.tab-chat-active):not(.portal-view-active) .tabs-n
 body:not(.user-logged-in):not(.tab-chat-active):not(.portal-view-active) .tab-panel,
 body:not(.user-logged-in) #bi-chat-launcher,
 body:not(.user-logged-in) #bi-chat-teaser,
-body:not(.user-logged-in) #bi-chatbox-window {
+body:not(.user-logged-in) #bi-chatbox-window,
+body:not(.user-logged-in) .auth-only-nav,
+body:not(.user-logged-in) #nav-open-chat-btn,
+body:not(.user-logged-in) #nav-more-dropdown,
+body:not(.user-logged-in) #nav-mobile-chat-link {
+  display: none !important;
+}
+
+body.user-logged-in .guest-only-nav {
   display: none !important;
 }
 

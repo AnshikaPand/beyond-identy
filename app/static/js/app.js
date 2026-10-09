@@ -58,15 +58,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const currentHash = window.location.hash.toLowerCase();
   const requestedTab = params.get("tab")?.toLowerCase();
 
-  // Jump straight to the 24/7 Voice Chat tab if authenticated or explicitly navigating to chat
-  if (
-    currentPath === "/chat" ||
-    currentPath === "/chatbot" ||
-    requestedTab === "chat" ||
-    currentHash === "#tab-chat" ||
-    (currentUser && currentAuthToken)
-  ) {
-    switchToTab("tab-chat");
+  // Only authenticated users navigate straight to tab-chat or requested tab
+  if (currentUser && currentAuthToken) {
+    const target = (requestedTab && document.getElementById(requestedTab)) ? requestedTab : "tab-chat";
+    switchToTab(target);
+  } else {
+    // Unauthenticated guest: keep single Home as default view
+    document.body.classList.remove("tab-chat-active", "portal-view-active");
+    const guestHero = document.getElementById("landing-hero-section");
+    if (guestHero) guestHero.style.display = "flex";
+    const authPortal = document.getElementById("authenticated-portal-view");
+    if (authPortal) authPortal.style.display = "none";
+    const authTabsNav = document.getElementById("authenticated-tabs-nav");
+    if (authTabsNav) authTabsNav.style.display = "none";
+    const navHomeLink = document.querySelector('.nav-links-menu a[href="#landing-hero-section"]');
+    if (navHomeLink) navHomeLink.classList.add("active");
   }
 
   const isAuth = !!(currentAuthToken && currentUser);
@@ -130,13 +136,13 @@ function applyTheme(theme) {
 // Tabs Navigation
 // ==========================================
 function switchToTab(targetId) {
-  // Gate only sensitive mutate/verifier tabs for guests (report incident & case triage desk)
+  // Guests are restricted to Home screen; any internal tab navigation requires login
   const isGuest = !currentUser || !currentAuthToken;
-  if (isGuest && (targetId === "tab-report" || targetId === "tab-cases")) {
-    showToast("🔒 Please sign in to access confidential reporting & verification.", "info");
+  if (isGuest) {
+    showToast("Please sign in to access portal features.", "info");
     setTimeout(() => {
       window.location.href = targetId === "tab-cases" ? "/login?role=ngo" : "/login";
-    }, 450);
+    }, 350);
     return;
   }
 
@@ -222,8 +228,8 @@ function setupTabs() {
         const guestLanding = document.getElementById("guest-landing-view");
         const authPortal = document.getElementById("authenticated-portal-view");
         const authTabsNav = document.getElementById("authenticated-tabs-nav");
-        if (guestHero) guestHero.style.display = "block";
-        if (guestLanding) guestLanding.style.display = "block";
+        if (guestHero) guestHero.style.display = "flex";
+        if (guestLanding) guestLanding.style.display = "none";
         if (authPortal) authPortal.style.display = "none";
         if (authTabsNav) authTabsNav.style.display = "none";
       }
@@ -594,6 +600,8 @@ function renderUserStatus() {
   const authTabsNav = document.getElementById("authenticated-tabs-nav");
   const container = document.getElementById("auth-actions-container");
   const navChatBtn = document.getElementById("nav-open-chat-btn");
+  const navMoreDropdown = document.getElementById("nav-more-dropdown");
+  const navMobileChatLink = document.getElementById("nav-mobile-chat-link");
 
   if (currentUser && currentAuthToken) {
     // Authenticated state
@@ -604,6 +612,17 @@ function renderUserStatus() {
     if (guestLanding) guestLanding.style.display = "none";
     if (authPortal) authPortal.style.display = "block";
     if (authTabsNav) authTabsNav.style.display = "flex";
+
+    // Show Chatbot and More navigation options for authenticated users
+    if (navChatBtn) navChatBtn.style.display = "";
+    if (navMoreDropdown) navMoreDropdown.style.display = "";
+    if (navMobileChatLink) navMobileChatLink.style.display = "";
+    document.querySelectorAll(".auth-only-nav").forEach((el) => {
+      el.style.display = "";
+    });
+    document.querySelectorAll(".guest-only-nav").forEach((el) => {
+      el.style.display = "none";
+    });
 
     // Nav chat button directly switches to the chat tab
     if (navChatBtn) {
@@ -670,10 +689,10 @@ function renderUserStatus() {
         currentUser = null;
         localStorage.removeItem("bi_token");
         localStorage.removeItem("bi_user");
-        document.body.classList.remove("user-logged-in");
+        document.body.classList.remove("user-logged-in", "portal-view-active", "tab-chat-active");
         document.documentElement.classList.remove("user-logged-in");
         renderUserStatus();
-        showToast("Signed out successfully. Guest demo mode active.", "info");
+        showToast("Signed out successfully.", "info");
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     }
@@ -691,9 +710,9 @@ function renderUserStatus() {
     }
   } else {
     // ==========================================
-    // GUEST STATE: Clean Presentation
+    // GUEST STATE: Clean Single Home Default
     // ==========================================
-    document.body.classList.remove("user-logged-in");
+    document.body.classList.remove("user-logged-in", "portal-view-active", "tab-chat-active");
     document.documentElement.classList.remove("user-logged-in");
 
     if (guestHero) guestHero.style.display = "flex";
@@ -702,6 +721,17 @@ function renderUserStatus() {
     if (guestDemoStrip) guestDemoStrip.style.display = "none";
     if (authPortal) authPortal.style.display = "none";
     if (authTabsNav) authTabsNav.style.display = "none";
+
+    // Strictly hide Chatbot and More navigation options for guests
+    if (navChatBtn) navChatBtn.style.display = "none";
+    if (navMoreDropdown) navMoreDropdown.style.display = "none";
+    if (navMobileChatLink) navMobileChatLink.style.display = "none";
+    document.querySelectorAll(".auth-only-nav").forEach((el) => {
+      el.style.display = "none";
+    });
+    document.querySelectorAll(".guest-only-nav").forEach((el) => {
+      el.style.display = "";
+    });
 
     // Strictly hide floating launcher and window for unauthenticated guests
     const launcher = document.getElementById("bi-chat-launcher");
@@ -714,28 +744,9 @@ function renderUserStatus() {
       floatingWin.classList.remove("active");
     }
 
-    // Nav chat button directly opens the full page chatbot tab
-    if (navChatBtn) {
-      navChatBtn.onclick = (e) => {
-        e.preventDefault();
-        switchToTab("tab-chat");
-      };
-    }
-
-    const mobileNavChatBtn = document.getElementById("nav-mobile-chat-link");
-    if (mobileNavChatBtn) {
-      mobileNavChatBtn.onclick = (e) => {
-        e.preventDefault();
-        const drawer = document.getElementById("nav-mobile-drawer");
-        if (drawer) drawer.classList.remove("active");
-        switchToTab("tab-chat");
-      };
-    }
-
     if (container) {
       container.innerHTML = `
-        <a href="/login" class="btn btn-primary" id="open-login-btn" style="padding: 8px 16px; font-size: 13px; text-decoration: none;">Sign In</a>
-        <a href="/login?tab=register" class="btn btn-secondary" style="padding: 8px 14px; font-size: 13px; text-decoration: none;">Register</a>
+        <a href="/login" class="btn btn-primary" id="open-login-btn" style="padding: 8px 18px; font-size: 13.5px; text-decoration: none; font-weight: 700;">Sign In</a>
       `;
     }
   }

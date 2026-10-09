@@ -407,6 +407,17 @@ body {
   color: var(--bi-primary) !important;
 }
 
+/* Guest vs Authenticated Navigation Visibility Rules */
+html:not(.user-logged-in) .auth-only-nav,
+body:not(.user-logged-in) .auth-only-nav {
+  display: none !important;
+}
+
+html.user-logged-in .guest-only-nav,
+body.user-logged-in .guest-only-nav {
+  display: none !important;
+}
+
 /* Right Utility Actions */
 .nav-actions-group {
   display: flex !important;
@@ -1964,6 +1975,11 @@ body.chatbot-fullscreen-active {
   padding: 40px 20px 60px;
   position: relative;
   z-index: 2;
+}
+
+body.user-logged-in .prelogin-hero-section,
+body.user-logged-in #landing-hero-section {
+  display: none !important;
 }
 
 .prelogin-container {
