@@ -299,11 +299,11 @@
               <button type="button" class="tab-chat-control-btn" id="tab-chat-fullscreen-btn" title="Toggle Full Page Chatbot View">
                 <span>⛶</span> <span class="tab-chat-btn-text" id="tab-chat-fullscreen-label">Full Page</span>
               </button>
-              <button type="button" class="tab-chat-control-btn active" id="tab-chat-voice-toggle" title="Toggle Auto-Speech Aloud (Voice Output)">
-                <span id="tab-chat-voice-icon">🔊</span> <span class="tab-chat-btn-text" id="tab-chat-voice-label">Voice: ON</span>
+              <button type="button" class="tab-chat-control-btn active tab-chat-audio-btn" id="tab-chat-voice-toggle" title="Turn Audio Voice Output ON / OFF">
+                <span id="tab-chat-voice-icon">🔊</span> <span class="tab-chat-btn-text" id="tab-chat-voice-label">Audio: ON</span>
               </button>
-              <button type="button" class="tab-chat-control-btn" id="tab-chat-stop-speaking-btn" style="display: none;" title="Stop Voice">
-                <span>⏹️</span> <span class="tab-chat-btn-text">Stop Talking</span>
+              <button type="button" class="tab-chat-control-btn tab-chat-stop-btn" id="tab-chat-stop-speaking-btn" title="Stop Audio Speech Immediately">
+                <span>⏹️</span> <span class="tab-chat-btn-text">Stop Audio</span>
               </button>
               <button type="button" class="tab-chat-control-btn" id="tab-chat-clear-btn" title="Clear Conversation Thread">
                 <span>🗑️</span> <span class="tab-chat-btn-text">Clear</span>
@@ -400,7 +400,8 @@
                   </div>
                 </div>
                 <div class="tab-chat-actions-row">
-                  <button type="button" class="tab-chat-action-btn tab-chat-static-listen-btn"><span>🔊</span> Listen</button>
+                  <button type="button" class="tab-chat-action-btn tab-chat-static-listen-btn" title="Play greeting message aloud"><span>🔊</span> Play Audio</button>
+                  <button type="button" class="tab-chat-action-btn tab-chat-static-stop-btn tab-chat-stop-btn" title="Stop voice speech"><span>⏹️</span> Stop Audio</button>
                   <button type="button" class="tab-chat-action-btn tab-chat-static-copy-btn"><span>📋</span> Copy</button>
                 </div>
               </div>
@@ -825,7 +826,12 @@
         </div>
       </div>
       <div class="bi-chat-header-actions">
-        <button type="button" class="bi-chat-tool-btn" id="bi-chat-voice-toggle" title="Toggle Auto-Speak Aloud (Text-to-Speech)">🔊</button>
+        <button type="button" class="bi-chat-tool-btn bi-chat-audio-btn active" id="bi-chat-voice-toggle" title="Turn Audio Voice Output ON / OFF">
+          <span id="bi-chat-voice-icon">🔊</span> <span id="bi-chat-voice-label">Audio: ON</span>
+        </button>
+        <button type="button" class="bi-chat-tool-btn bi-chat-stop-btn" id="bi-chat-stop-btn" title="Stop Audio Speech">
+          <span>⏹️</span> <span>Stop</span>
+        </button>
         <button type="button" class="bi-chat-tool-btn" id="bi-chat-clear-btn" title="Clear Chat History">🗑️</button>
         <button type="button" class="bi-chat-tool-btn" id="bi-chat-close-btn" title="Minimize / Close Chatbox">✕</button>
       </div>

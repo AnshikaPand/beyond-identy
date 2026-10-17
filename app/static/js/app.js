@@ -1968,13 +1968,17 @@ function initChatbox() {
 
   function updateVoiceIcon() {
     if (!voiceToggle) return;
+    const label = document.getElementById("bi-chat-voice-label");
+    const icon = document.getElementById("bi-chat-voice-icon");
     if (biChatVoiceEnabled) {
-      voiceToggle.innerHTML = "🔊";
-      voiceToggle.title = "Auto-speech aloud is ON. Click to mute.";
+      if (icon) icon.innerText = "🔊";
+      if (label) label.innerText = "Audio: ON";
+      voiceToggle.title = "Audio speech is ON. Click to mute.";
       voiceToggle.classList.add("active");
     } else {
-      voiceToggle.innerHTML = "🔇";
-      voiceToggle.title = "Auto-speech aloud is OFF. Click to unmute.";
+      if (icon) icon.innerText = "🔇";
+      if (label) label.innerText = "Audio: OFF";
+      voiceToggle.title = "Audio speech is OFF. Click to turn audio ON.";
       voiceToggle.classList.remove("active");
     }
   }
@@ -2138,10 +2142,28 @@ function initChatbox() {
 
         const listenBtn = document.createElement("button");
         listenBtn.type = "button";
-        listenBtn.className = "bi-chat-action-btn";
-        listenBtn.innerHTML = "<span>🔊</span> Listen";
-        listenBtn.onclick = () => speakText(msg.content);
+        listenBtn.className = "bi-chat-action-btn bi-chat-audio-btn";
+        listenBtn.innerHTML = "<span>🔊</span> Play Audio";
+        listenBtn.title = "Play this response aloud (Audio ON)";
+        listenBtn.onclick = () => {
+          biChatVoiceEnabled = true;
+          localStorage.setItem("bi_chat_voice", "true");
+          updateVoiceIcon();
+          speakText(msg.content);
+        };
         actions.appendChild(listenBtn);
+
+        const stopBtn = document.createElement("button");
+        stopBtn.type = "button";
+        stopBtn.className = "bi-chat-action-btn bi-chat-stop-btn";
+        stopBtn.innerHTML = "<span>⏹️</span> Stop Audio";
+        stopBtn.title = "Stop Audio Speech";
+        stopBtn.onclick = () => {
+          if ("speechSynthesis" in window) {
+            window.speechSynthesis.cancel();
+          }
+        };
+        actions.appendChild(stopBtn);
 
         const copyBtn = document.createElement("button");
         copyBtn.type = "button";
@@ -2373,6 +2395,14 @@ function initChatbox() {
   if (closeBtn) closeBtn.addEventListener("click", closeChatbox);
   if (clearBtn) clearBtn.addEventListener("click", clearChat);
   if (voiceToggle) voiceToggle.addEventListener("click", toggleVoice);
+  const biStopBtn = document.getElementById("bi-chat-stop-btn");
+  if (biStopBtn) {
+    biStopBtn.addEventListener("click", () => {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    });
+  }
 
   if (sendBtn && input) {
     sendBtn.addEventListener("click", () => sendMessage(input.value));
@@ -2486,13 +2516,13 @@ function initTabChatbox() {
     if (!voiceToggle) return;
     if (tabVoiceEnabled) {
       if (voiceIcon) voiceIcon.innerText = "🔊";
-      if (voiceLabel) voiceLabel.innerText = "Voice Talking: ON";
-      voiceToggle.title = "Auto-speech aloud is ON. Click to mute.";
+      if (voiceLabel) voiceLabel.innerText = "Audio: ON";
+      voiceToggle.title = "Audio speech is ON. Click to mute.";
       voiceToggle.classList.add("active");
     } else {
       if (voiceIcon) voiceIcon.innerText = "🔇";
-      if (voiceLabel) voiceLabel.innerText = "Voice Talking: OFF";
-      voiceToggle.title = "Auto-speech aloud is OFF. Click to unmute.";
+      if (voiceLabel) voiceLabel.innerText = "Audio: OFF";
+      voiceToggle.title = "Audio speech is OFF. Click to unmute and turn audio ON.";
       voiceToggle.classList.remove("active");
       stopSpeech();
     }
@@ -2510,7 +2540,11 @@ function initTabChatbox() {
     }
     if (avatarBox) avatarBox.classList.remove("is-talking");
     if (speakingBadge) speakingBadge.classList.remove("active");
-    if (stopSpeakingBtn) stopSpeakingBtn.style.display = "none";
+    if (stopSpeakingBtn) {
+      stopSpeakingBtn.classList.remove("is-active-speaking");
+      const label = stopSpeakingBtn.querySelector(".tab-chat-btn-text");
+      if (label) label.innerText = "Stop Audio";
+    }
     if (liveBadge) liveBadge.innerText = "🟢 Online";
     document.querySelectorAll(".tab-chat-row.speaking-now").forEach((r) => r.classList.remove("speaking-now"));
     document.querySelectorAll(".tab-chat-speaking-indicator-mini").forEach((ind) => ind.remove());
@@ -2560,7 +2594,11 @@ function initTabChatbox() {
     utterance.onstart = () => {
       if (avatarBox) avatarBox.classList.add("is-talking");
       if (speakingBadge) speakingBadge.classList.add("active");
-      if (stopSpeakingBtn) stopSpeakingBtn.style.display = "inline-flex";
+      if (stopSpeakingBtn) {
+        stopSpeakingBtn.classList.add("is-active-speaking");
+        const label = stopSpeakingBtn.querySelector(".tab-chat-btn-text");
+        if (label) label.innerText = "Stop Audio (Playing)";
+      }
       if (liveBadge) liveBadge.innerText = "🔊 Speaking...";
 
       if (rowElement) {
@@ -2779,10 +2817,26 @@ function initTabChatbox() {
 
         const listenBtn = document.createElement("button");
         listenBtn.type = "button";
-        listenBtn.className = "tab-chat-action-btn";
-        listenBtn.innerHTML = "<span>🔊</span> Listen";
-        listenBtn.onclick = () => speakText(msg.content, row);
+        listenBtn.className = "tab-chat-action-btn tab-chat-play-audio-btn";
+        listenBtn.innerHTML = "<span>🔊</span> Play Audio";
+        listenBtn.title = "Play this response aloud (Audio ON)";
+        listenBtn.onclick = () => {
+          tabVoiceEnabled = true;
+          localStorage.setItem("bi_tab_voice", "true");
+          updateVoiceUI();
+          speakText(msg.content, row);
+        };
         actionsRow.appendChild(listenBtn);
+
+        const stopBtn = document.createElement("button");
+        stopBtn.type = "button";
+        stopBtn.className = "tab-chat-action-btn tab-chat-stop-btn";
+        stopBtn.innerHTML = "<span>⏹️</span> Stop Audio";
+        stopBtn.title = "Stop Audio Speech";
+        stopBtn.onclick = () => {
+          stopSpeech();
+        };
+        actionsRow.appendChild(stopBtn);
 
         const copyBtn = document.createElement("button");
         copyBtn.type = "button";
@@ -3061,6 +3115,25 @@ function initTabChatbox() {
   if (clearBtn) clearBtn.addEventListener("click", clearChat);
   if (badgeStopBtn) badgeStopBtn.addEventListener("click", stopSpeech);
   if (stopSpeakingBtn) stopSpeakingBtn.addEventListener("click", stopSpeech);
+
+  const staticListen = container.querySelector(".tab-chat-static-listen-btn");
+  if (staticListen) {
+    staticListen.onclick = () => {
+      tabVoiceEnabled = true;
+      localStorage.setItem("bi_tab_voice", "true");
+      updateVoiceUI();
+      const firstRow = container.querySelector(".tab-chat-row.assistant");
+      const heading = document.getElementById("tab-chat-initial-heading");
+      const text = heading ? heading.parentElement.innerText : defaultGreeting.content;
+      speakText(text, firstRow);
+    };
+  }
+  const staticStop = container.querySelector(".tab-chat-static-stop-btn");
+  if (staticStop) {
+    staticStop.onclick = () => {
+      stopSpeech();
+    };
+  }
 
   // Full Page Toggle Button for Chatbot (#tab-chat-fullscreen-btn)
   const fullscreenBtn = document.getElementById("tab-chat-fullscreen-btn");

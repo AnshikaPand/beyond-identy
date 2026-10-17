@@ -1058,6 +1058,97 @@ body.user-logged-in .guest-only-nav {
   transform: translateY(-1px) !important;
 }
 
+.tab-chat-control-btn.tab-chat-stop-btn {
+  background: rgba(225, 29, 72, 0.08) !important;
+  border-color: rgba(225, 29, 72, 0.35) !important;
+  color: #e11d48 !important;
+}
+
+.tab-chat-control-btn.tab-chat-stop-btn:hover {
+  background: #e11d48 !important;
+  border-color: #e11d48 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+}
+
+.tab-chat-control-btn.tab-chat-stop-btn.is-active-speaking {
+  background: #e11d48 !important;
+  border-color: #e11d48 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(225, 29, 72, 0.45) !important;
+  animation: pulseSpeakingStop 1.6s infinite !important;
+}
+
+@keyframes pulseSpeakingStop {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.6); }
+  70% { transform: scale(1.02); box-shadow: 0 0 0 7px rgba(225, 29, 72, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+}
+
+.tab-chat-control-btn.tab-chat-audio-btn.active {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  color: #059669 !important;
+}
+
+[data-theme="dark"] .tab-chat-control-btn.tab-chat-audio-btn.active {
+  background: rgba(16, 185, 129, 0.2) !important;
+  border-color: #10b981 !important;
+  color: #34d399 !important;
+}
+
+.tab-chat-action-btn.tab-chat-stop-btn,
+.bi-chat-action-btn.bi-chat-stop-btn {
+  color: #e11d48 !important;
+  border-color: rgba(225, 29, 72, 0.35) !important;
+}
+
+.tab-chat-action-btn.tab-chat-stop-btn:hover,
+.bi-chat-action-btn.bi-chat-stop-btn:hover {
+  background: rgba(225, 29, 72, 0.14) !important;
+  border-color: #e11d48 !important;
+  color: #e11d48 !important;
+}
+
+.tab-chat-action-btn.tab-chat-play-audio-btn:hover,
+.bi-chat-action-btn.bi-chat-audio-btn:hover {
+  background: rgba(16, 185, 129, 0.14) !important;
+  border-color: #059669 !important;
+  color: #059669 !important;
+}
+
+.bi-chat-tool-btn.bi-chat-stop-btn {
+  background: rgba(225, 29, 72, 0.1) !important;
+  border: 1px solid rgba(225, 29, 72, 0.35) !important;
+  color: #e11d48 !important;
+  font-weight: 600 !important;
+  padding: 3px 9px !important;
+  border-radius: var(--radius-sm, 6px) !important;
+  font-size: 11.5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.bi-chat-tool-btn.bi-chat-stop-btn:hover {
+  background: #e11d48 !important;
+  color: #ffffff !important;
+}
+
+.bi-chat-tool-btn.bi-chat-audio-btn {
+  font-weight: 600 !important;
+  padding: 3px 9px !important;
+  border-radius: var(--radius-sm, 6px) !important;
+  font-size: 11.5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
 /* Category Filter Bar with Floating Capsule Styling */
 .tab-chat-categories {
   position: relative !important;
