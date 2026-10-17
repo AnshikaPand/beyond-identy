@@ -1345,7 +1345,10 @@
         });
 
         if (loginRes.status === 401) {
-          throw new Error("Invalid email or password. Please check your credentials and try again.");
+          const errData = await loginRes.json().catch(() => ({}));
+          const errMsg = errData.detail || "Invalid email or password. Please check your credentials and try again.";
+          showLoginError(errMsg, f.email.value.trim().toLowerCase());
+          return;
         }
         if (loginRes.status === 403) {
           const errData = await loginRes.json().catch(() => ({}));
@@ -1402,6 +1405,50 @@
       $("formSuccess").textContent = `Filled credentials for ${roleKey === "ngo" ? "NGO Partner" : "Community"}! Click Submit to sign in.`;
       $("formSuccess").classList.add("show");
     };
+
+    // Displays helpful, actionable guidance when an account is not found or password is wrong
+    function showLoginError(msg, email) {
+      const errBox = $("formErr");
+      if (msg.includes("Account not found") || msg.includes("not found")) {
+        errBox.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span>⚠️</span>
+              <strong style="color: #991B1B;">Account Not Found</strong>
+            </div>
+            <div style="font-size: 0.86rem; color: #7F1D1D; line-height: 1.45;">
+              No Beyond Identity account is registered for <strong>${email}</strong> yet.
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+              <a href="register.html?email=${encodeURIComponent(email)}&role=${currentRole}" class="resend-btn" style="background: #0F766E;">
+                ✨ Create This Account Now
+              </a>
+              <button type="button" class="resend-btn" style="background: #1E293B;" onclick="onCustomGoogleBtnClick()">
+                G Sign in with Google
+              </button>
+            </div>
+          </div>
+        `;
+      } else if (msg.includes("Google account password") || msg.includes("Incorrect password")) {
+        errBox.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span>⚠️</span>
+              <strong style="color: #991B1B;">Incorrect Password</strong>
+            </div>
+            <div style="font-size: 0.86rem; color: #7F1D1D; line-height: 1.45;">
+              ${msg}
+            </div>
+            <div style="font-size: 0.80rem; color: #64748B; margin-top: 4px;">
+              💡 <em>Note: If you want to log in using Google without a password, click "Continue with Google" above.</em>
+            </div>
+          </div>
+        `;
+      } else {
+        errBox.textContent = msg;
+      }
+      errBox.classList.add("show");
+    }
 
     // Displays clear 'Verify your email first' message with an inline Resend button
     function showVerificationRequiredError(detailMsg, userEmail) {
@@ -1614,11 +1661,23 @@
       }
     }
 
-    // Custom fallback button click handler
     window.onCustomGoogleBtnClick = function() {
       if (GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE_CLIENT_ID")) {
         const errBox = $("formErr");
-        errBox.textContent = "Google Sign-In is ready! Please paste your Google Client ID into login.html and .env to connect your real Gmail account.";
+        errBox.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span>ℹ️</span>
+              <strong style="color: #1E293B;">Google Sign-In Setup Notice</strong>
+            </div>
+            <div style="font-size: 0.86rem; color: #334155; line-height: 1.45;">
+              To enable the official Google 1-click popup, paste your Google Client ID into <code>login.html</code> and <code>.env</code>.
+            </div>
+            <div style="font-size: 0.82rem; color: #64748B;">
+              👉 To sign in with your email right now, register first by clicking <strong><a href="register.html" style="color: #0F766E; font-weight: 700;">Create an account</a></strong> below.
+            </div>
+          </div>
+        `;
         errBox.classList.add("show");
         return;
       }

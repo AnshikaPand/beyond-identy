@@ -800,12 +800,16 @@
       }
     }
 
-    // Role detection from query string (?role=ngo or ?role=community)
+    // Role & Email detection from query string (?role=ngo, ?email=...)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("role") === "ngo" || urlParams.get("role") === "verifier") {
       applyRole("ngo");
     } else {
       applyRole("community");
+    }
+
+    if (urlParams.get("email")) {
+      f.email.value = urlParams.get("email").trim();
     }
 
     window.addEventListener("DOMContentLoaded", initGoogleIdentity);

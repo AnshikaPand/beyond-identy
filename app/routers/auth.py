@@ -155,10 +155,15 @@ def login_json(credentials: schemas.UserLoginJSON, db: Session = Depends(get_db)
     """JSON-based authentication endpoint for web frontends."""
     clean_email = credentials.email.strip().lower()
     user = db.query(models.User).filter(models.User.email == clean_email).first()
-    if not user or not auth.verify_password(credentials.password, user.hashed_password):
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
+            detail="Account not found. Please click 'Create an account' to register first, or use 'Continue with Google'.",
+        )
+    if not auth.verify_password(credentials.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect password. Please note: Enter your Beyond Identity account password, not your Google account password.",
         )
 
     # Reject unverified accounts
