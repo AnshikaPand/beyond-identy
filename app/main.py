@@ -95,7 +95,14 @@ def serve_app():
 def serve_auth_portal():
     """Serves the single unified Beyond Identity Auth Portal for both Login and Register."""
     if LOGIN_FILE.exists():
-        return FileResponse(str(LOGIN_FILE))
+        return FileResponse(
+            str(LOGIN_FILE),
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
     return {"message": "Auth portal not found"}
 
 
