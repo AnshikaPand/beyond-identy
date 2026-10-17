@@ -681,8 +681,8 @@
 
     <!-- =========================================================
          LEFT ARTWORK PANEL
-         - Pre-Login: beyond_identity_1_circles.svg (Labels se pare)
-         - Post-Login: beyond_identity_4_network.svg (Sab jude, sab barabar)
+         - Pre-Login: beyond_identity_1_circles.svg (Beyond Labels, Everyone Equal)
+         - Post-Login: beyond_identity_4_network.svg (All Connected, All Equal)
          ========================================================= -->
     <aside class="art" id="artPanel" aria-label="Beyond Identity Visual Artwork">
 
@@ -746,9 +746,9 @@
             Beyond Identity
           </text>
 
-          <!-- Tagline: Labels se pare, har insaan barabar -->
+          <!-- Tagline: Beyond Labels, Everyone Equal -->
           <text x="250" y="456" text-anchor="middle" fill="#C7C3E5" font-family="'Plus Jakarta Sans', -apple-system, sans-serif" font-size="16" font-weight="400" letter-spacing="0.01em">
-            Labels se pare, har insaan barabar
+            Beyond Labels, Everyone Equal
           </text>
 
           <!-- Saffron Accent Bar -->
@@ -756,9 +756,9 @@
         </svg>
       </div>
 
-      <!-- POST-LOGIN ARTWORK (4_network: Sab jude, sab barabar) -->
+      <!-- POST-LOGIN ARTWORK (4_network: All Connected, All Equal) -->
       <div class="art-svg-card" id="artPostLogin" style="display: none;">
-        <img src="/assets/beyond_identity_4_network.svg" alt="Beyond Identity Community Network - Sab jude, sab barabar" style="width: 100%; height: auto; border-radius: 28px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45); display: block;" />
+        <img src="/assets/beyond_identity_4_network.svg" alt="Beyond Identity Community Network - All Connected, All Equal" style="width: 100%; height: auto; border-radius: 28px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45); display: block;" />
       </div>
 
     </aside>
@@ -785,7 +785,7 @@
           </div>
 
           <h2 id="title">Welcome back</h2>
-          <p class="sub" id="sub">Apne role ke hisaab se login karein.</p>
+          <p class="sub" id="sub">Sign in according to your account role.</p>
 
           <!-- Role Selector Switcher -->
           <div class="roles" role="radiogroup" aria-label="Select Login Role">
@@ -822,9 +822,9 @@
             <div class="field" id="nameField">
               <label for="name">
                 <span id="nameLabel">Name</span>
-                <span class="hint" id="nameHint">(jo naam aap use karna chahein)</span>
+                <span class="hint" id="nameHint">(the name you wish to use)</span>
               </label>
-              <input type="text" id="name" autocomplete="name" aria-describedby="nameErr" placeholder="Aapka chosen naam" />
+              <input type="text" id="name" autocomplete="name" aria-describedby="nameErr" placeholder="Your chosen name" />
               <p class="err" id="nameErr" aria-live="polite"></p>
             </div>
 
@@ -857,10 +857,10 @@
           <!-- Footer Navigation Links -->
           <div class="foot">
             <p id="signupLine">
-              Naye hain? <a id="signupLink" href="#register">Account banayein</a>
+              New here? <a id="signupLink" href="#register">Create an account</a>
             </p>
             <p id="extraLine">
-              <a href="/?tab=report&anon=1">Bina login ke anonymously report karein</a>
+              <a href="/?tab=report&anon=1">Submit an anonymous report without signing in</a>
             </p>
           </div>
         </div>
@@ -878,7 +878,7 @@
           <div class="network-artwork-frame">
             <img 
               src="/assets/beyond_identity_4_network.svg" 
-              alt="Beyond Identity Network - Sab jude, sab barabar" 
+              alt="Beyond Identity Network - All Connected, All Equal" 
               class="network-artwork-img" 
               id="networkPostLoginImg" 
             />
@@ -888,10 +888,10 @@
             Welcome, <span id="postLoginName">Friend</span>!
           </h2>
           <p class="post-login-tagline-sub">
-            Sab jude, sab barabar
+            All Connected, All Equal
           </p>
           <p class="post-login-desc" id="postLoginDesc">
-            Aap Beyond Identity ke safe network se jud chuke hain. Verified opportunities, legal awareness, aur 24/7 AI chat ready hain.
+            You are connected to Beyond Identity's verified network. Verified opportunities, legal awareness, and 24/7 AI assistance are ready.
           </p>
 
           <div class="post-login-actions-grid">
@@ -929,7 +929,7 @@
         <button type="button" class="modal-close" id="closeForgotModal" aria-label="Close modal">&times;</button>
       </div>
       <p style="font-size: 0.9rem; color: var(--muted); margin: 0 0 16px;">
-        Apna registered email address enter karein taaki hum aapko password reset token provide kar sakein.
+        Enter your registered email address to receive your password reset token.
       </p>
       <div class="form-err" id="modalErr"></div>
       <div class="form-success" id="modalSuccess"></div>
@@ -964,26 +964,26 @@
         accent: "#0F766E",
         backendRole: "user",
         title: "Welcome back",
-        sub: "Aapki pehchaan, aapka decision. Safe space mein login karein.",
+        sub: "Your identity, your choice. Sign in to your safe sanctuary.",
         nameLabel: "Name",
-        nameHint: "(jo naam aap use karna chahein)",
-        namePlaceholder: "Aapka chosen naam",
-        button: "Login as community member",
-        signupText: "Account banayein",
-        extra: '<a href="/?tab=report&anon=1">Bina login ke anonymously report karein</a>',
+        nameHint: "(the name you wish to use)",
+        namePlaceholder: "Your chosen name",
+        button: "Sign in as community member",
+        signupText: "Create an account",
+        extra: '<a href="/?tab=report&anon=1">Submit an anonymous report without signing in</a>',
         redirect: "/?login=success&role=community"
       },
       ngo: {
         accent: "#1F1B4D",
         backendRole: "verifier",
         title: "NGO partner login",
-        sub: "Apni organisation ke account se login karein.",
+        sub: "Sign in with your verified partner organization account.",
         nameLabel: "Contact person name",
-        nameHint: "(authorised representative)",
-        namePlaceholder: "Aapka naam",
-        button: "Login as NGO partner",
-        signupText: "Partner ke roop mein register karein",
-        extra: 'Account approval mein madad chahiye? <a href="/about">Hum se baat karein</a>',
+        nameHint: "(authorized representative)",
+        namePlaceholder: "Your full name",
+        button: "Sign in as NGO partner",
+        signupText: "Register as an NGO partner",
+        extra: 'Need help with account approval? <a href="/about">Contact our support team</a>',
         redirect: "/?login=success&role=ngo"
       }
     };
@@ -1016,8 +1016,8 @@
 
       const isNgo = userData.role === "verifier" || currentRole === "ngo";
       $("postLoginDesc").textContent = isNgo
-        ? "Aap Beyond Identity verified partner network se jud chuke hain. Opportunities manage karein aur community triage mein sahayata karein."
-        : "Aap Beyond Identity ke safe network se jud chuke hain. Verified opportunities, legal awareness, aur 24/7 AI chat ready hain.";
+        ? "You are connected to the Beyond Identity verified partner network. Manage opportunities and assist in community triage."
+        : "You are connected to Beyond Identity's verified network. Verified opportunities, legal awareness, and 24/7 AI assistance are ready.";
 
       // 3. Switch Left Artwork to beyond_identity_4_network.svg
       $("artPreLogin").style.display = "none";
@@ -1109,10 +1109,10 @@
         $("sub").textContent = c.sub;
         $("submit").textContent = c.button;
         $("signupLink").textContent = c.signupText;
-        $("signupLine").innerHTML = `Naye hain? <a id="signupLink" href="#register">${c.signupText}</a>`;
+        $("signupLine").innerHTML = `New here? <a id="signupLink" href="#register">${c.signupText}</a>`;
         $("signupLink").onclick = toggleRegisterMode;
       } else {
-        $("title").textContent = r === "community" ? "Naya Account Banayein" : "Register NGO Partner";
+        $("title").textContent = r === "community" ? "Create an Account" : "Register NGO Partner";
         $("sub").textContent = r === "community" ? "Safe & confidential space for you." : "List opportunities & verify resources.";
         $("submit").textContent = r === "community" ? "Register as Community Member" : "Register as NGO Partner";
       }
@@ -1140,7 +1140,7 @@
 
         $("nameField").style.display = "block";
         $("rememberRow").style.display = "none";
-        $("signupLine").innerHTML = 'Pehle se account hai? <a id="loginToggleLink" href="/login">Sign In karein</a>';
+        $("signupLine").innerHTML = 'Already have an account? <a id="loginToggleLink" href="/login">Sign In</a>';
         $("loginToggleLink").onclick = e => { e.preventDefault(); setAuthMode("signin"); };
         document.title = "Create Account | Beyond Identity";
       } else {
@@ -1155,7 +1155,7 @@
         $("tabRegisterBtn").style.boxShadow = "none";
 
         $("rememberRow").style.display = "flex";
-        $("signupLine").innerHTML = `Naye hain? <a id="signupLink" href="/register">${ROLES[currentRole].signupText}</a>`;
+        $("signupLine").innerHTML = `New here? <a id="signupLink" href="/register">${ROLES[currentRole].signupText}</a>`;
         $("signupLink").onclick = e => { e.preventDefault(); setAuthMode("register"); };
         document.title = "Sign In | Beyond Identity";
       }
@@ -1204,15 +1204,15 @@
     function validate() {
       let ok = true;
       if (isRegisterMode && f.name.value.trim().length < 2) {
-        setErr("name", "Naam kam se kam 2 letters ka likhein.");
+        setErr("name", "Name must be at least 2 characters.");
         ok = false;
       }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim())) {
-        setErr("email", "Sahi email address likhein, jaise you@gmail.com");
+        setErr("email", "Please enter a valid email address, e.g. you@gmail.com");
         ok = false;
       }
       if (f.password.value.length < 6) {
-        setErr("password", "Password kam se kam 6 characters ka hona chahiye.");
+        setErr("password", "Password must be at least 6 characters long.");
         ok = false;
       }
       return ok;
@@ -1252,7 +1252,7 @@
 
           if (!regRes.ok) {
             const errData = await regRes.json().catch(() => ({}));
-            throw new Error(errData.detail || "Account register nahi ho paya. Email shayad already registered hai.");
+            throw new Error(errData.detail || "Account registration failed. This email may already be registered.");
           }
         }
 
@@ -1269,11 +1269,11 @@
         });
 
         if (loginRes.status === 401 || loginRes.status === 403) {
-          throw new Error("Email ya password galat hai. Dobara check karein.");
+          throw new Error("Invalid email or password. Please check your credentials and try again.");
         }
         if (!loginRes.ok) {
           const errData = await loginRes.json().catch(() => ({}));
-          throw new Error(errData.detail || "Login nahi ho paya. Kripya dobara try karein.");
+          throw new Error(errData.detail || "Sign in failed. Please try again.");
         }
 
         const data = await loginRes.json();
@@ -1298,7 +1298,7 @@
 
       } catch (err) {
         $("formErr").textContent = err instanceof TypeError
-          ? "Backend server se connect nahi ho paya. Make sure FastAPI server port 8000 par running hai."
+          ? "Unable to connect to the backend server. Please verify the service is running on port 8000."
           : err.message;
         $("formErr").classList.add("show");
       } finally {
@@ -1364,7 +1364,7 @@
           });
 
           const data = await res.json();
-          if (!res.ok) throw new Error(data.detail || "Email registered nahi mila.");
+          if (!res.ok) throw new Error(data.detail || "No account found with this email address.");
 
           succBox.textContent = "Token generated! Demo Token copied to field below.";
           succBox.classList.add("show");
@@ -1382,7 +1382,7 @@
         const token = $("resetToken").value.trim();
         const newPassword = $("newPassword").value;
         if (newPassword.length < 6) {
-          errBox.textContent = "New password kam se kam 6 characters ka hona chahiye.";
+          errBox.textContent = "New password must be at least 6 characters long.";
           errBox.classList.add("show");
           return;
         }
@@ -1398,9 +1398,9 @@
           });
 
           const data = await res.json();
-          if (!res.ok) throw new Error(data.detail || "Password reset nahi ho paya.");
+          if (!res.ok) throw new Error(data.detail || "Password reset failed. Please verify your token and try again.");
 
-          succBox.textContent = "Password updated successfully! Ab naye password se login karein.";
+          succBox.textContent = "Password updated successfully! You can now sign in with your new password.";
           succBox.classList.add("show");
 
           setTimeout(() => {

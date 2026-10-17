@@ -61,7 +61,7 @@
 
   <!-- Branding Typography -->
   <text x="250" y="420" text-anchor="middle" class="title">Beyond Identity</text>
-  <text x="250" y="456" text-anchor="middle" class="tagline">Labels se pare, har insaan barabar</text>
+  <text x="250" y="456" text-anchor="middle" class="tagline">Beyond Labels, Everyone Equal</text>
 
   <!-- Amber Accent Bar -->
   <rect x="216" y="478" width="68" height="4" rx="2" fill="#F59E0B" />

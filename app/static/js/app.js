@@ -1945,7 +1945,7 @@ function initChatbox() {
   const defaultGreeting = {
     role: "assistant",
     content:
-      "### 👋 Hello! Welcome to Beyond Identity\n\n" +
+      "### 🙏 Namaste! Welcome to Beyond Identity\n\n" +
       "I am your 24/7 Assistant. How are you doing today?\n\n" +
       "Please choose an option below or type your question:\n\n" +
       "1️⃣ 💼 **Jobs & Employment** — Find verified trans-inclusive jobs & career opportunities\n" +
@@ -2504,7 +2504,7 @@ function initTabChatbox() {
 
   const defaultGreeting = {
     role: "assistant",
-    content: "Hi! I'm Beyond Identity — a website where you get verified, trustworthy information about transgender identity and related topics.",
+    content: "🙏 Namaste! I'm Beyond Identity — a verified platform where you get trustworthy information about transgender rights, healthcare, and opportunities.",
     suggestions: [],
     suggested_prompts: [],
     timestamp: formatTime(new Date()),
@@ -2640,7 +2640,7 @@ function initTabChatbox() {
     const welcomeGreeting = {
       role: "assistant",
       content:
-        `### 👋 Hello ${user.name}! Welcome to Beyond Identity\n\n` +
+        `### 🙏 Namaste ${user.name}! Welcome to Beyond Identity\n\n` +
         `I am your **24/7 Rights and Healthcare Assistant**. How are you doing today?\n\n` +
         `Please choose an option below or type what you need:\n\n` +
         `1️⃣ 💼 **Jobs & Employment** — Find verified inclusive job openings\n` +
@@ -2677,7 +2677,7 @@ function initTabChatbox() {
 
     // Vocal Speech Greeting
     if (tabVoiceEnabled && "speechSynthesis" in window) {
-      const speechGreeting = `Hello ${user.name}! Welcome to Beyond Identity. I am your 24/7 assistant. I can guide you through statutory legal rights, verified housing, jobs, and healthcare. Feel free to talk with me anytime by clicking the microphone or typing below.`;
+      const speechGreeting = `Namaste ${user.name}! Welcome to Beyond Identity. I am your 24/7 assistant. I can guide you through statutory legal rights, verified housing, jobs, and healthcare. Feel free to talk with me anytime by clicking the microphone or typing below.`;
       setTimeout(() => {
         const rows = messagesContainer.querySelectorAll(".tab-chat-row.assistant");
         const lastRow = rows[rows.length - 1];
