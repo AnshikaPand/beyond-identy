@@ -63,9 +63,13 @@
   --bi-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
   --bi-shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
 
-  /* Background Artwork & Atmospheric Soft Overlay (Visible Before & After Login) */
+  /* Background Artwork & Atmospheric Soft Overlay */
   --bi-bg-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(240, 245, 255, 0.56) 45%, rgba(248, 250, 252, 0.70) 100%);
   --bi-bg-image-url: url('/assets/bg.jpg');
+
+  /* Dynamic Post-Login Blue Watercolor Background (Light Mode) */
+  --bi-bg-logged-in-url: url('/assets/bg-blue-watercolor.jpg');
+  --bi-bg-logged-in-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(230, 242, 255, 0.48) 45%, rgba(242, 248, 255, 0.68) 100%);
 
   /* Standardized Border Radii */
   --radius-xs: 4px;
@@ -117,6 +121,10 @@
 
   --bi-bg-overlay: linear-gradient(180deg, rgba(11, 15, 28, 0.62) 0%, rgba(15, 23, 42, 0.75) 100%);
   --bi-bg-image-url: url('/assets/bg.jpg');
+
+  /* Dynamic Post-Login Blue Watercolor Background (Dark Mode) */
+  --bi-bg-logged-in-url: url('/assets/bg-blue-watercolor.jpg');
+  --bi-bg-logged-in-overlay: linear-gradient(180deg, rgba(8, 15, 30, 0.55) 0%, rgba(11, 20, 38, 0.76) 100%);
 }
 
 /* ==========================================================================
@@ -149,6 +157,17 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: background-image 0.45s ease;
+}
+
+/* Post-Login Dynamic Background: Blue Watercolor Fluid Atmosphere */
+body.user-logged-in,
+html.user-logged-in body {
+  background-image: var(--bi-bg-logged-in-overlay), var(--bi-bg-logged-in-url) !important;
+  background-size: cover !important;
+  background-position: center top !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
 }
 
 .container {

@@ -53,8 +53,16 @@ app.include_router(chatbot.router)
 @app.get("/")
 def root(request: Request):
     accept = request.headers.get("accept", "")
-    # Serve interactive web application to browser requests
     if "text/html" in accept and INDEX_FILE.exists():
+        return FileResponse(
+            str(INDEX_FILE),
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
+    if request.query_params.get("format") == "html" and INDEX_FILE.exists():
         return FileResponse(str(INDEX_FILE))
     return {
         "message": "Beyond Identity API is running",

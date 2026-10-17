@@ -678,6 +678,10 @@
       const token = localStorage.getItem("bi_token");
       const userStr = localStorage.getItem("bi_user");
       const authContainer = document.getElementById("auth-actions-container");
+      if (token && userStr) {
+        document.body.classList.add("user-logged-in");
+        document.documentElement.classList.add("user-logged-in");
+      }
       if (token && userStr && authContainer) {
         try {
           const user = JSON.parse(userStr);

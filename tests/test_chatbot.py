@@ -117,7 +117,7 @@ def test_chatbot_chitchat_greeting():
         assert response.status_code == 200
         data = response.json()
         assert data["intent"] == "chitchat_greeting"
-        assert "Namaste! Welcome to Beyond Identity" in data["reply"]
+        assert "Hello! Welcome to Beyond Identity" in data["reply"]
         assert len(data["suggested_prompts"]) == 0
 
 

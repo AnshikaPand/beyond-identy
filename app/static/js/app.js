@@ -1945,7 +1945,7 @@ function initChatbox() {
   const defaultGreeting = {
     role: "assistant",
     content:
-      "### 👋 Hello & Namaste! Welcome to Beyond Identity\n\n" +
+      "### 👋 Hello! Welcome to Beyond Identity\n\n" +
       "I am your 24/7 Assistant. How are you doing today?\n\n" +
       "Please choose an option below or type your question:\n\n" +
       "1️⃣ 💼 **Jobs & Employment** — Find verified trans-inclusive jobs & career opportunities\n" +
@@ -2602,7 +2602,7 @@ function initTabChatbox() {
     const welcomeGreeting = {
       role: "assistant",
       content:
-        `### 👋 Namaste ${user.name}! Welcome to Beyond Identity\n\n` +
+        `### 👋 Hello ${user.name}! Welcome to Beyond Identity\n\n` +
         `I am your **24/7 Rights and Healthcare Assistant**. How are you doing today?\n\n` +
         `Please choose an option below or type what you need:\n\n` +
         `1️⃣ 💼 **Jobs & Employment** — Find verified inclusive job openings\n` +
@@ -2639,7 +2639,7 @@ function initTabChatbox() {
 
     // Vocal Speech Greeting
     if (tabVoiceEnabled && "speechSynthesis" in window) {
-      const speechGreeting = `Namaste ${user.name}! Welcome to Beyond Identity. I am your 24/7 assistant. I can guide you through statutory legal rights, verified housing, jobs, and healthcare. Feel free to talk with me anytime by clicking the microphone or typing below.`;
+      const speechGreeting = `Hello ${user.name}! Welcome to Beyond Identity. I am your 24/7 assistant. I can guide you through statutory legal rights, verified housing, jobs, and healthcare. Feel free to talk with me anytime by clicking the microphone or typing below.`;
       setTimeout(() => {
         const rows = messagesContainer.querySelectorAll(".tab-chat-row.assistant");
         const lastRow = rows[rows.length - 1];

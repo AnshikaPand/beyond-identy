@@ -12,7 +12,7 @@ def test_small_talk_exact_and_hinglish():
         ans, match = knowledge_base.answer_query(q)
         assert match is not None
         assert match["id"] == 1
-        assert "Namaste! Welcome to Beyond Identity" in ans
+        assert "Hello! Welcome to Beyond Identity" in ans
 
     # 2. How are you / Hinglish
     for q in ["how are you", "kaise ho", "kya haal hai"]:

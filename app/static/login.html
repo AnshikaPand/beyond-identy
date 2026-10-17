@@ -98,9 +98,37 @@
       transition: background 0.6s ease;
     }
 
-    /* Post-login forest-teal background variant */
+    /* Post-login Blue Watercolor & Deep Azure variant */
     .art.network-mode {
-      background: radial-gradient(circle at 50% 36%, #164E48 0%, #0B3330 60%, #072422 100%);
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.78) 0%, rgba(30, 58, 138, 0.65) 50%, rgba(15, 23, 42, 0.88) 100%),
+                  url('/assets/bg-blue-watercolor.jpg') center/cover no-repeat !important;
+    }
+
+    .art.network-mode::before {
+      background: radial-gradient(circle at 75% 20%, rgba(56, 189, 248, 0.25) 0%, transparent 50%),
+                  radial-gradient(circle at 25% 65%, rgba(99, 102, 241, 0.20) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 85%, rgba(14, 165, 233, 0.22) 0%, transparent 55%) !important;
+    }
+
+    /* Post-Login Dynamic Background State for Page & Card */
+    body.post-login-active {
+      background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.40) 0%, rgba(235, 245, 255, 0.62) 100%),
+                        url('/assets/bg-blue-watercolor.jpg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+    }
+
+    body.post-login-active .panel {
+      background: transparent !important;
+    }
+
+    body.post-login-active .card {
+      background: rgba(255, 255, 255, 0.94) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      border: 1px solid rgba(191, 219, 254, 0.8) !important;
+      box-shadow: 0 20px 45px -10px rgba(30, 58, 138, 0.16) !important;
     }
 
     /* Ambient background nebula effect */
@@ -463,9 +491,9 @@
       margin: 0 auto 18px;
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 16px 36px -8px rgba(11, 51, 48, 0.4);
-      border: 1px solid rgba(144, 205, 197, 0.3);
-      background: #0B3330;
+      box-shadow: 0 16px 36px -8px rgba(30, 58, 138, 0.35);
+      border: 1px solid rgba(147, 197, 253, 0.4);
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
       transition: transform 0.25s ease;
     }
     .network-artwork-frame:hover {
@@ -485,7 +513,7 @@
       letter-spacing: -0.02em;
     }
     .post-login-tagline-sub {
-      color: #0D9488;
+      color: #2563eb;
       font-weight: 700;
       font-size: 0.98rem;
       margin: 0 0 10px;
@@ -508,7 +536,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      background: linear-gradient(135deg, #0F766E 0%, #115E59 100%);
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
       color: #FFFFFF !important;
       font-weight: 700;
       font-size: 0.98rem;
@@ -517,7 +545,7 @@
       border: 0;
       cursor: pointer;
       text-decoration: none !important;
-      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
       transition: transform 0.15s, opacity 0.15s;
     }
     .btn-portal-primary:hover {
@@ -978,6 +1006,7 @@
       // 1. Hide authentication form, show post-login network card
       $("authFormsContainer").style.display = "none";
       $("postLoginContainer").classList.add("active");
+      document.body.classList.add("post-login-active");
 
       // 2. Set user details
       const userName = userData.name || (userData.email ? userData.email.split("@")[0] : "Friend");
@@ -1033,6 +1062,7 @@
       // Restore form view
       $("postLoginContainer").classList.remove("active");
       $("authFormsContainer").style.display = "block";
+      document.body.classList.remove("post-login-active");
 
       // Restore artwork 1
       $("artPostLogin").style.display = "none";
