@@ -215,6 +215,13 @@ def login_json(credentials: schemas.UserLoginJSON, db: Session = Depends(get_db)
     return schemas.Token(access_token=token, token_type="bearer", user=user)
 
 
+@router.get("/google-client-id")
+def get_google_client_id():
+    """Returns the configured Google Client ID so the frontend can initialize Google Sign-In dynamically."""
+    client_id = os.getenv("GOOGLE_CLIENT_ID", "").strip()
+    return {"client_id": client_id}
+
+
 @router.post("/google", response_model=schemas.Token)
 def google_auth(req: schemas.GoogleLoginRequest, db: Session = Depends(get_db)):
     """

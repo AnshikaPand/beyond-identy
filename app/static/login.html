@@ -240,7 +240,7 @@
   const API_BASE = window.location.port === "8000" ? "" : "http://127.0.0.1:8000";
   const API_URL = `${API_BASE}/auth/login`;
   const GOOGLE_API_URL = `${API_BASE}/auth/google`;
-  const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+  let GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
   const hints = {
     community: "Log in to report discrimination and find schemes.",
@@ -422,8 +422,32 @@
     }
   }
 
+  async function loadBackendGoogleClientId() {
+    try {
+      const res = await fetch(`${API_BASE}/auth/google-client-id`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.client_id && !data.client_id.includes("your-google-client-id") && !data.client_id.includes("PASTE_YOUR_GOOGLE_CLIENT_ID")) {
+          GOOGLE_CLIENT_ID = data.client_id;
+          initGoogle();
+        }
+      }
+    } catch (e) {
+      // Offline or backend loading
+    }
+  }
+
   function initGoogle() {
     if (typeof google === "undefined" || !google.accounts || !google.accounts.id) return;
+
+    const isPlaceholder = (
+      !GOOGLE_CLIENT_ID ||
+      GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE_CLIENT_ID") ||
+      GOOGLE_CLIENT_ID.includes("PASTE_YOUR_GOOGLE_CLIENT_ID") ||
+      GOOGLE_CLIENT_ID.includes("your-google-client-id")
+    );
+
+    if (isPlaceholder) return;
 
     try {
       google.accounts.id.initialize({
@@ -433,19 +457,20 @@
         cancel_on_tap_outside: true
       });
 
-      if (!GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE_CLIENT_ID") && !GOOGLE_CLIENT_ID.includes("PASTE_YOUR_GOOGLE_CLIENT_ID")) {
-        const btnBox = document.getElementById("googleBtn");
-        btnBox.innerHTML = "";
-        google.accounts.id.renderButton(btnBox, {
-          theme: "outline", size: "large", shape: "pill", text: "continue_with", width: 320
-        });
-      }
+      const btnBox = document.getElementById("googleBtn");
+      btnBox.innerHTML = "";
+      google.accounts.id.renderButton(btnBox, {
+        theme: "outline", size: "large", shape: "pill", text: "continue_with", width: 320
+      });
     } catch (e) {
       console.warn("Google identity init notice:", e);
     }
   }
 
-  window.addEventListener("DOMContentLoaded", initGoogle);
+  window.addEventListener("DOMContentLoaded", () => {
+    initGoogle();
+    loadBackendGoogleClientId();
+  });
 </script>
 <script src="https://accounts.google.com/gsi/client" async defer onload="initGoogle()"></script>
 </body>

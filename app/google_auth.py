@@ -27,6 +27,12 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
+@router.get("/google-client-id")
+def get_google_client_id():
+    """Returns the configured Google Client ID so frontend can initialize Google Sign-In dynamically."""
+    return {"client_id": GOOGLE_CLIENT_ID or ""}
+
+
 class GoogleLoginIn(BaseModel):
     credential: str                       # the ID token Google gave the browser
     role: Optional[str] = "community"     # "community" or "ngo"
