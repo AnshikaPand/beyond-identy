@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account | Beyond Identity</title>
+  <meta name="description" content="Register for Beyond Identity — Safe, verified sanctuary for community members and NGO partners in India." />
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Google Identity Services (Google Sign-In) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    :root {
+      --ink: #1F1B4D;
+      --paper: #F8F7FF;
+      --saffron: #F59E0B;
+      --teal: #14B8A6;
+      --pink: #EC4899;
+      --muted: #64748B;
+      --line: #E2E8F0;
+      --accent: #0F766E;
+      --error: #E11D48;
+      --dark-space: #16133B;
+      --dark-deep: #120F31;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--ink);
+      min-height: 100vh;
+      background: #0D0B24 url('/assets/bg.webp') center center / cover no-repeat fixed;
+      position: relative;
+    }
+
+    /* Ambient Watercolor Canvas */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 75% 20%, rgba(245, 158, 11, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 25% 65%, rgba(236, 72, 153, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 50% 85%, rgba(56, 189, 248, 0.22) 0%, transparent 55%) !important;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .crisis-strip {
+      position: relative;
+      z-index: 10;
+      background: rgba(18, 15, 49, 0.92);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 9px 20px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #F8FAFC;
+    }
+    .crisis-strip a { color: #5EEAD4; text-decoration: none; font-weight: 600; }
+    .back-link {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 5px 12px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: all 0.2s;
+    }
+    .back-link:hover { background: rgba(255, 255, 255, 0.15); color: #FFFFFF !important; }
+
+    .layout {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: calc(100vh - 44px);
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+      gap: 32px;
+    }
+
+    .art {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .art-svg-card {
+      width: 100%;
+      max-width: 440px;
+      border-radius: 28px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 460px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.35);
+      padding: 32px 30px;
+    }
+
+    .auth-mode-switch {
+      display: flex;
+      gap: 6px;
+      background: #F1F5F9;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 20px;
+      border: 1px solid #E2E8F0;
+    }
+    .auth-mode-btn {
+      flex: 1;
+      border: 0;
+      padding: 9px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .auth-mode-btn.active {
+      background: #FFFFFF;
+      color: var(--ink);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+    .auth-mode-btn.inactive {
+      background: transparent;
+      color: #64748B;
+      font-weight: 600;
+    }
+
+    h2 { margin: 0 0 6px; font-size: 1.65rem; font-weight: 800; letter-spacing: -0.02em; }
+    p.sub { margin: 0 0 18px; color: var(--muted); font-size: 0.92rem; line-height: 1.45; }
+
+    .roles {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      background: #F8FAFC;
+      border-radius: 12px;
+      padding: 4px;
+      border: 1px solid #E2E8F0;
+    }
+    .roles button {
+      flex: 1;
+      border: 0;
+      background: transparent;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: #64748B;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .roles button[aria-checked="true"] {
+      background: #FFFFFF;
+      color: var(--accent);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-err {
+      display: none;
+      background: #FFE4E6;
+      border: 1px solid #FDA4AF;
+      color: #BE123C;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+    .form-err.show { display: block; }
+
+    .form-success {
+      display: none;
+      background: #ECFDF5;
+      border: 1px solid #6EE7B7;
+      color: #065F46;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+    .form-success.show { display: block; }
+
+    .google-custom-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      background: #FFFFFF;
+      border: 1.5px solid #CBD5E1;
+      color: #1E293B;
+      font-weight: 600;
+      font-size: 0.94rem;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      transition: all 0.2s;
+    }
+    .google-custom-btn:hover {
+      background: #F8FAFC;
+      border-color: #94A3B8;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+      transform: translateY(-1px);
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 16px 0 14px;
+      color: #94A3B8;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .auth-divider span:first-child, .auth-divider span:last-child {
+      flex: 1;
+      border-bottom: 1px solid #E2E8F0;
+    }
+    .auth-divider span:nth-child(2) { padding: 0 10px; }
+
+    .field { margin-bottom: 15px; }
+    .field label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 5px;
+    }
+    .field label .hint { font-size: 0.78rem; font-weight: 400; color: #64748B; margin-left: 4px; }
+    .field input {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1.5px solid #CBD5E1;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--ink);
+      background: #FFFFFF;
+      transition: all 0.2s;
+    }
+    .field input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+    }
+    .pw { position: relative; }
+    .pw input { padding-right: 64px; }
+    .pw button {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: 0;
+      color: #64748B;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    .err {
+      color: var(--error);
+      font-size: 0.78rem;
+      margin: 4px 0 0;
+      min-height: 16px;
+      font-weight: 600;
+    }
+
+    .submit {
+      width: 100%;
+      background: var(--accent);
+      color: #FFFFFF;
+      border: 0;
+      padding: 13px;
+      border-radius: 11px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.35);
+      transition: all 0.2s;
+      margin-top: 6px;
+    }
+    .submit:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+    .submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .foot {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.88rem;
+      color: #64748B;
+    }
+    .foot a {
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .foot a:hover { text-decoration: underline; }
+
+    /* Verification Confirmation State View */
+    .verify-state-view {
+      display: none;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+    .verify-state-view.active { display: block; }
+    .verify-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      display: inline-block;
+      animation: bounce 1.8s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .art { display: none; }
+      .panel { padding: 12px 6px; }
+      .card { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Emergency Support & Return Bar -->
+  <aside class="crisis-strip" aria-label="Support & Navigation">
+    <div>
+      🚨 <strong>24/7 Crisis Support:</strong>
+      <a href="tel:868989330">868989330</a>
+      <span style="opacity: 0.6; margin: 0 6px;">|</span>
+      <span>Tele-MANAS: <a href="tel:14416">14416</a></span>
+    </div>
+    <div>
+      <a href="/" class="back-link">← Return to Portal</a>
+    </div>
+  </aside>
+
+  <!-- Split Screen Layout -->
+  <div class="layout">
+
+    <!-- Left Visual Artwork Panel -->
+    <aside class="art" aria-label="Beyond Identity Visual Artwork">
+      <div class="art-svg-card">
+        <img src="/assets/beyond_identity_1_circles.svg" alt="Beyond Identity — Beyond Labels, Everyone Equal" style="width: 100%; height: auto; display: block;" />
+      </div>
+    </aside>
+
+    <!-- Right Interactive Registration Card -->
+    <main class="panel">
+      <div class="card">
+
+        <!-- Form View Container -->
+        <div id="registerFormContainer">
+          
+          <!-- Mode Switcher -->
+          <div class="auth-mode-switch">
+            <a href="/login" class="auth-mode-btn inactive">🔐 Sign In</a>
+            <span class="auth-mode-btn active">✨ Create Account</span>
+          </div>
+
+          <h2 id="registerTitle">Create Account</h2>
+          <p class="sub" id="registerSub">Join the verified, affirming Beyond Identity sanctuary.</p>
+
+          <!-- Role Toggle -->
+          <div class="roles" role="radiogroup" aria-label="Select Account Role">
+            <button type="button" role="radio" aria-checked="true" data-role="community" id="roleCommunityBtn">
+              <span>🌈</span> Community member
+            </button>
+            <button type="button" role="radio" aria-checked="false" data-role="ngo" id="roleNgoBtn">
+              <span>🏢</span> NGO partner
+            </button>
+          </div>
+
+          <!-- Status Alerts -->
+          <div class="form-err" id="formErr" role="alert"></div>
+          <div class="form-success" id="formSuccess" role="status"></div>
+
+          <!-- METHOD 2: Continue with Google -->
+          <div class="google-auth-section" id="googleAuthSection" style="margin-bottom: 16px;">
+            <div id="googleBtnWrapper" style="display: flex; justify-content: center; width: 100%; min-height: 44px;">
+              <button type="button" id="customGoogleBtn" class="google-custom-btn" onclick="onCustomGoogleBtnClick()">
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span>Continue with Google</span>
+              </button>
+            </div>
+
+            <!-- Divider -->
+            <div class="auth-divider">
+              <span></span>
+              <span>or register with Gmail</span>
+              <span></span>
+            </div>
+          </div>
+
+          <!-- METHOD 1: Gmail + Password Registration Form -->
+          <form id="registerForm" novalidate>
+            <div class="field">
+              <label for="name">
+                <span id="nameLabel">Name</span>
+                <span class="hint" id="nameHint">(the name you wish to use)</span>
+              </label>
+              <input type="text" id="name" placeholder="Your chosen name" required autocomplete="name" />
+              <p class="err" id="nameErr"></p>
+            </div>
+
+            <div class="field">
+              <label for="email">
+                Gmail Address
+                <span class="hint">(must end in @gmail.com)</span>
+              </label>
+              <input type="email" id="email" placeholder="you@gmail.com" required autocomplete="email" />
+              <p class="err" id="emailErr"></p>
+            </div>
+
+            <div class="field">
+              <label for="password">
+                Password
+                <span class="hint">(minimum 8 characters)</span>
+              </label>
+              <div class="pw">
+                <input type="password" id="password" placeholder="Create strong password (min 8 chars)" required autocomplete="new-password" />
+                <button type="button" id="togglePw" aria-label="Show password">Show</button>
+              </div>
+              <p class="err" id="passwordErr"></p>
+            </div>
+
+            <button class="submit" id="submitBtn" type="submit">
+              Register as Community Member
+            </button>
+          </form>
+
+          <div class="foot">
+            <p>Already have an account? <a href="/login">Sign In</a></p>
+          </div>
+        </div>
+
+        <!-- Verification Sent Confirmation View -->
+        <div class="verify-state-view" id="verifyConfirmationView">
+          <div class="verify-icon">📬</div>
+          <h2 style="margin-bottom: 8px;">Check your Gmail!</h2>
+          <p style="color: var(--muted); font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px;">
+            We've sent an account verification link to:<br/>
+            <strong id="sentEmailDisplay" style="color: var(--ink); font-size: 1.05rem;">you@gmail.com</strong>
+          </p>
+          
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; margin-bottom: 22px; font-size: 0.85rem; color: #64748B; text-align: left;">
+            <p style="margin: 0 0 6px;">⏱️ <strong>Link validity:</strong> 24 hours.</p>
+            <p style="margin: 0;">💡 <strong>Tip:</strong> If you don't see the email, please check your <em>Promotions</em> or <em>Spam</em> folder.</p>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="https://mail.google.com" target="_blank" rel="noopener noreferrer" class="submit" style="text-decoration: none; text-align: center;">
+              Open Gmail Inbox →
+            </a>
+            <button type="button" id="resendBtn" class="google-custom-btn" style="border: 1px solid #CBD5E1; color: var(--ink);">
+              🔄 Resend Verification Link
+            </button>
+            <a href="/login" style="margin-top: 8px; color: var(--accent); font-weight: 700; font-size: 0.9rem; text-decoration: none;">
+              Return to Sign In
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    // =========================================================
+    // GOOGLE OAUTH 2.0 CONFIGURATION
+    // Replace this string with your real Google Client ID from Google Cloud Console
+    // =========================================================
+    const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+    const API_BASE = (window.location.port === "8000" || window.location.hostname.includes("onrender.com"))
+      ? ""
+      : "http://127.0.0.1:8000";
+
+    let currentRole = "community";
+    let lastRegisteredEmail = "";
+
+    const $ = id => document.getElementById(id);
+    const form = $("registerForm");
+    const f = {
+      name: $("name"),
+      email: $("email"),
+      password: $("password")
+    };
+
+    // Role configuration dictionary
+    const ROLES = {
+      community: {
+        backendRole: "user",
+        accent: "#0F766E",
+        title: "Create Account",
+        sub: "Your identity, your choice. Safe space for community members.",
+        nameLabel: "Name",
+        nameHint: "(the name you wish to use)",
+        namePlaceholder: "Your chosen name",
+        button: "Register as Community Member",
+        redirect: "/dashboard.html"
+      },
+      ngo: {
+        backendRole: "verifier",
+        accent: "#1F1B4D",
+        title: "Register NGO Partner",
+        sub: "Verified portal for community organizations and support shelters.",
+        nameLabel: "Representative Name",
+        nameHint: "(authorized coordinator)",
+        namePlaceholder: "Your full name",
+        button: "Register as NGO Partner",
+        redirect: "/ngo-dashboard.html"
+      }
+    };
+
+    function applyRole(r) {
+      currentRole = r;
+      const c = ROLES[r];
+      document.documentElement.style.setProperty("--accent", c.accent);
+
+      $("roleCommunityBtn").setAttribute("aria-checked", String(r === "community"));
+      $("roleNgoBtn").setAttribute("aria-checked", String(r === "ngo"));
+
+      $("registerTitle").textContent = c.title;
+      $("registerSub").textContent = c.sub;
+      $("submitBtn").textContent = c.button;
+      $("nameLabel").textContent = c.nameLabel;
+      $("nameHint").textContent = c.nameHint;
+      f.name.placeholder = c.namePlaceholder;
+      clearErrors();
+    }
+
+    $("roleCommunityBtn").addEventListener("click", () => applyRole("community"));
+    $("roleNgoBtn").addEventListener("click", () => applyRole("ngo"));
+
+    // Show/Hide password toggle
+    $("togglePw").addEventListener("click", () => {
+      const show = f.password.type === "password";
+      f.password.type = show ? "text" : "password";
+      $("togglePw").textContent = show ? "Hide" : "Show";
+    });
+
+    function setErr(key, msg) {
+      const el = $(key + "Err");
+      if (el) el.textContent = msg;
+    }
+
+    function clearErrors() {
+      ["name", "email", "password"].forEach(k => setErr(k, ""));
+      $("formErr").textContent = "";
+      $("formErr").classList.remove("show");
+      $("formSuccess").textContent = "";
+      $("formSuccess").classList.remove("show");
+    }
+
+    // Client-side Form Validation
+    function validate() {
+      clearErrors();
+      let ok = true;
+      const nameVal = f.name.value.trim();
+      const emailVal = f.email.value.trim().toLowerCase();
+      const pwVal = f.password.value;
+
+      if (nameVal.length < 2) {
+        setErr("name", "Name must be at least 2 characters.");
+        ok = false;
+      }
+
+      if (!emailVal.endsWith("@gmail.com")) {
+        setErr("email", "Please enter a valid @gmail.com address.");
+        ok = false;
+      }
+
+      if (pwVal.length < 8) {
+        setErr("password", "Password must be at least 8 characters long.");
+        ok = false;
+      }
+
+      return ok;
+    }
+
+    // Form Submission: POST /auth/register
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      if (!validate()) return;
+
+      const submitBtn = $("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creating account & sending email...";
+
+      const emailVal = f.email.value.trim().toLowerCase();
+      lastRegisteredEmail = emailVal;
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: f.name.value.trim(),
+            email: emailVal,
+            password: f.password.value,
+            role: ROLES[currentRole].backendRole
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || "Registration failed. This Gmail address may already be in use.");
+        }
+
+        // Show confirmation view
+        $("sentEmailDisplay").textContent = emailVal;
+        $("registerFormContainer").style.display = "none";
+        $("verifyConfirmationView").classList.add("active");
+
+      } catch (err) {
+        $("formErr").textContent = err.message || "Unable to register. Please check your network.";
+        $("formErr").classList.add("show");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = ROLES[currentRole].button;
+      }
+    });
+
+    // Resend Verification Email Button
+    $("resendBtn").addEventListener("click", async () => {
+      if (!lastRegisteredEmail) return;
+      $("resendBtn").disabled = true;
+      $("resendBtn").textContent = "Sending new link...";
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/resend-verification`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: lastRegisteredEmail })
+        });
+        const data = await res.json();
+        alert(data.message || "A fresh verification link has been sent to your Gmail inbox!");
+      } catch (err) {
+        alert("Failed to resend verification email: " + err.message);
+      } finally {
+        $("resendBtn").disabled = false;
+        $("resendBtn").textContent = "🔄 Resend Verification Link";
+      }
+    });
+
+    // =========================================================
+    // METHOD 2: GOOGLE IDENTITY SERVICES INTEGRATION
+    // =========================================================
+    async function handleGoogleCredentialResponse(response) {
+      clearErrors();
+      const errBox = $("formErr");
+
+      if (!response || !response.credential) {
+        errBox.textContent = "Google authentication did not return a valid credential.";
+        errBox.classList.add("show");
+        return;
+      }
+
+      const roleToSend = ROLES[currentRole].backendRole;
+
+      try {
+        if ($("customGoogleBtn")) $("customGoogleBtn").disabled = true;
+        errBox.textContent = "Authenticating with Google...";
+        errBox.classList.remove("show");
+
+        const res = await fetch(`${API_BASE}/auth/google`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            credential: response.credential,
+            role: roleToSend
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || "Google authentication failed on server.");
+        }
+
+        // Save JWT session
+        localStorage.setItem("bi_token", data.access_token);
+        sessionStorage.setItem("bi_token", data.access_token);
+        if (data.user) {
+          localStorage.setItem("bi_user", JSON.stringify(data.user));
+          sessionStorage.setItem("bi_user", JSON.stringify(data.user));
+        }
+
+        // Redirect according to role
+        const targetUrl = (data.user && data.user.role === "verifier") ? "/ngo-dashboard.html" : "/dashboard.html";
+        window.location.href = targetUrl;
+
+      } catch (err) {
+        errBox.textContent = err.message || "Google registration failed. Please try again.";
+        errBox.classList.add("show");
+      } finally {
+        if ($("customGoogleBtn")) $("customGoogleBtn").disabled = false;
+      }
+    }
+
+    window.onCustomGoogleBtnClick = function() {
+      if (GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE_CLIENT_ID")) {
+        const errBox = $("formErr");
+        errBox.textContent = "Google Sign-In is ready! Please paste your Google Client ID into register.html and .env to activate.";
+        errBox.classList.add("show");
+        return;
+      }
+      if (typeof google !== "undefined" && google.accounts && google.accounts.id) {
+        google.accounts.id.prompt();
+      }
+    };
+
+    function initGoogleIdentity() {
+      if (typeof google === "undefined" || !google.accounts || !google.accounts.id) {
+        setTimeout(initGoogleIdentity, 300);
+        return;
+      }
+
+      try {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredentialResponse,
+          auto_select: false,
+          cancel_on_tap_outside: true,
+        });
+
+        const btnContainer = $("googleBtnWrapper");
+        if (btnContainer && !GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE_CLIENT_ID")) {
+          google.accounts.id.renderButton(btnContainer, {
+            type: "standard",
+            theme: "outline",
+            size: "large",
+            text: "continue_with",
+            shape: "rectangular",
+            logo_alignment: "left",
+            width: 340,
+          });
+        }
+      } catch (e) {
+        console.warn("Google Identity init notice:", e);
+      }
+    }
+
+    // Role detection from query string (?role=ngo or ?role=community)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("role") === "ngo" || urlParams.get("role") === "verifier") {
+      applyRole("ngo");
+    } else {
+      applyRole("community");
+    }
+
+    window.addEventListener("DOMContentLoaded", initGoogleIdentity);
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+      initGoogleIdentity();
+    }
+  </script>
+</body>
+</html>

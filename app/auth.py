@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app import models
 
-SECRET_KEY = os.getenv("BI_SECRET_KEY", "dev-only-change-me-before-deploying")
+SECRET_KEY = os.getenv("JWT_SECRET") or os.getenv("SECRET_KEY") or os.getenv("BI_SECRET_KEY", "dev-only-change-me-before-deploying")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 1 day
 
@@ -113,6 +113,32 @@ def verify_password_reset_token(token: str) -> Optional[str]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         if payload.get("purpose") != "password_reset":
+            return None
+        email: str = payload.get("sub")
+        return email.lower().strip() if email else None
+    except JWTError:
+        return None
+
+
+VERIFY_TOKEN_EXPIRE_HOURS = 24
+
+
+def create_email_verification_token(email: str) -> str:
+    """Generates a secure, signed, time-limited JWT email verification token valid for 24 hours."""
+    expire = datetime.utcnow() + timedelta(hours=VERIFY_TOKEN_EXPIRE_HOURS)
+    to_encode = {
+        "sub": email.strip().lower(),
+        "purpose": "email_verification",
+        "exp": expire,
+    }
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def verify_email_verification_token(token: str) -> Optional[str]:
+    """Decodes and validates an email verification token, returning the user's email if valid."""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("purpose") != "email_verification":
             return None
         email: str = payload.get("sub")
         return email.lower().strip() if email else None

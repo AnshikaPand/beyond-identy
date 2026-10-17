@@ -51,8 +51,18 @@ class User(Base):
     google_id = Column(String, unique=True, index=True, nullable=True)  # Unique Google sub ID
     auth_provider = Column(String, default="local", nullable=False)  # "local" or "google"
     role = Column(Enum(UserRole), default=UserRole.user, nullable=False)
+    is_verified = Column(Boolean, default=False, nullable=False)  # Email verification status
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    @property
+    def password_hash(self):
+        """Synonym for hashed_password for codebase compatibility."""
+        return self.hashed_password
+
+    @password_hash.setter
+    def password_hash(self, value):
+        self.hashed_password = value
 
     listings_submitted = relationship(
         "Listing", back_populates="submitted_by", foreign_keys="Listing.submitted_by_id"

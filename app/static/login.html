@@ -407,7 +407,7 @@
     }
 
     /* Global Alert Box */
-    .form-err {
+    .form-err, .error {
       background: #FEF2F2;
       border: 1px solid #FECACA;
       color: #B91C1C;
@@ -418,7 +418,33 @@
       display: none;
       font-weight: 500;
     }
-    .form-err.show { display: block; }
+    .form-err.show, .error.show { display: block; }
+
+    .resend-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      background: #DC2626;
+      color: #FFFFFF !important;
+      border: 0;
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .resend-btn:hover {
+      background: #B91C1C;
+      transform: translateY(-1px);
+    }
+    .resend-btn[disabled] {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
 
     .form-success {
       background: #F0FDF4;
@@ -787,12 +813,12 @@
           
           <!-- Unified Auth Mode Switcher (Sign In vs Create Account) -->
           <div class="auth-mode-switch" style="display: flex; gap: 6px; background: #F1F5F9; border-radius: 12px; padding: 4px; margin-bottom: 22px; border: 1px solid #E2E8F0;">
-            <button type="button" id="tabSignInBtn" class="auth-mode-btn" style="flex: 1; border: 0; background: #FFFFFF; color: var(--ink); font-weight: 700; font-size: 0.92rem; padding: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: all 0.2s;">
+            <a href="login.html" id="tabSignInBtn" class="auth-mode-btn" style="flex: 1; border: 0; background: #FFFFFF; color: var(--ink); font-weight: 700; font-size: 0.92rem; padding: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.06); text-decoration: none; text-align: center;">
               🔐 Sign In
-            </button>
-            <button type="button" id="tabRegisterBtn" class="auth-mode-btn" style="flex: 1; border: 0; background: transparent; color: #64748B; font-weight: 600; font-size: 0.92rem; padding: 10px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+            </a>
+            <a href="register.html" id="tabRegisterBtn" class="auth-mode-btn" style="flex: 1; border: 0; background: transparent; color: #64748B; font-weight: 600; font-size: 0.92rem; padding: 10px; border-radius: 8px; cursor: pointer; text-decoration: none; text-align: center;">
               ✨ Create Account
-            </button>
+            </a>
           </div>
 
           <h2 id="title">Welcome back</h2>
@@ -824,8 +850,8 @@
             </div>
           </div>
 
-          <!-- Status Alerts -->
-          <div class="form-err" id="formErr" role="alert"></div>
+          <!-- Status Alerts (Displays server errors and email verification required banners) -->
+          <div class="form-err error" id="formErr" role="alert"></div>
           <div class="form-success" id="formSuccess" role="status"></div>
 
           <!-- Google Sign-In (Google Identity Services) -->
@@ -862,8 +888,8 @@
             </div>
 
             <div class="field">
-              <label for="email">Email Address</label>
-              <input type="email" id="email" placeholder="you@example.com" autocomplete="email" aria-describedby="emailErr" required />
+              <label for="email">Gmail Address</label>
+              <input type="email" id="email" placeholder="you@gmail.com" autocomplete="email" aria-describedby="emailErr" required />
               <p class="err" id="emailErr" aria-live="polite"></p>
             </div>
 
@@ -890,7 +916,7 @@
           <!-- Footer Navigation Links -->
           <div class="foot">
             <p id="signupLine">
-              New here? <a id="signupLink" href="#register">Create an account</a>
+              New here? <a id="signupLink" href="register.html">Create an account</a>
             </p>
             <p id="extraLine">
               <a href="/?tab=report&anon=1">Submit an anonymous report without signing in</a>
@@ -996,8 +1022,10 @@
     // =========================================================
     const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
-    // Automatic API Base detection: handles localhost:8000, 127.0.0.1, and cloud deployment
-    const API_BASE = window.location.protocol.startsWith("http") ? "" : "http://127.0.0.1:8000";
+    // Automatic API Base detection: handles localhost:8000, localhost:5500, 127.0.0.1, and cloud deployment
+    const API_BASE = (window.location.port === "8000" || window.location.hostname.includes("onrender.com"))
+      ? ""
+      : "http://127.0.0.1:8000";
 
     const ROLES = {
       community: {
@@ -1011,7 +1039,7 @@
         button: "Sign in as community member",
         signupText: "Create an account",
         extra: '<a href="/?tab=report&anon=1">Submit an anonymous report without signing in</a>',
-        redirect: "/?login=success&role=community"
+        redirect: "dashboard.html"
       },
       ngo: {
         accent: "#1F1B4D",
@@ -1024,14 +1052,14 @@
         button: "Sign in as NGO partner",
         signupText: "Register as an NGO partner",
         extra: 'Need help with account approval? <a href="/about">Contact our support team</a>',
-        redirect: "/?login=success&role=ngo"
+        redirect: "ngo-dashboard.html"
       }
     };
 
     let currentRole = "community";
     let isRegisterMode = false;
     let redirectTimer = null;
-    let countdownRemaining = 3;
+    let countdownRemaining = 2;
 
     const $ = id => document.getElementById(id);
     const f = {
@@ -1044,7 +1072,7 @@
     // POST-LOGIN VIEW CONTROLLER
     // Reveals beyond_identity_4_network.svg and user details
     // =========================================================
-    function showPostLoginView(userData, autoRedirect = true) {
+    function showPostLoginView(userData, autoRedirect = true, redirectTarget = null) {
       // 1. Hide authentication form, show post-login network card
       $("authFormsContainer").style.display = "none";
       $("postLoginContainer").classList.add("active");
@@ -1054,10 +1082,17 @@
       const userName = userData.name || (userData.email ? userData.email.split("@")[0] : "Friend");
       $("postLoginName").textContent = userName;
 
-      const isNgo = userData.role === "verifier" || currentRole === "ngo";
+      const isNgo = (userData.role === "verifier" || userData.role === "ngo") || currentRole === "ngo";
+      const targetUrl = redirectTarget || (isNgo ? "ngo-dashboard.html" : "dashboard.html");
+
       $("postLoginDesc").textContent = isNgo
         ? "You are connected to the Beyond Identity verified partner network. Manage opportunities and assist in community triage."
         : "You are connected to Beyond Identity's verified network. Verified opportunities, legal awareness, and 24/7 AI assistance are ready.";
+
+      if ($("continueToPortalBtn")) {
+        $("continueToPortalBtn").href = targetUrl;
+        $("continueToPortalBtn").textContent = isNgo ? "🚀 Continue to NGO Dashboard →" : "🚀 Continue to Community Dashboard →";
+      }
 
       // 3. Switch Left Artwork to beyond_identity_4_network.svg
       $("artPreLogin").style.display = "none";
@@ -1066,7 +1101,7 @@
 
       // 4. Start auto-redirect countdown
       if (autoRedirect) {
-        countdownRemaining = 3;
+        countdownRemaining = 2;
         $("countdownSeconds").textContent = countdownRemaining;
         $("countdownPill").style.display = "inline-flex";
 
@@ -1076,7 +1111,7 @@
           if ($("countdownSeconds")) $("countdownSeconds").textContent = countdownRemaining;
           if (countdownRemaining <= 0) {
             clearInterval(redirectTimer);
-            window.location.href = `/?tab=chat&talk=1&login=success&role=${userData.role || currentRole}`;
+            window.location.href = targetUrl;
           }
         }, 1000);
       } else {
@@ -1309,8 +1344,14 @@
           })
         });
 
-        if (loginRes.status === 401 || loginRes.status === 403) {
+        if (loginRes.status === 401) {
           throw new Error("Invalid email or password. Please check your credentials and try again.");
+        }
+        if (loginRes.status === 403) {
+          const errData = await loginRes.json().catch(() => ({}));
+          const detailMsg = errData.detail || "Verify your email first.";
+          showVerificationRequiredError(detailMsg, f.email.value.trim().toLowerCase());
+          return;
         }
         if (!loginRes.ok) {
           const errData = await loginRes.json().catch(() => ({}));
@@ -1334,8 +1375,11 @@
           localStorage.setItem("bi_user", JSON.stringify(data.user));
         }
 
-        // Trigger the Post-Login Network State View with beyond_identity_4_network.svg!
-        showPostLoginView(data.user || { name: f.name.value.trim(), email: f.email.value.trim(), role: ROLES[currentRole].backendRole }, true);
+        const isNgo = (data.user && (data.user.role === "verifier" || data.user.role === "ngo")) || currentRole === "ngo";
+        const targetDashboard = isNgo ? "ngo-dashboard.html" : "dashboard.html";
+
+        // Trigger the Post-Login Network State View with auto-redirect to dashboard
+        showPostLoginView(data.user || { name: f.name ? f.name.value.trim() : "", email: f.email.value.trim(), role: isNgo ? "verifier" : "user" }, true, targetDashboard);
 
       } catch (err) {
         $("formErr").textContent = err instanceof TypeError
@@ -1358,6 +1402,53 @@
       $("formSuccess").textContent = `Filled credentials for ${roleKey === "ngo" ? "NGO Partner" : "Community"}! Click Submit to sign in.`;
       $("formSuccess").classList.add("show");
     };
+
+    // Displays clear 'Verify your email first' message with an inline Resend button
+    function showVerificationRequiredError(detailMsg, userEmail) {
+      const errBox = $("formErr");
+      errBox.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span>⚠️</span>
+            <strong style="color: #991B1B;">Verify your email first</strong>
+          </div>
+          <div style="font-size: 0.86rem; color: #7F1D1D; line-height: 1.45;">
+            ${detailMsg}
+          </div>
+          <div>
+            <button type="button" id="inlineResendBtn" class="resend-btn">
+              ✉️ Resend verification email
+            </button>
+          </div>
+        </div>
+      `;
+      errBox.classList.add("show");
+
+      const btn = $("inlineResendBtn");
+      if (btn) {
+        btn.addEventListener("click", async () => {
+          btn.disabled = true;
+          btn.textContent = "Sending link...";
+          try {
+            const res = await fetch(`${API_BASE}/auth/resend-verification`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: userEmail })
+            });
+            const data = await res.json();
+            if (res.ok) {
+              $("formSuccess").textContent = `✅ Verification email sent to ${userEmail}! Check your inbox and spam folder.`;
+              $("formSuccess").classList.add("show");
+              btn.textContent = "✓ Link Sent!";
+            } else {
+              errBox.textContent = data.detail || "Failed to resend verification email.";
+            }
+          } catch (e) {
+            errBox.textContent = "Unable to reach server. Please ensure the backend is running.";
+          }
+        });
+      }
+    }
 
     // =========================================================
     // Forgot Password Flow Modal Handlers
@@ -1509,8 +1600,11 @@
           localStorage.setItem("bi_user", JSON.stringify(data.user));
         }
 
-        // Show post-login celebration / network view with auto-redirect
-        showPostLoginView(data.user || { name: "Friend", role: roleToSend }, true);
+        const isNgo = (data.user && (data.user.role === "verifier" || data.user.role === "ngo")) || roleToSend === "verifier";
+        const targetDashboard = isNgo ? "ngo-dashboard.html" : "dashboard.html";
+
+        // Show post-login celebration / network view with auto-redirect to dashboard
+        showPostLoginView(data.user || { name: "Friend", role: isNgo ? "verifier" : "user" }, true, targetDashboard);
 
       } catch (err) {
         errBox.textContent = err.message || "Failed to sign in with Google. Please try again.";
@@ -1569,22 +1663,33 @@
     const currentPath = window.location.pathname.toLowerCase();
     const queryParams = new URLSearchParams(window.location.search);
 
-    // 1. Role detection from route/params
+    // 1. Check email verification feedback from GET /auth/verify-email
+    if (queryParams.get("verified") === "1") {
+      $("formSuccess").textContent = "✅ Your Gmail address has been verified successfully! Please sign in with your password.";
+      $("formSuccess").classList.add("show");
+    } else if (queryParams.get("verified") === "0") {
+      const errMsg = queryParams.get("error") || "Verification link is invalid or has expired. Please sign in to resend.";
+      $("formErr").textContent = `❌ ${errMsg}`;
+      $("formErr").classList.add("show");
+    }
+
+    // 2. Role detection from route/params
     if (currentPath.includes("ngo") || queryParams.get("role") === "ngo" || queryParams.get("role") === "verifier") {
       applyRole("ngo");
     } else {
       applyRole("community");
     }
 
-    // 2. Mode detection (Register vs Sign In)
+    // 3. Mode detection (Register vs Sign In)
     const wantsRegister = currentPath.includes("register") || currentPath.includes("signup") || queryParams.get("tab") === "register" || queryParams.get("mode") === "register";
 
     if (wantsRegister) {
-      setAuthMode("register");
+      // If user came to /login?tab=register or /signup, direct them smoothly to register.html
+      window.location.href = "register.html" + (queryParams.get("role") ? `?role=${queryParams.get("role")}` : "");
     } else {
       setAuthMode("signin");
       // Check existing session only for login flow if not explicitly relogging in
-      if (!queryParams.has("relogin")) {
+      if (!queryParams.has("relogin") && !queryParams.has("verified")) {
         checkExistingSession();
       }
     }

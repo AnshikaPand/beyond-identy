@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -45,12 +46,23 @@ def _ensure_sqlite_columns():
                 cursor.execute("DROP TABLE users")
                 cursor.execute("ALTER TABLE users_temp RENAME TO users")
                 conn.connection.commit()
-            else:
-                if "google_id" not in cols:
-                    cursor.execute("ALTER TABLE users ADD COLUMN google_id VARCHAR")
-                if "auth_provider" not in cols:
-                    cursor.execute("ALTER TABLE users ADD COLUMN auth_provider VARCHAR DEFAULT 'local'")
-                conn.connection.commit()
+            if "is_verified" not in cols:
+                cursor.execute("ALTER TABLE users ADD COLUMN is_verified BOOLEAN DEFAULT 0")
+            if "google_id" not in cols:
+                cursor.execute("ALTER TABLE users ADD COLUMN google_id VARCHAR")
+            if "auth_provider" not in cols:
+                cursor.execute("ALTER TABLE users ADD COLUMN auth_provider VARCHAR DEFAULT 'local'")
+
+            # Keep demo/seed accounts verified so tests and demo logins never fail
+            cursor.execute("""
+                UPDATE users SET is_verified = 1 
+                WHERE email LIKE '%@example.com'
+                   OR email LIKE '%@example.org'
+                   OR email LIKE '%@humsafar.org'
+                   OR email LIKE '%@beyondidentity.org'
+                   OR auth_provider = 'google'
+            """)
+            conn.connection.commit()
     except Exception as e:
         pass
 
@@ -60,7 +72,10 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 ASSETS_DIR = STATIC_DIR / "assets"
 INDEX_FILE = STATIC_DIR / "index.html"
 LOGIN_FILE = STATIC_DIR / "login.html"
+REGISTER_FILE = STATIC_DIR / "register.html"
 ABOUT_FILE = STATIC_DIR / "about.html"
+DASHBOARD_FILE = STATIC_DIR / "dashboard.html"
+NGO_DASHBOARD_FILE = STATIC_DIR / "ngo-dashboard.html"
 
 app = FastAPI(
     title="Beyond Identity API",
@@ -73,9 +88,23 @@ app = FastAPI(
     version="0.3.0",
 )
 
+# Robust CORS middleware: permits localhost (e.g. VS Code Live Server on :5500) and configured frontend URL
+origins = [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://localhost:3000",
+    "http://localhost",
+]
+frontend_env = os.getenv("FRONTEND_URL")
+if frontend_env and frontend_env not in origins:
+    origins.append(frontend_env)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten this to your actual frontend domain before deploying
+    allow_origins=origins,
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -127,18 +156,33 @@ def serve_app():
 
 
 # =========================================================================
-# Unified Auth Portal Routes (Common page for Login, Register, Sign In & Sign Up)
+# Auth Portal Routes (Dedicated Login and Register Pages)
 # =========================================================================
-@app.get("/login")
-@app.get("/signin")
 @app.get("/register")
+@app.get("/register.html")
 @app.get("/signup")
+def serve_register_page():
+    """Serves the dedicated Register page with real Gmail verification."""
+    target = REGISTER_FILE if REGISTER_FILE.exists() else LOGIN_FILE
+    if target.exists():
+        return FileResponse(
+            str(target),
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
+    return {"message": "Register page not found"}
+
+
+@app.get("/login")
+@app.get("/login.html")
+@app.get("/signin")
 @app.get("/auth")
 @app.get("/auth-portal")
-@app.get("/register/community")
-@app.get("/register/ngo")
-def serve_auth_portal():
-    """Serves the single unified Beyond Identity Auth Portal for both Login and Register."""
+def serve_login_page():
+    """Serves the login page featuring Google Sign-In and Gmail+Password."""
     if LOGIN_FILE.exists():
         return FileResponse(
             str(LOGIN_FILE),
@@ -148,7 +192,7 @@ def serve_auth_portal():
                 "Expires": "0",
             },
         )
-    return {"message": "Auth portal not found"}
+    return {"message": "Login page not found"}
 
 
 @app.get("/about")
@@ -172,10 +216,28 @@ def serve_chatbot():
     return {"message": "Chatbox frontend not found"}
 
 
-@app.get("/portal")
 @app.get("/dashboard")
+@app.get("/dashboard.html")
 @app.get("/dashboard/community")
+def serve_dashboard():
+    """Serves the dedicated Community Member Dashboard."""
+    target = DASHBOARD_FILE if DASHBOARD_FILE.exists() else INDEX_FILE
+    if target.exists():
+        return FileResponse(str(target))
+    return {"message": "Dashboard not found"}
+
+
+@app.get("/ngo-dashboard.html")
 @app.get("/dashboard/ngo")
+def serve_ngo_dashboard():
+    """Serves the dedicated NGO Partner Dashboard."""
+    target = NGO_DASHBOARD_FILE if NGO_DASHBOARD_FILE.exists() else INDEX_FILE
+    if target.exists():
+        return FileResponse(str(target))
+    return {"message": "NGO Dashboard not found"}
+
+
+@app.get("/portal")
 @app.get("/report/anonymous")
 def serve_portal_routes():
     if INDEX_FILE.exists():

@@ -44,6 +44,7 @@ class UserOut(BaseModel):
     email: str
     role: UserRole
     is_active: bool
+    is_verified: bool = False
     auth_provider: Optional[str] = "local"
     google_id: Optional[str] = None
 
@@ -55,6 +56,16 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: Optional[UserOut] = None
+
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr
+
+
+class EmailVerificationResponse(BaseModel):
+    message: str
+    email: str
+    is_verified: bool = False
 
 
 class ForgotPasswordRequest(BaseModel):

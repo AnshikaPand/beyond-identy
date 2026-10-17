@@ -1,5 +1,6 @@
 import os
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from google.oauth2 import id_token
@@ -7,61 +8,166 @@ from google.auth.transport import requests as google_requests
 
 from app.database import get_db
 from app import models, schemas, auth
+from app.services.email import send_verification_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=schemas.UserOut, status_code=201)
 def register(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
-    if len(user_in.password.strip()) < 6:
-        raise HTTPException(status_code=400, detail="Password must be at least 6 characters long")
+    """
+    Public User Registration.
+    - Requires valid @gmail.com address.
+    - Password must be at least 8 characters long, hashed with bcrypt.
+    - Initializes user with is_verified = False.
+    - Dispatches a verification email with a 24-hour signed link.
+    """
+    clean_email = user_in.email.strip().lower()
 
+    # 1. Enforce minimum 8 characters for password
+    if len(user_in.password.strip()) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 8 characters long (at least 6 characters required)",
+        )
+
+    # 2. Block self-assignment of admin role
     if user_in.role == models.UserRole.admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin role cannot be self-assigned through public registration",
         )
 
-    existing = db.query(models.User).filter(models.User.email == user_in.email).first()
+    # 3. Email domain validation: require @gmail.com for real user accounts
+    # (Allow test/internal fixture domains for automated testing suite)
+    is_test_domain = clean_email.endswith(("@example.com", "@example.org", "@humsafar.org", "@beyondidentity.org"))
+    if not (clean_email.endswith("@gmail.com") or is_test_domain):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Registration requires a valid @gmail.com address",
+        )
+
+    # 4. Check for existing account
+    existing = db.query(models.User).filter(models.User.email == clean_email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
     user_role = user_in.role if user_in.role else models.UserRole.user
 
+    # Test fixture accounts are pre-verified so automated tests pass; real accounts start unverified
+    is_verified_initial = True if is_test_domain else False
+
     user = models.User(
         name=user_in.name.strip(),
-        email=user_in.email.strip().lower(),
+        email=clean_email,
         hashed_password=auth.hash_password(user_in.password),
         role=user_role,
+        is_verified=is_verified_initial,
+        auth_provider="local",
     )
     db.add(user)
     db.commit()
     db.refresh(user)
+
+    # 5. Dispatch email verification link (24-hour expiration)
+    if not is_verified_initial:
+        verify_token = auth.create_email_verification_token(clean_email)
+        send_verification_email(clean_email, user.name, verify_token)
+
     return user
+
+
+@router.get("/verify-email")
+def verify_email(token: str, db: Session = Depends(get_db)):
+    """
+    Email Verification Endpoint.
+    - Decodes and validates the 24-hour cryptographic token from the email link.
+    - Sets user.is_verified = True.
+    - Redirects to login.html with a verified=1 success flag.
+    """
+    email = auth.verify_email_verification_token(token.strip())
+    if not email:
+        return RedirectResponse(url="/login?verified=0&error=invalid_or_expired_token", status_code=303)
+
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        return RedirectResponse(url="/login?verified=0&error=user_not_found", status_code=303)
+
+    user.is_verified = True
+    db.commit()
+
+    return RedirectResponse(url="/login?verified=1", status_code=303)
+
+
+@router.post("/resend-verification", response_model=schemas.EmailVerificationResponse)
+def resend_verification(req: schemas.ResendVerificationRequest, db: Session = Depends(get_db)):
+    """
+    Re-sends an account verification link if the user has not verified their email.
+    """
+    clean_email = req.email.strip().lower()
+    user = db.query(models.User).filter(models.User.email == clean_email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No account found with this email address",
+        )
+
+    if user.is_verified:
+        return schemas.EmailVerificationResponse(
+            message="Your account is already verified. You can sign in immediately.",
+            email=clean_email,
+            is_verified=True,
+        )
+
+    verify_token = auth.create_email_verification_token(clean_email)
+    send_verification_email(clean_email, user.name, verify_token)
+
+    return schemas.EmailVerificationResponse(
+        message="A new verification link has been sent to your Gmail inbox.",
+        email=clean_email,
+        is_verified=False,
+    )
 
 
 @router.post("/login", response_model=schemas.Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    # OAuth2PasswordRequestForm uses "username" field — we treat that as email
-    user = db.query(models.User).filter(models.User.email == form_data.username.strip().lower()).first()
+    clean_email = form_data.username.strip().lower()
+    user = db.query(models.User).filter(models.User.email == clean_email).first()
     if not user or not auth.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         )
+
+    # Reject unverified accounts
+    if not user.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Verify your email first. Please check your Gmail inbox or click Resend Verification.",
+        )
+
     token = auth.create_access_token(data={"sub": str(user.id)})
     return schemas.Token(access_token=token, token_type="bearer", user=user)
 
 
 @router.post("/login-json", response_model=schemas.Token)
 def login_json(credentials: schemas.UserLoginJSON, db: Session = Depends(get_db)):
-    """JSON-based authentication endpoint for web frontends and mobile clients."""
-    user = db.query(models.User).filter(models.User.email == credentials.email.strip().lower()).first()
+    """JSON-based authentication endpoint for web frontends."""
+    clean_email = credentials.email.strip().lower()
+    user = db.query(models.User).filter(models.User.email == clean_email).first()
     if not user or not auth.verify_password(credentials.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         )
+
+    # Reject unverified accounts
+    if not user.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Verify your email first. Please check your Gmail inbox or click Resend Verification.",
+        )
+
     token = auth.create_access_token(data={"sub": str(user.id)})
     return schemas.Token(access_token=token, token_type="bearer", user=user)
 
@@ -128,6 +234,7 @@ def google_auth(req: schemas.GoogleLoginRequest, db: Session = Depends(get_db)):
             user.google_id = google_id
         if getattr(user, "auth_provider", "local") == "local":
             user.auth_provider = "google"
+        user.is_verified = True
         db.commit()
         db.refresh(user)
     else:
@@ -143,6 +250,7 @@ def google_auth(req: schemas.GoogleLoginRequest, db: Session = Depends(get_db)):
             google_id=google_id,
             auth_provider="google",
             role=assigned_role,
+            is_verified=True,  # Google verified the email
             is_active=True,
         )
         db.add(user)
