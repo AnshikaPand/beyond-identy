@@ -33,12 +33,19 @@ class UserLoginJSON(BaseModel):
     password: str
 
 
+class GoogleLoginRequest(BaseModel):
+    credential: str  # JWT ID Token returned by Google Identity Services
+    role: Optional[str] = "user"  # Target role: "user" / "community" or "verifier" / "ngo"
+
+
 class UserOut(BaseModel):
     id: int
     name: str
     email: str
     role: UserRole
     is_active: bool
+    auth_provider: Optional[str] = "local"
+    google_id: Optional[str] = None
 
     class Config:
         from_attributes = True

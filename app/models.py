@@ -47,7 +47,9 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
+    hashed_password = Column(String, nullable=True)  # Nullable for Google OAuth users
+    google_id = Column(String, unique=True, index=True, nullable=True)  # Unique Google sub ID
+    auth_provider = Column(String, default="local", nullable=False)  # "local" or "google"
     role = Column(Enum(UserRole), default=UserRole.user, nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)

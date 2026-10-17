@@ -1,6 +1,9 @@
+import os
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 
 from app.database import get_db
 from app import models, schemas, auth
@@ -61,6 +64,94 @@ def login_json(credentials: schemas.UserLoginJSON, db: Session = Depends(get_db)
         )
     token = auth.create_access_token(data={"sub": str(user.id)})
     return schemas.Token(access_token=token, token_type="bearer", user=user)
+
+
+@router.post("/google", response_model=schemas.Token)
+def google_auth(req: schemas.GoogleLoginRequest, db: Session = Depends(get_db)):
+    """
+    Google Sign-In Authentication Endpoint.
+    
+    Workflow:
+    1. Receives the Google ID token (JWT) from Google Identity Services on the frontend.
+    2. Verifies the token's cryptographic signature server-side using Google's public certs.
+    3. Validates that the Google account's email has been verified by Google.
+    4. Automatically logs in the user if their email exists, or registers a new user with
+       the selected role (Community Member or NGO Partner).
+    5. Returns our standard platform JWT access_token for seamless session continuity.
+    """
+    client_id = os.getenv("GOOGLE_CLIENT_ID", "").strip()
+    audience = client_id if (client_id and "your-google-client-id" not in client_id) else None
+
+    # Step 1: Verify the Google ID Token cryptographically
+    try:
+        id_info = id_token.verify_oauth2_token(
+            req.credential,
+            google_requests.Request(),
+            audience=audience,
+        )
+    except ValueError as e:
+        # Token is invalid, expired, or audience doesn't match
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Google authentication failed: {str(e)}",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unable to verify Google credential: {str(e)}",
+        )
+
+    # Step 2: Ensure email is verified by Google
+    if not id_info.get("email_verified", False):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Your Google account email address is not verified by Google.",
+        )
+
+    # Step 3: Extract verified profile information from the Google payload
+    email = id_info.get("email", "").strip().lower()
+    name = id_info.get("name", "").strip() or email.split("@")[0]
+    google_id = id_info.get("sub", "")
+
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google account did not provide a valid email address.",
+        )
+
+    # Step 4: Check if this user already exists in our database
+    user = db.query(models.User).filter(models.User.email == email).first()
+
+    if user:
+        # User already exists: link Google ID and update auth_provider if not set
+        if not user.google_id and google_id:
+            user.google_id = google_id
+        if getattr(user, "auth_provider", "local") == "local":
+            user.auth_provider = "google"
+        db.commit()
+        db.refresh(user)
+    else:
+        # User does not exist: create a new account automatically
+        # Map requested role: "ngo" / "verifier" -> UserRole.verifier, otherwise UserRole.user
+        role_param = (req.role or "").strip().lower()
+        assigned_role = models.UserRole.verifier if role_param in ("ngo", "verifier") else models.UserRole.user
+
+        user = models.User(
+            name=name,
+            email=email,
+            hashed_password=None,  # No password required for Google OAuth accounts
+            google_id=google_id,
+            auth_provider="google",
+            role=assigned_role,
+            is_active=True,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    # Step 5: Issue our own platform JWT access token
+    access_token = auth.create_access_token(data={"sub": str(user.id)})
+    return schemas.Token(access_token=access_token, token_type="bearer", user=user)
 
 
 @router.get("/me", response_model=schemas.UserOut)

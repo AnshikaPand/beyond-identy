@@ -5,10 +5,12 @@ Swap DATABASE_URL to a Postgres URL later for the "real data" phase — no other
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 DEFAULT_DB_FILE = BASE_DIR / "beyond_identity.db"
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DEFAULT_DB_FILE.as_posix()}")
 

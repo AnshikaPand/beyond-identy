@@ -702,3 +702,64 @@ def test_scheme_state_matching_engine():
     assert any("Tamil Nadu" in name for name in tn_schemes)
     assert any("Garima Greh" in name for name in tn_schemes)
 
+
+# =========================================================================
+# Google Sign-In (OAuth 2.0) Tests
+# =========================================================================
+
+def test_google_auth_invalid_token():
+    """Sending an invalid/garbage token should fail verification with HTTP 400."""
+    res = client.post("/auth/google", json={"credential": "invalid_token_xyz", "role": "user"})
+    assert res.status_code == 400
+    assert "Google authentication failed" in res.json()["detail"] or "Invalid" in res.json()["detail"]
+
+
+def test_google_auth_success_new_and_existing_user(monkeypatch):
+    """Verifies that valid Google ID token registers a new user and logs in existing user."""
+    from google.oauth2 import id_token
+
+    mock_google_user = {
+        "email": "testgoogleuser@gmail.com",
+        "name": "Google Test User",
+        "sub": "google_sub_998877",
+        "email_verified": True,
+    }
+
+    # Mock verify_oauth2_token to return valid payload
+    monkeypatch.setattr(id_token, "verify_oauth2_token", lambda *args, **kwargs: mock_google_user)
+
+    # 1. First Google sign-in (Registers new account)
+    reg_res = client.post("/auth/google", json={"credential": "valid_mock_token", "role": "community"})
+    assert reg_res.status_code == 200
+    reg_data = reg_res.json()
+    assert "access_token" in reg_data
+    assert reg_data["user"]["email"] == "testgoogleuser@gmail.com"
+    assert reg_data["user"]["name"] == "Google Test User"
+    assert reg_data["user"]["role"] == "user"
+
+    # 2. Second Google sign-in with same account (Logs in existing account)
+    login_res = client.post("/auth/google", json={"credential": "valid_mock_token", "role": "community"})
+    assert login_res.status_code == 200
+    login_data = login_res.json()
+    assert "access_token" in login_data
+    assert login_data["user"]["id"] == reg_data["user"]["id"]
+
+
+def test_google_auth_unverified_email_rejected(monkeypatch):
+    """Google tokens with unverified emails must be rejected."""
+    from google.oauth2 import id_token
+
+    unverified_payload = {
+        "email": "unverified@gmail.com",
+        "name": "Unverified User",
+        "sub": "google_sub_112233",
+        "email_verified": False,
+    }
+
+    monkeypatch.setattr(id_token, "verify_oauth2_token", lambda *args, **kwargs: unverified_payload)
+
+    res = client.post("/auth/google", json={"credential": "mock_unverified_token", "role": "community"})
+    assert res.status_code == 400
+    assert "not verified" in res.json()["detail"]
+
+

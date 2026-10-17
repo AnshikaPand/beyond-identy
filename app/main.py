@@ -11,6 +11,51 @@ from app.routers import auth, listings, incidents, awareness, health_assistant, 
 # use Alembic migrations once the schema stabilizes).
 Base.metadata.create_all(bind=engine)
 
+def _ensure_sqlite_columns():
+    """Lightweight SQLite schema migration for Google OAuth integration."""
+    try:
+        with engine.connect() as conn:
+            cursor = conn.connection.cursor()
+            cursor.execute("PRAGMA table_info(users)")
+            info = cursor.fetchall()
+            cols = {row[1]: row for row in info}
+
+            # If hashed_password is still NOT NULL in existing SQLite table, rebuild it with nullable password
+            if "hashed_password" in cols and cols["hashed_password"][3] == 1:
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS users_temp (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name VARCHAR NOT NULL,
+                        email VARCHAR UNIQUE NOT NULL,
+                        hashed_password VARCHAR NULL,
+                        role VARCHAR(8) NOT NULL DEFAULT 'user',
+                        is_active BOOLEAN DEFAULT 1,
+                        created_at DATETIME,
+                        google_id VARCHAR UNIQUE,
+                        auth_provider VARCHAR DEFAULT 'local'
+                    )
+                """)
+                cursor.execute("""
+                    INSERT INTO users_temp (id, name, email, hashed_password, role, is_active, created_at, google_id, auth_provider)
+                    SELECT id, name, email, hashed_password, role, is_active, created_at,
+                           COALESCE(google_id, NULL),
+                           COALESCE(auth_provider, 'local')
+                    FROM users
+                """)
+                cursor.execute("DROP TABLE users")
+                cursor.execute("ALTER TABLE users_temp RENAME TO users")
+                conn.connection.commit()
+            else:
+                if "google_id" not in cols:
+                    cursor.execute("ALTER TABLE users ADD COLUMN google_id VARCHAR")
+                if "auth_provider" not in cols:
+                    cursor.execute("ALTER TABLE users ADD COLUMN auth_provider VARCHAR DEFAULT 'local'")
+                conn.connection.commit()
+    except Exception as e:
+        pass
+
+_ensure_sqlite_columns()
+
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 ASSETS_DIR = STATIC_DIR / "assets"
 INDEX_FILE = STATIC_DIR / "index.html"
