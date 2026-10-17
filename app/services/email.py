@@ -37,13 +37,18 @@ def send_verification_email(to_email: str, user_name: str, verification_token: s
     # 3. Development / Mock Mode fallback
     # If the student or developer hasn't configured a Gmail App Password yet,
     # log the activation link directly to the console so local testing always works!
-    if not smtp_user or not smtp_password or "your-" in smtp_password.lower():
+    if (
+        not smtp_user
+        or not smtp_password
+        or "your" in smtp_password.lower()
+        or "example" in smtp_user.lower()
+    ):
         print("\n" + "=" * 72)
-        print("📧 [BEYOND IDENTITY EMAIL SERVICE - LOCAL DEV MODE]")
+        print("[BEYOND IDENTITY EMAIL SERVICE - LOCAL DEV MODE]")
         print(f"Recipient: {user_name} <{to_email}>")
-        print(f"Subject  : Verify your Beyond Identity Account")
+        print("Subject  : Verify your Beyond Identity Account")
         print(f"Link     : {verification_link}")
-        print("💡 TIP: To send real emails, set SMTP_USER and SMTP_APP_PASSWORD in .env")
+        print("TIP: To send real emails, set SMTP_USER and SMTP_APP_PASSWORD in .env")
         print("=" * 72 + "\n")
         return True
 
@@ -122,5 +127,5 @@ def send_verification_email(to_email: str, user_name: str, verification_token: s
         return True
 
     except Exception as e:
-        print(f"❌ [SMTP ERROR] Could not send email to {to_email}: {e}")
+        print(f"[SMTP ERROR] Could not send email to {to_email}: {e}")
         return False

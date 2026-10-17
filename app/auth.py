@@ -50,13 +50,17 @@ def get_current_user(
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub")
-        if user_id is None:
+        user_sub: str = payload.get("sub")
+        if user_sub is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
 
-    user = db.query(models.User).filter(models.User.id == int(user_id)).first()
+    if str(user_sub).isdigit():
+        user = db.query(models.User).filter(models.User.id == int(user_sub)).first()
+    else:
+        user = db.query(models.User).filter(models.User.email == str(user_sub).lower().strip()).first()
+
     if user is None:
         raise credentials_exception
     return user
@@ -86,10 +90,12 @@ def get_optional_current_user(
         return None
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub")
-        if user_id is None:
+        user_sub: str = payload.get("sub")
+        if user_sub is None:
             return None
-        return db.query(models.User).filter(models.User.id == int(user_id)).first()
+        if str(user_sub).isdigit():
+            return db.query(models.User).filter(models.User.id == int(user_sub)).first()
+        return db.query(models.User).filter(models.User.email == str(user_sub).lower().strip()).first()
     except JWTError:
         return None
 

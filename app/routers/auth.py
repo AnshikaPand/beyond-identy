@@ -1,5 +1,6 @@
 import os
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -130,10 +131,47 @@ def resend_verification(req: schemas.ResendVerificationRequest, db: Session = De
 
 
 @router.post("/login", response_model=schemas.Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    clean_email = form_data.username.strip().lower()
+async def login(
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    """
+    Unified Authentication Endpoint:
+    Accepts both JSON payloads (from login.html) and OAuth2 form-data (from Swagger/tests).
+    """
+    content_type = request.headers.get("content-type", "").lower()
+    email = None
+    password = None
+
+    if "application/json" in content_type:
+        try:
+            body = await request.json()
+            email = body.get("email") or body.get("username")
+            password = body.get("password")
+        except Exception:
+            pass
+    else:
+        try:
+            form = await request.form()
+            email = form.get("username") or form.get("email")
+            password = form.get("password")
+        except Exception:
+            pass
+
+    if not email or not password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email and password are required",
+        )
+
+    clean_email = str(email).strip().lower()
     user = db.query(models.User).filter(models.User.email == clean_email).first()
-    if not user or not auth.verify_password(form_data.password, user.hashed_password):
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Account not found. Please click 'Create an account' to register first, or use 'Continue with Google'.",
+        )
+    if not auth.verify_password(str(password), user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",

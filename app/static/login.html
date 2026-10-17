@@ -1,1763 +1,452 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | Beyond Identity</title>
-  <meta name="description" content="Sign in to Beyond Identity — Safe space for community members, verified NGOs, and legal rights advocates." />
-
-  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
-
-  <!-- Google Identity Services (Google Sign-In) -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-  <style>
-    :root {
-      --ink: #1F1B4D;
-      --paper: #F8F7FF;
-      --saffron: #F59E0B;
-      --teal: #14B8A6;
-      --pink: #EC4899;
-      --muted: #64748B;
-      --line: #E2E8F0;
-      --accent: #0F766E;
-      --error: #E11D48;
-      --dark-space: #16133B;
-      --dark-deep: #120F31;
-    }
-
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      font-family: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: var(--ink);
-      background: var(--paper);
-    }
-
-    /* Top Emergency Crisis Bar */
-    .crisis-strip {
-      background: #111827;
-      color: #F3F4F6;
-      padding: 8px 16px;
-      font-size: 0.82rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .crisis-strip a {
-      color: #38BDF8;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .crisis-strip a:hover {
-      text-decoration: underline;
-    }
-    .crisis-strip .back-link {
-      color: #F8FAFC;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-weight: 600;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 3px 10px;
-      border-radius: 6px;
-      transition: background 0.15s;
-    }
-    .crisis-strip .back-link:hover {
-      background: rgba(255, 255, 255, 0.2);
-      text-decoration: none;
-    }
-
-    /* Main Split Layout */
-    .layout {
-      min-height: calc(100vh - 38px);
-      display: grid;
-      grid-template-columns: 1.05fr 1fr;
-    }
-
-    /* =========================================================
-       Left Panel: Artwork (Pre-Login: Circles | Post-Login: Network)
-       ========================================================= */
-    .art {
-      position: relative;
-      background: radial-gradient(circle at 50% 36%, #251F5E 0%, #18153F 60%, #120F30 100%);
-      color: #FFFFFF;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 48px 32px;
-      overflow: hidden;
-      user-select: none;
-      transition: background 0.6s ease;
-    }
-
-    /* Post-login Rainbow Watercolor & Iridescent variant */
-    .art.network-mode {
-      background: linear-gradient(135deg, rgba(22, 19, 59, 0.76) 0%, rgba(37, 31, 94, 0.65) 50%, rgba(18, 15, 48, 0.86) 100%),
-                  url('/assets/bg-rainbow-watercolor.jpg') center/cover no-repeat !important;
-    }
-
-    .art.network-mode::before {
-      background: radial-gradient(circle at 75% 20%, rgba(245, 158, 11, 0.22) 0%, transparent 50%),
-                  radial-gradient(circle at 25% 65%, rgba(236, 72, 153, 0.22) 0%, transparent 50%),
-                  radial-gradient(circle at 50% 85%, rgba(56, 189, 248, 0.22) 0%, transparent 55%) !important;
-    }
-
-    /* Post-Login Dynamic Background State for Page & Card */
-    body.post-login-active {
-      background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 248, 252, 0.58) 100%),
-                        url('/assets/bg-rainbow-watercolor.jpg') !important;
-      background-size: cover !important;
-      background-position: center !important;
-      background-attachment: fixed !important;
-    }
-
-    body.post-login-active .panel {
-      background: transparent !important;
-    }
-
-    body.post-login-active .card {
-      background: rgba(255, 255, 255, 0.94) !important;
-      backdrop-filter: blur(20px) !important;
-      -webkit-backdrop-filter: blur(20px) !important;
-      border: 1px solid rgba(251, 207, 232, 0.8) !important;
-      box-shadow: 0 20px 45px -10px rgba(139, 92, 246, 0.16) !important;
-    }
-
-    /* Ambient background nebula effect */
-    .art::before {
-      content: "";
-      position: absolute;
-      top: -10%;
-      left: -10%;
-      width: 120%;
-      height: 120%;
-      background: radial-gradient(circle at 75% 20%, rgba(20, 184, 166, 0.12) 0%, transparent 40%),
-                  radial-gradient(circle at 25% 65%, rgba(245, 158, 11, 0.12) 0%, transparent 45%),
-                  radial-gradient(circle at 50% 85%, rgba(236, 72, 153, 0.14) 0%, transparent 50%);
-      pointer-events: none;
-    }
-
-    /* Central SVG Artwork Container */
-    .art-svg-card {
-      position: relative;
-      width: 100%;
-      max-width: 440px;
-      height: auto;
-      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.45));
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
-    }
-    .art-svg-card:hover {
-      transform: scale(1.015);
-    }
-
-    /* Orbit pulse animation */
-    @keyframes orbitPulse {
-      0%, 100% { opacity: 0.15; }
-      50% { opacity: 0.28; }
-    }
-    .art svg .orbit {
-      animation: orbitPulse 6s ease-in-out infinite;
-    }
-    .art svg .orbit:nth-child(2) { animation-delay: 1.5s; }
-    .art svg .orbit:nth-child(3) { animation-delay: 3s; }
-
-    /* Floating subtle dot animation */
-    @keyframes dotFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
-    .art svg .float-dot {
-      animation: dotFloat 4s ease-in-out infinite;
-    }
-
-    /* =========================================================
-       Right Panel: Authentication Form
-       ========================================================= */
-    .panel {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 24px;
-      background: #FAFAFC;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 450px;
-      background: #FFFFFF;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 36px 32px;
-      box-shadow: 0 10px 30px -5px rgba(31, 27, 77, 0.06), 0 20px 25px -5px rgba(0, 0, 0, 0.03);
-      position: relative;
-    }
-
-    .card h2 {
-      margin: 0 0 6px;
-      font-size: 1.6rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--ink);
-    }
-    .card .sub {
-      margin: 0 0 24px;
-      color: var(--muted);
-      font-size: 0.95rem;
-      line-height: 1.45;
-    }
-
-    /* Role Switcher Tabs */
-    .roles {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      padding: 5px;
-      background: #F1F5F9;
-      border: 1px solid #E2E8F0;
-      border-radius: 12px;
-      margin-bottom: 22px;
-    }
-    .roles button {
-      border: 0;
-      background: transparent;
-      color: #64748B;
-      font: inherit;
-      font-weight: 600;
-      font-size: 0.92rem;
-      padding: 10px 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-    .roles button[aria-checked="true"] {
-      background: var(--accent);
-      color: #FFFFFF;
-      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.25);
-    }
-
-    /* 1-Click Fast Demo Credentials Pill Bar */
-    .demo-bar {
-      background: #F8FAFC;
-      border: 1px dashed #CBD5E1;
-      border-radius: 10px;
-      padding: 10px 12px;
-      margin-bottom: 20px;
-      font-size: 0.8rem;
-    }
-    .demo-bar-title {
-      font-weight: 600;
-      color: #475569;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .demo-pills {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-    .demo-pill {
-      background: #FFFFFF;
-      border: 1px solid #E2E8F0;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--ink);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .demo-pill:hover {
-      background: #F1F5F9;
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    /* Form Fields */
-    .field { margin-bottom: 16px; }
-    label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.88rem;
-      margin-bottom: 6px;
-      color: #1E293B;
-    }
-    .hint {
-      font-weight: 400;
-      color: #64748B;
-      font-size: 0.8rem;
-      margin-left: 4px;
-    }
-    input[type="text"], input[type="email"], input[type="password"] {
-      width: 100%;
-      font: inherit;
-      padding: 12px 14px;
-      border: 1.5px solid var(--line);
-      border-radius: 10px;
-      background: #FFFFFF;
-      color: var(--ink);
-      font-size: 0.95rem;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
-    }
-    input[aria-invalid="true"] {
-      border-color: var(--error) !important;
-      background: #FFF1F2;
-    }
-    .err {
-      color: var(--error);
-      font-size: 0.82rem;
-      margin: 5px 0 0;
-      min-height: 0;
-      font-weight: 500;
-    }
-    .err:empty { display: none; }
-
-    .pw { position: relative; }
-    .pw input { padding-right: 74px; }
-    .pw button {
-      position: absolute;
-      right: 6px;
-      top: 50%;
-      transform: translateY(-50%);
-      border: 0;
-      background: transparent;
-      color: var(--accent);
-      font: inherit;
-      font-weight: 600;
-      font-size: 0.84rem;
-      padding: 8px 10px;
-      cursor: pointer;
-      border-radius: 6px;
-    }
-    .pw button:hover {
-      background: rgba(15, 118, 110, 0.08);
-    }
-
-    .row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 6px 0 20px;
-      font-size: 0.88rem;
-    }
-    .row label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 400;
-      margin: 0;
-      color: #475569;
-      cursor: pointer;
-    }
-    a {
-      color: var(--accent);
-      font-weight: 600;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .submit {
-      width: 100%;
-      border: 0;
-      border-radius: 10px;
-      padding: 13px;
-      font: inherit;
-      font-weight: 700;
-      font-size: 1rem;
-      color: #FFFFFF;
-      background: var(--accent);
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s, opacity 0.15s;
-      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
-    }
-    .submit:hover {
-      opacity: 0.95;
-      transform: translateY(-1px);
-    }
-    .submit:active {
-      transform: translateY(0);
-    }
-    .submit[disabled] {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* Global Alert Box */
-    .form-err, .error {
-      background: #FEF2F2;
-      border: 1px solid #FECACA;
-      color: #B91C1C;
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 0.88rem;
-      margin-bottom: 18px;
-      display: none;
-      font-weight: 500;
-    }
-    .form-err.show, .error.show { display: block; }
-
-    .resend-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 8px;
-      background: #DC2626;
-      color: #FFFFFF !important;
-      border: 0;
-      border-radius: 6px;
-      padding: 7px 14px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.15s, transform 0.1s;
-    }
-    .resend-btn:hover {
-      background: #B91C1C;
-      transform: translateY(-1px);
-    }
-    .resend-btn[disabled] {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .form-success {
-      background: #F0FDF4;
-      border: 1px solid #BBF7D0;
-      color: #15803D;
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 0.88rem;
-      margin-bottom: 18px;
-      display: none;
-      font-weight: 500;
-    }
-    .form-success.show { display: block; }
-
-    /* Foot Links */
-    .foot {
-      text-align: center;
-      margin: 22px 0 0;
-      font-size: 0.9rem;
-      color: var(--muted);
-      border-top: 1px solid #F1F5F9;
-      padding-top: 16px;
-    }
-    .foot p { margin: 6px 0; }
-
-    /* =========================================================
-       POST-LOGIN NETWORK STATE VIEW (beyond_identity_4_network.svg)
-       ========================================================= */
-    .post-login-container {
-      display: none;
-      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      text-align: center;
-    }
-    .post-login-container.active {
-      display: block;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .network-badge-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #ECFDF5;
-      border: 1px solid #A7F3D0;
-      color: #047857;
-      font-size: 0.82rem;
-      font-weight: 700;
-      padding: 5px 14px;
-      border-radius: 999px;
-      margin-bottom: 16px;
-    }
-    .pulse-dot-green {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #10B981;
-      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-      animation: greenPulse 2s infinite;
-    }
-    @keyframes greenPulse {
-      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-    }
-
-    .network-artwork-frame {
-      position: relative;
-      width: 100%;
-      max-width: 330px;
-      margin: 0 auto 18px;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 16px 36px -8px rgba(139, 92, 246, 0.35);
-      border: 1px solid rgba(244, 114, 182, 0.4);
-      background: linear-gradient(135deg, #4338ca 0%, #ec4899 100%);
-      transition: transform 0.25s ease;
-    }
-    .network-artwork-frame:hover {
-      transform: scale(1.02);
-    }
-    .network-artwork-img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .post-login-welcome-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--ink);
-      margin: 0 0 6px;
-      letter-spacing: -0.02em;
-    }
-    .post-login-tagline-sub {
-      background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: 800;
-      font-size: 1rem;
-      margin: 0 0 10px;
-    }
-    .post-login-desc {
-      color: #64748B;
-      font-size: 0.88rem;
-      line-height: 1.5;
-      margin: 0 0 22px;
-    }
-
-    .post-login-actions-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .btn-portal-primary {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #f59e0b 100%);
-      color: #FFFFFF !important;
-      font-weight: 700;
-      font-size: 0.98rem;
-      padding: 13px 20px;
-      border-radius: 10px;
-      border: 0;
-      cursor: pointer;
-      text-decoration: none !important;
-      box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
-      transition: transform 0.15s, opacity 0.15s;
-    }
-    .btn-portal-primary:hover {
-      transform: translateY(-1px);
-      opacity: 0.95;
-    }
-    .btn-portal-secondary {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: #F1F5F9;
-      color: #334155 !important;
-      font-weight: 600;
-      font-size: 0.9rem;
-      padding: 10px 16px;
-      border-radius: 8px;
-      text-decoration: none !important;
-      border: 1px solid #E2E8F0;
-      transition: background 0.15s;
-    }
-    .btn-portal-secondary:hover {
-      background: #E2E8F0;
-    }
-    .btn-portal-signout {
-      background: transparent;
-      border: 0;
-      color: #94A3B8;
-      font-size: 0.82rem;
-      cursor: pointer;
-      text-decoration: underline;
-      padding: 6px;
-      margin-top: 4px;
-      transition: color 0.15s;
-    }
-    .btn-portal-signout:hover {
-      color: #E11D48;
-    }
-
-    .redirect-countdown-pill {
-      font-size: 0.82rem;
-      color: #475569;
-      background: #F8FAFC;
-      border: 1px solid #E2E8F0;
-      border-radius: 20px;
-      padding: 5px 14px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 8px;
-    }
-    .countdown-cancel-btn {
-      background: none;
-      border: 0;
-      color: #0F766E;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 0.78rem;
-      padding: 0 2px;
-      text-decoration: underline;
-    }
-
-    /* Modal for Password Reset */
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(4px);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .modal-backdrop.active { display: flex; }
-    .modal-card {
-      background: #FFFFFF;
-      border-radius: 18px;
-      padding: 28px;
-      max-width: 440px;
-      width: 100%;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-    .modal-header h3 { margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--ink); }
-    .modal-close {
-      background: transparent;
-      border: 0;
-      font-size: 1.3rem;
-      cursor: pointer;
-      color: #64748B;
-    }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      .layout { grid-template-columns: 1fr; }
-      .art { padding: 36px 20px 24px; min-height: 380px; }
-      .art-svg-card { max-width: 340px; }
-      .panel { padding: 24px 16px; }
-      .card { padding: 28px 20px; }
-    .google-custom-btn {
-      transition: all 0.2s ease;
-    }
-    .google-custom-btn:hover {
-      background: #F8FAFC !important;
-      border-color: #94A3B8 !important;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.08) !important;
-      transform: translateY(-1px);
-    }
-    @media (prefers-reduced-motion: reduce) {
-      * { animation: none !important; transition: none !important; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beyond Identity - Log in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1F2937;
+    --muted: #5B6472;
+    --blue: #3BB4E5;
+    --pink: #E8749A;
+    --purple: #7C3AED;
+    --line: #E3E6EC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px 16px;
+    font-family: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--ink);
+    background: url("bg.webp") center / cover no-repeat fixed;
+  }
+  .card {
+    width: 100%;
+    max-width: 400px;
+    padding: 28px 24px 24px;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(124, 58, 237, 0.15);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .brand svg { flex: none; }
+  .brand h1 { margin: 0; font-size: 22px; font-weight: 600; line-height: 1.1; }
+  .brand p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+  .roles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 18px;
+    background: #EEF1F6;
+    border-radius: 12px;
+  }
+  .roles button {
+    padding: 10px 8px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .roles button[aria-pressed="true"] {
+    background: #fff;
+    color: var(--ink);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  }
+  .hint { margin: 0 0 16px; font-size: 14px; color: var(--muted); min-height: 21px; }
+  label { display: block; margin-bottom: 14px; font-size: 14px; font-weight: 500; }
+  input {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    font: inherit;
+    font-size: 16px;
+    color: var(--ink);
+  }
+  input:focus-visible, button:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+  }
+  .pw { position: relative; }
+  .pw input { padding-right: 64px; }
+  .pw button {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+    color: var(--purple);
+    cursor: pointer;
+  }
+  .success-banner {
+    display: none;
+    background: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    color: #15803D;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+  .error {
+    min-height: 20px;
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: #B42318;
+    line-height: 1.45;
+  }
+  .submit {
+    width: 100%;
+    padding: 13px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--blue), var(--pink));
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: filter 0.15s, opacity 0.15s;
+  }
+  .submit:hover { filter: brightness(1.05); }
+  .submit:disabled { opacity: 0.7; cursor: not-allowed; }
+  .foot { margin: 16px 0 0; text-align: center; font-size: 14px; color: var(--muted); }
+  .foot a { color: var(--purple); font-weight: 500; text-decoration: none; }
+  .foot a:hover { text-decoration: underline; }
+  #googleBtn { display: flex; justify-content: center; min-height: 44px; width: 100%; }
+  .divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; font-size: 13px; color: var(--muted); }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  
+  .resend-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    background: #B42318;
+    color: #fff !important;
+    border: 0;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none !important;
+  }
+  .resend-btn:hover { background: #91180F; }
+  .google-custom-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: #fff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .google-custom-btn:hover { background: #F9FAFB; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
 </head>
 <body>
-
-  <!-- Top 24/7 Crisis Helpline & Portal Return Navigation -->
-  <aside class="crisis-strip" aria-label="Emergency Support & Navigation">
-    <div>
-      🚨 <strong>24/7 Crisis Helpline:</strong>
-      <a href="tel:868989330">📞 868989330</a>
-      <span style="opacity: 0.6; margin: 0 6px;">|</span>
-      <span>Tele-MANAS: <a href="tel:14416">14416</a></span>
-      <span style="opacity: 0.6; margin: 0 6px;">|</span>
-      <span>Legal Aid: <a href="tel:15100">15100</a></span>
+  <main class="card">
+    <div class="brand">
+      <svg width="48" height="56" viewBox="-30 -38 60 76" role="img" aria-label="Beyond Identity shield">
+        <path d="M-28,-30L0,-36L28,-30V0L0,36L-28,0Z" fill="#F4A6A0"/>
+        <path d="M-28,-30L0,-36V36L-28,0Z" fill="#5BCEFA"/>
+        <path d="M0,-36L28,-30V0L0,36Z" fill="#F5A9B8"/>
+        <circle cx="-6" cy="0" r="10" fill="none" stroke="#fff" stroke-width="2.5"/>
+        <circle cx="6" cy="0" r="10" fill="none" stroke="#fff" stroke-width="2.5"/>
+      </svg>
+      <div>
+        <h1>Beyond Identity</h1>
+        <p>Welcome back</p>
+      </div>
     </div>
-    <div>
-      <a href="/" class="back-link">← Return to Portal</a>
+
+    <div class="roles" role="group" aria-label="Log in as">
+      <button type="button" data-role="community" aria-pressed="true">Community member</button>
+      <button type="button" data-role="ngo" aria-pressed="false">NGO partner</button>
     </div>
-  </aside>
+    <p class="hint" id="hint"></p>
 
-  <!-- Split Screen Layout -->
-  <div class="layout">
+    <!-- Success Feedback (e.g., after verifying email link) -->
+    <div class="success-banner" id="successBanner"></div>
 
-    <!-- =========================================================
-         LEFT ARTWORK PANEL
-         - Pre-Login: beyond_identity_1_circles.svg (Beyond Labels, Everyone Equal)
-         - Post-Login: beyond_identity_4_network.svg (All Connected, All Equal)
-         ========================================================= -->
-    <aside class="art" id="artPanel" aria-label="Beyond Identity Visual Artwork">
-
-      <!-- PRE-LOGIN ARTWORK (1_circles) -->
-      <div class="art-svg-card" id="artPreLogin">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 580" width="100%" height="100%">
-          <defs>
-            <radialGradient id="card-glow" cx="50%" cy="38%" r="65%">
-              <stop offset="0%" stop-color="#241E5C" />
-              <stop offset="70%" stop-color="#18153F" />
-              <stop offset="100%" stop-color="#120F30" />
-            </radialGradient>
-          </defs>
-
-          <!-- Deep Dark Navy Card Background -->
-          <rect width="500" height="580" rx="28" fill="url(#card-glow)" />
-
-          <!-- Concentric Orbital Rings centered at (250, 205) -->
-          <g class="orbit-group" fill="none" stroke="rgba(165, 180, 252, 0.16)" stroke-width="1.2">
-            <circle cx="250" cy="205" r="72" class="orbit" />
-            <circle cx="250" cy="205" r="118" class="orbit" />
-            <circle cx="250" cy="205" r="165" class="orbit" />
-            <circle cx="250" cy="205" r="212" class="orbit" />
-            <circle cx="250" cy="205" r="255" class="orbit" stroke-opacity="0.10" />
-          </g>
-
-          <!-- Planetary Celestial Dots along the Orbits -->
-          <circle cx="250" cy="40" r="4.5" fill="#FFFFFF" class="float-dot" />
-          <circle cx="372" cy="72" r="4" fill="#F59E0B" class="float-dot" />
-          <circle cx="438" cy="148" r="4.5" fill="#14B8A6" class="float-dot" />
-          <circle cx="456" cy="254" r="5" fill="#F59E0B" class="float-dot" />
-          <circle cx="420" cy="336" r="5" fill="#EC4899" class="float-dot" />
-          <circle cx="82" cy="352" r="5.5" fill="#14B8A6" class="float-dot" />
-          <circle cx="46" cy="245" r="5" fill="#EC4899" class="float-dot" />
-          <circle cx="62" cy="140" r="5" fill="#F59E0B" class="float-dot" />
-          <circle cx="135" cy="82" r="4" fill="#14B8A6" class="float-dot" />
-          <circle cx="288" cy="90" r="2.5" fill="#FFFFFF" opacity="0.8" />
-
-          <!-- Three Overlapping Circles (Amber, Teal, Pink) -->
-          <g id="venn-circles">
-            <!-- Top-Left Circle (Warm Amber) -->
-            <circle cx="196" cy="168" r="82" fill="#E89C1D" opacity="0.88" />
-
-            <!-- Top-Right Circle (Vibrant Teal) -->
-            <circle cx="304" cy="168" r="82" fill="#14B8A6" opacity="0.88" />
-
-            <!-- Bottom-Center Circle (Vivid Magenta / Pink) -->
-            <circle cx="250" cy="252" r="82" fill="#D9387E" opacity="0.88" />
-          </g>
-
-          <!-- Human Silhouette in Clean White -->
-          <g id="avatar-figure">
-            <!-- Head Circle -->
-            <circle cx="250" cy="198" r="27" fill="#FFFFFF" />
-            <!-- Curved Shoulder Torso Shape -->
-            <path d="M 192 292 C 192 236, 308 236, 308 292 Z" fill="#FFFFFF" />
-          </g>
-
-          <!-- Typography: Beyond Identity -->
-          <text x="250" y="420" text-anchor="middle" fill="#FFFFFF" font-family="'Plus Jakarta Sans', -apple-system, sans-serif" font-size="34" font-weight="700" letter-spacing="-0.02em">
-            Beyond Identity
-          </text>
-
-          <!-- Tagline: Beyond Labels, Everyone Equal -->
-          <text x="250" y="456" text-anchor="middle" fill="#C7C3E5" font-family="'Plus Jakarta Sans', -apple-system, sans-serif" font-size="16" font-weight="400" letter-spacing="0.01em">
-            Beyond Labels, Everyone Equal
-          </text>
-
-          <!-- Saffron Accent Bar -->
-          <rect x="216" y="478" width="68" height="4" rx="2" fill="#F59E0B" />
+    <div id="googleBtn">
+      <button type="button" class="google-custom-btn" id="customGoogleBtn" onclick="onCustomGoogleClick()">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
         </svg>
-      </div>
-
-      <!-- POST-LOGIN ARTWORK (4_network: All Connected, All Equal) -->
-      <div class="art-svg-card" id="artPostLogin" style="display: none;">
-        <img src="/assets/beyond_identity_4_network.svg" alt="Beyond Identity Community Network - All Connected, All Equal" style="width: 100%; height: auto; border-radius: 28px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45); display: block;" />
-      </div>
-
-    </aside>
-
-    <!-- =========================================================
-         RIGHT PANEL: Interactive Form Card & Post-Login State
-         ========================================================= -->
-    <main class="panel">
-      <div class="card">
-
-        <!-- =====================================================
-             VIEW 1: AUTHENTICATION FORMS (Unified Auth Portal)
-             ===================================================== -->
-        <div id="authFormsContainer">
-          
-          <!-- Unified Auth Mode Switcher (Sign In vs Create Account) -->
-          <div class="auth-mode-switch" style="display: flex; gap: 6px; background: #F1F5F9; border-radius: 12px; padding: 4px; margin-bottom: 22px; border: 1px solid #E2E8F0;">
-            <a href="login.html" id="tabSignInBtn" class="auth-mode-btn" style="flex: 1; border: 0; background: #FFFFFF; color: var(--ink); font-weight: 700; font-size: 0.92rem; padding: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.06); text-decoration: none; text-align: center;">
-              🔐 Sign In
-            </a>
-            <a href="register.html" id="tabRegisterBtn" class="auth-mode-btn" style="flex: 1; border: 0; background: transparent; color: #64748B; font-weight: 600; font-size: 0.92rem; padding: 10px; border-radius: 8px; cursor: pointer; text-decoration: none; text-align: center;">
-              ✨ Create Account
-            </a>
-          </div>
-
-          <h2 id="title">Welcome back</h2>
-          <p class="sub" id="sub">Sign in according to your account role.</p>
-
-          <!-- Role Selector Switcher -->
-          <div class="roles" role="radiogroup" aria-label="Select Login Role">
-            <button type="button" role="radio" aria-checked="true" data-role="community" id="role-community-btn">
-              <span>🌈</span> Community member
-            </button>
-            <button type="button" role="radio" aria-checked="false" data-role="ngo" id="role-ngo-btn">
-              <span>🏢</span> NGO partner
-            </button>
-          </div>
-
-          <!-- 1-Click Fast Demo Credentials Pill Bar -->
-          <div class="demo-bar">
-            <div class="demo-bar-title">⚡ 1-Click Demo Accounts:</div>
-            <div class="demo-pills">
-              <button type="button" class="demo-pill" onclick="fillDemo('user@example.com', 'user123', 'community', 'Demo User')">
-                👤 Community
-              </button>
-              <button type="button" class="demo-pill" onclick="fillDemo('ngo@shreetrust.org', 'verifier123', 'ngo', 'Shree Trust')">
-                🏢 NGO Partner
-              </button>
-              <button type="button" class="demo-pill" onclick="fillDemo('admin@beyondidentity.org', 'admin123', 'community', 'Admin User')">
-                🛡️ Admin
-              </button>
-            </div>
-          </div>
-
-          <!-- Status Alerts (Displays server errors and email verification required banners) -->
-          <div class="form-err error" id="formErr" role="alert"></div>
-          <div class="form-success" id="formSuccess" role="status"></div>
-
-          <!-- Google Sign-In (Google Identity Services) -->
-          <div class="google-auth-section" id="googleAuthSection" style="margin: 10px 0 16px;">
-            <div id="googleBtnWrapper" style="display: flex; justify-content: center; width: 100%; min-height: 44px;">
-              <button type="button" id="customGoogleBtn" class="google-custom-btn" onclick="onCustomGoogleBtnClick()" style="display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; background: #FFFFFF; border: 1.5px solid #CBD5E1; color: #1E293B; font-weight: 600; font-size: 0.95rem; padding: 10px 16px; border-radius: 10px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
-                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                </svg>
-                <span>Continue with Google</span>
-              </button>
-            </div>
-            
-            <!-- Or Divider -->
-            <div class="auth-divider" style="display: flex; align-items: center; text-align: center; margin: 16px 0 14px; color: #94A3B8; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
-              <span style="flex: 1; border-bottom: 1px solid #E2E8F0;"></span>
-              <span style="padding: 0 12px;">or continue with email</span>
-              <span style="flex: 1; border-bottom: 1px solid #E2E8F0;"></span>
-            </div>
-          </div>
-
-          <!-- Form Element -->
-          <form id="form" novalidate>
-            <div class="field" id="nameField" style="display: none;">
-              <label for="name">
-                <span id="nameLabel">Name</span>
-                <span class="hint" id="nameHint">(the name you wish to use)</span>
-              </label>
-              <input type="text" id="name" autocomplete="name" aria-describedby="nameErr" placeholder="Your chosen name" />
-              <p class="err" id="nameErr" aria-live="polite"></p>
-            </div>
-
-            <div class="field">
-              <label for="email">Gmail Address</label>
-              <input type="email" id="email" placeholder="you@gmail.com" autocomplete="email" aria-describedby="emailErr" required />
-              <p class="err" id="emailErr" aria-live="polite"></p>
-            </div>
-
-            <div class="field">
-              <label for="password">Password</label>
-              <div class="pw">
-                <input type="password" id="password" autocomplete="current-password" aria-describedby="passwordErr" required />
-                <button type="button" id="toggle" aria-label="Show password">Show</button>
-              </div>
-              <p class="err" id="passwordErr" aria-live="polite"></p>
-            </div>
-
-            <div class="row" id="rememberRow">
-              <label>
-                <input type="checkbox" id="remember" checked />
-                Remember me
-              </label>
-              <a href="#forgot" id="forgotLink">Forgot password?</a>
-            </div>
-
-            <button class="submit" id="submit" type="submit">Sign in as community member</button>
-          </form>
-
-          <!-- Footer Navigation Links -->
-          <div class="foot">
-            <p id="signupLine">
-              New here? <a id="signupLink" href="register.html">Create an account</a>
-            </p>
-            <p id="extraLine">
-              <a href="/?tab=report&anon=1">Submit an anonymous report without signing in</a>
-            </p>
-          </div>
-        </div>
-
-        <!-- =====================================================
-             VIEW 2: POST-LOGIN STATE (FEATURING beyond_identity_4_network.svg)
-             ===================================================== -->
-        <div class="post-login-container" id="postLoginContainer">
-          
-          <div class="network-badge-status">
-            <span class="pulse-dot-green"></span> Connected to Community Network
-          </div>
-
-          <!-- Exact Artwork: beyond_identity_4_network.svg -->
-          <div class="network-artwork-frame">
-            <img 
-              src="/assets/beyond_identity_4_network.svg" 
-              alt="Beyond Identity Network - All Connected, All Equal" 
-              class="network-artwork-img" 
-              id="networkPostLoginImg" 
-            />
-          </div>
-
-          <h2 class="post-login-welcome-title">
-            Welcome, <span id="postLoginName">Friend</span>!
-          </h2>
-          <p class="post-login-tagline-sub">
-            All Connected, All Equal
-          </p>
-          <p class="post-login-desc" id="postLoginDesc">
-            You are connected to Beyond Identity's verified network. Verified opportunities, legal awareness, and 24/7 AI assistance are ready.
-          </p>
-
-          <div class="post-login-actions-grid">
-            <a href="/" class="btn-portal-primary" id="continueToPortalBtn">
-              🚀 Continue to Community Portal →
-            </a>
-            <a href="/?tab=chat&talk=1" class="btn-portal-secondary">
-              💬 Open 24/7 Voice Assistant
-            </a>
-            <a href="/?tab=listings" class="btn-portal-secondary">
-              💼 Browse Verified Listings &amp; Schemes
-            </a>
-            <button type="button" class="btn-portal-signout" id="switchAccountBtn">
-              🔓 Sign Out / Switch Account
-            </button>
-          </div>
-
-          <div class="redirect-countdown-pill" id="countdownPill">
-            <span>⏱️ Redirecting in <strong id="countdownSeconds">3</strong>s...</span>
-            <button type="button" class="countdown-cancel-btn" id="pauseCountdownBtn">Pause</button>
-          </div>
-
-        </div>
-
-      </div>
-    </main>
-
-  </div>
-
-  <!-- Forgot Password Recovery Modal -->
-  <div class="modal-backdrop" id="forgotModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 id="modalTitle">Reset Password</h3>
-        <button type="button" class="modal-close" id="closeForgotModal" aria-label="Close modal">&times;</button>
-      </div>
-      <p style="font-size: 0.9rem; color: var(--muted); margin: 0 0 16px;">
-        Enter your registered email address to receive your password reset token.
-      </p>
-      <div class="form-err" id="modalErr"></div>
-      <div class="form-success" id="modalSuccess"></div>
-      <form id="forgotForm">
-        <div class="field">
-          <label for="forgotEmail">Email Address</label>
-          <input type="email" id="forgotEmail" placeholder="you@domain.com" required />
-        </div>
-        <div id="resetStep2" style="display: none;">
-          <div class="field">
-            <label for="resetToken">Reset Token</label>
-            <input type="text" id="resetToken" placeholder="Paste reset token" />
-          </div>
-          <div class="field">
-            <label for="newPassword">New Password (Min 6 chars)</label>
-            <input type="password" id="newPassword" placeholder="Enter new password" />
-          </div>
-        </div>
-        <button type="submit" class="submit" id="forgotSubmitBtn" style="margin-top: 8px;">
-          Send Recovery Token
-        </button>
-      </form>
+        <span>Continue with Google</span>
+      </button>
     </div>
-  </div>
 
-  <script>
-    // =========================================================
-    // GOOGLE OAUTH 2.0 CONFIGURATION
-    // Set your real Google Client ID from Google Cloud Console here
-    // Example: "1234567890-abcdefg1234567.apps.googleusercontent.com"
-    // =========================================================
-    const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+    <div class="divider"><span>or</span></div>
 
-    // Automatic API Base detection: handles localhost:8000, localhost:5500, 127.0.0.1, and cloud deployment
-    const API_BASE = (window.location.port === "8000" || window.location.hostname.includes("onrender.com"))
-      ? ""
-      : "http://127.0.0.1:8000";
+    <form id="loginForm" novalidate>
+      <label>Name
+        <input type="text" id="name" autocomplete="name" placeholder="Your name" required>
+      </label>
+      <label>Gmail
+        <input type="email" id="email" autocomplete="email" placeholder="you@gmail.com" required>
+      </label>
+      <label class="pw">Password
+        <input type="password" id="password" autocomplete="current-password" placeholder="Enter password" required>
+        <button type="button" id="togglePw" aria-label="Show password">Show</button>
+      </label>
+      <div class="error" id="error" role="alert"></div>
+      <button class="submit" id="submitBtn" type="submit">Log in</button>
+    </form>
 
-    const ROLES = {
-      community: {
-        accent: "#0F766E",
-        backendRole: "user",
-        title: "Welcome back",
-        sub: "Your identity, your choice. Sign in to your safe sanctuary.",
-        nameLabel: "Name",
-        nameHint: "(the name you wish to use)",
-        namePlaceholder: "Your chosen name",
-        button: "Sign in as community member",
-        signupText: "Create an account",
-        extra: '<a href="/?tab=report&anon=1">Submit an anonymous report without signing in</a>',
-        redirect: "dashboard.html"
-      },
-      ngo: {
-        accent: "#1F1B4D",
-        backendRole: "verifier",
-        title: "NGO partner login",
-        sub: "Sign in with your verified partner organization account.",
-        nameLabel: "Contact person name",
-        nameHint: "(authorized representative)",
-        namePlaceholder: "Your full name",
-        button: "Sign in as NGO partner",
-        signupText: "Register as an NGO partner",
-        extra: 'Need help with account approval? <a href="/about">Contact our support team</a>',
-        redirect: "ngo-dashboard.html"
-      }
-    };
+    <p class="foot">New here? <a href="register.html">Create an account</a></p>
+  </main>
 
-    let currentRole = "community";
-    let isRegisterMode = false;
-    let redirectTimer = null;
-    let countdownRemaining = 2;
+<script>
+  // Smart API Base: Works seamlessly on both http://localhost:8000 and http://localhost:5500
+  const API_BASE = window.location.port === "8000" ? "" : "http://127.0.0.1:8000";
+  const API_URL = `${API_BASE}/auth/login`;
+  const GOOGLE_API_URL = `${API_BASE}/auth/google`;
+  const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
-    const $ = id => document.getElementById(id);
-    const f = {
-      name: $("name"),
-      email: $("email"),
-      password: $("password")
-    };
+  const hints = {
+    community: "Log in to report discrimination and find schemes.",
+    ngo: "Log in to manage your organisation's support listings."
+  };
 
-    // =========================================================
-    // POST-LOGIN VIEW CONTROLLER
-    // Reveals beyond_identity_4_network.svg and user details
-    // =========================================================
-    function showPostLoginView(userData, autoRedirect = true, redirectTarget = null) {
-      // 1. Hide authentication form, show post-login network card
-      $("authFormsContainer").style.display = "none";
-      $("postLoginContainer").classList.add("active");
-      document.body.classList.add("post-login-active");
+  let role = "community";
+  const hint = document.getElementById("hint");
+  const error = document.getElementById("error");
+  const successBanner = document.getElementById("successBanner");
+  const pw = document.getElementById("password");
+  const submitBtn = document.getElementById("submitBtn");
 
-      // 2. Set user details
-      const userName = userData.name || (userData.email ? userData.email.split("@")[0] : "Friend");
-      $("postLoginName").textContent = userName;
+  hint.textContent = hints[role];
 
-      const isNgo = (userData.role === "verifier" || userData.role === "ngo") || currentRole === "ngo";
-      const targetUrl = redirectTarget || (isNgo ? "ngo-dashboard.html" : "dashboard.html");
+  // 1. Check if redirected from email verification (?verified=1 or ?verified=0)
+  const queryParams = new URLSearchParams(window.location.search);
+  if (queryParams.get("verified") === "1") {
+    successBanner.textContent = "✅ Your Gmail address has been verified successfully! You can now log in.";
+    successBanner.style.display = "block";
+  } else if (queryParams.get("verified") === "0") {
+    error.textContent = "Verification link was invalid or has expired. Please log in or request a new link.";
+  }
 
-      $("postLoginDesc").textContent = isNgo
-        ? "You are connected to the Beyond Identity verified partner network. Manage opportunities and assist in community triage."
-        : "You are connected to Beyond Identity's verified network. Verified opportunities, legal awareness, and 24/7 AI assistance are ready.";
-
-      if ($("continueToPortalBtn")) {
-        $("continueToPortalBtn").href = targetUrl;
-        $("continueToPortalBtn").textContent = isNgo ? "🚀 Continue to NGO Dashboard →" : "🚀 Continue to Community Dashboard →";
-      }
-
-      // 3. Switch Left Artwork to beyond_identity_4_network.svg
-      $("artPreLogin").style.display = "none";
-      $("artPostLogin").style.display = "block";
-      $("artPanel").classList.add("network-mode");
-
-      // 4. Start auto-redirect countdown
-      if (autoRedirect) {
-        countdownRemaining = 2;
-        $("countdownSeconds").textContent = countdownRemaining;
-        $("countdownPill").style.display = "inline-flex";
-
-        if (redirectTimer) clearInterval(redirectTimer);
-        redirectTimer = setInterval(() => {
-          countdownRemaining--;
-          if ($("countdownSeconds")) $("countdownSeconds").textContent = countdownRemaining;
-          if (countdownRemaining <= 0) {
-            clearInterval(redirectTimer);
-            window.location.href = targetUrl;
-          }
-        }, 1000);
-      } else {
-        $("countdownPill").style.display = "none";
-      }
-    }
-
-    // Pause/Resume Countdown
-    $("pauseCountdownBtn").addEventListener("click", () => {
-      if (redirectTimer) {
-        clearInterval(redirectTimer);
-        redirectTimer = null;
-        $("countdownPill").innerHTML = "<span>Auto-redirect paused.</span>";
-      }
+  // Role toggle
+  document.querySelectorAll(".roles button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      role = btn.dataset.role;
+      document.querySelectorAll(".roles button").forEach(b =>
+        b.setAttribute("aria-pressed", b === btn ? "true" : "false"));
+      hint.textContent = hints[role];
+      error.innerHTML = "";
     });
+  });
 
-    // Sign Out / Switch Account
-    $("switchAccountBtn").addEventListener("click", () => {
-      if (redirectTimer) clearInterval(redirectTimer);
-      localStorage.removeItem("bi_token");
-      localStorage.removeItem("bi_user");
-      sessionStorage.removeItem("bi_token");
-      sessionStorage.removeItem("bi_user");
+  // Password visibility toggle
+  document.getElementById("togglePw").addEventListener("click", e => {
+    const show = pw.type === "password";
+    pw.type = show ? "text" : "password";
+    e.target.textContent = show ? "Hide" : "Show";
+    e.target.setAttribute("aria-label", show ? "Hide password" : "Show password");
+  });
 
-      // Restore form view
-      $("postLoginContainer").classList.remove("active");
-      $("authFormsContainer").style.display = "block";
-      document.body.classList.remove("post-login-active");
+  // Form submission (Email + Password Login)
+  document.getElementById("loginForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const password = pw.value;
 
-      // Restore artwork 1
-      $("artPostLogin").style.display = "none";
-      $("artPreLogin").style.display = "block";
-      $("artPanel").classList.remove("network-mode");
+    if (!name) return error.textContent = "Enter your name.";
+    if (!/^[^\s@]+@gmail\.com$/i.test(email)) return error.textContent = "Enter a valid Gmail address (must end with @gmail.com).";
+    if (password.length < 6) return error.textContent = "Password must be at least 6 characters.";
+    error.innerHTML = "";
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Logging in...";
 
-      clearErrors();
-      f.password.value = "";
-    });
-
-    // Check if user is already logged in on initial page load
-    function checkExistingSession() {
-      const token = localStorage.getItem("bi_token") || sessionStorage.getItem("bi_token");
-      const userStr = localStorage.getItem("bi_user") || sessionStorage.getItem("bi_user");
-      const urlParams = new URLSearchParams(window.location.search);
-
-      if (token && userStr && !urlParams.has("relogin")) {
-        try {
-          const userObj = JSON.parse(userStr);
-          // Show post login view without instant redirect so they can choose
-          showPostLoginView(userObj, false);
-          return true;
-        } catch (e) {
-          console.warn("Invalid user session object:", e);
-        }
-      }
-      return false;
-    }
-
-    function applyRole(r) {
-      currentRole = r;
-      const c = ROLES[r];
-      document.documentElement.style.setProperty("--accent", c.accent);
-
-      document.querySelectorAll(".roles button").forEach(b => {
-        const isMatch = b.dataset.role === r;
-        b.setAttribute("aria-checked", String(isMatch));
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, role })
       });
+      const data = await res.json().catch(() => ({}));
 
-      if (!isRegisterMode) {
-        $("title").textContent = c.title;
-        $("sub").textContent = c.sub;
-        $("submit").textContent = c.button;
-        $("signupLink").textContent = c.signupText;
-        $("signupLine").innerHTML = `New here? <a id="signupLink" href="#register">${c.signupText}</a>`;
-        $("signupLink").onclick = toggleRegisterMode;
-      } else {
-        $("title").textContent = r === "community" ? "Create an Account" : "Register NGO Partner";
-        $("sub").textContent = r === "community" ? "Safe & confidential space for you." : "List opportunities & verify resources.";
-        $("submit").textContent = r === "community" ? "Register as Community Member" : "Register as NGO Partner";
-      }
-
-      $("nameLabel").textContent = c.nameLabel;
-      $("nameHint").textContent = c.nameHint;
-      f.name.placeholder = c.namePlaceholder;
-      $("extraLine").innerHTML = c.extra;
-      clearErrors();
-    }
-
-    function setAuthMode(mode) {
-      isRegisterMode = mode === "register";
-
-      if (isRegisterMode) {
-        $("tabRegisterBtn").style.background = "#FFFFFF";
-        $("tabRegisterBtn").style.color = "var(--ink)";
-        $("tabRegisterBtn").style.fontWeight = "700";
-        $("tabRegisterBtn").style.boxShadow = "0 2px 6px rgba(0,0,0,0.06)";
-
-        $("tabSignInBtn").style.background = "transparent";
-        $("tabSignInBtn").style.color = "#64748B";
-        $("tabSignInBtn").style.fontWeight = "600";
-        $("tabSignInBtn").style.boxShadow = "none";
-
-        $("nameField").style.display = "block";
-        $("rememberRow").style.display = "none";
-        $("signupLine").innerHTML = 'Already have an account? <a id="loginToggleLink" href="/login">Sign In</a>';
-        $("loginToggleLink").onclick = e => { e.preventDefault(); setAuthMode("signin"); };
-        document.title = "Create Account | Beyond Identity";
-      } else {
-        $("tabSignInBtn").style.background = "#FFFFFF";
-        $("tabSignInBtn").style.color = "var(--ink)";
-        $("tabSignInBtn").style.fontWeight = "700";
-        $("tabSignInBtn").style.boxShadow = "0 2px 6px rgba(0,0,0,0.06)";
-
-        $("tabRegisterBtn").style.background = "transparent";
-        $("tabRegisterBtn").style.color = "#64748B";
-        $("tabRegisterBtn").style.fontWeight = "600";
-        $("tabRegisterBtn").style.boxShadow = "none";
-
-        $("nameField").style.display = "none";
-        $("rememberRow").style.display = "flex";
-        $("signupLine").innerHTML = `New here? <a id="signupLink" href="/register">${ROLES[currentRole].signupText}</a>`;
-        $("signupLink").onclick = e => { e.preventDefault(); setAuthMode("register"); };
-        document.title = "Sign In | Beyond Identity";
-      }
-
-      applyRole(currentRole);
-      clearErrors();
-    }
-
-    function toggleRegisterMode(e) {
-      if (e) e.preventDefault();
-      setAuthMode(isRegisterMode ? "signin" : "register");
-    }
-
-    $("tabSignInBtn").addEventListener("click", () => setAuthMode("signin"));
-    $("tabRegisterBtn").addEventListener("click", () => setAuthMode("register"));
-
-    // Role button event listeners
-    document.querySelectorAll(".roles button").forEach(b =>
-      b.addEventListener("click", () => applyRole(b.dataset.role))
-    );
-
-    // Show / Hide Password toggle
-    $("toggle").addEventListener("click", () => {
-      const show = f.password.type === "password";
-      f.password.type = show ? "text" : "password";
-      $("toggle").textContent = show ? "Hide" : "Show";
-      $("toggle").setAttribute("aria-label", show ? "Hide password" : "Show password");
-    });
-
-    function setErr(key, msg) {
-      const el = $(key + "Err");
-      if (el) el.textContent = msg;
-      if (f[key]) f[key].setAttribute("aria-invalid", msg ? "true" : "false");
-    }
-
-    function clearErrors() {
-      ["name", "email", "password"].forEach(k => setErr(k, ""));
-      $("formErr").textContent = "";
-      $("formErr").classList.remove("show");
-      $("formSuccess").textContent = "";
-      $("formSuccess").classList.remove("show");
-    }
-
-    Object.keys(f).forEach(k => f[k].addEventListener("input", () => setErr(k, "")));
-
-    function validate() {
-      let ok = true;
-      if (isRegisterMode && f.name.value.trim().length < 2) {
-        setErr("name", "Name must be at least 2 characters.");
-        ok = false;
-      }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim())) {
-        setErr("email", "Please enter a valid email address, e.g. you@gmail.com");
-        ok = false;
-      }
-      if (f.password.value.length < 6) {
-        setErr("password", "Password must be at least 6 characters long.");
-        ok = false;
-      }
-      return ok;
-    }
-
-    // Form Submit (Handles both Login and Registration via FastAPI)
-    $("form").addEventListener("submit", async e => {
-      e.preventDefault();
-      clearErrors();
-
-      if (!validate()) {
-        const first = Object.values(f).find(i => i.getAttribute("aria-invalid") === "true");
-        if (first) first.focus();
-        return;
-      }
-
-      const btn = $("submit");
-      const label = btn.textContent;
-      btn.disabled = true;
-      btn.textContent = isRegisterMode ? "Creating account..." : "Signing in...";
-
-      try {
-        if (isRegisterMode) {
-          // ===============================
-          // 1. REGISTRATION (/auth/register)
-          // ===============================
-          const regRes = await fetch(`${API_BASE}/auth/register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: f.name.value.trim(),
-              email: f.email.value.trim().toLowerCase(),
-              password: f.password.value,
-              role: ROLES[currentRole].backendRole
-            })
-          });
-
-          if (!regRes.ok) {
-            const errData = await regRes.json().catch(() => ({}));
-            throw new Error(errData.detail || "Account registration failed. This email may already be registered.");
-          }
-        }
-
-        // ===============================
-        // 2. AUTHENTICATION (/auth/login-json)
-        // ===============================
-        const loginRes = await fetch(`${API_BASE}/auth/login-json`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: f.email.value.trim().toLowerCase(),
-            password: f.password.value
-          })
-        });
-
-        if (loginRes.status === 401) {
-          const errData = await loginRes.json().catch(() => ({}));
-          const errMsg = errData.detail || "Invalid email or password. Please check your credentials and try again.";
-          showLoginError(errMsg, f.email.value.trim().toLowerCase());
-          return;
-        }
-        if (loginRes.status === 403) {
-          const errData = await loginRes.json().catch(() => ({}));
-          const detailMsg = errData.detail || "Verify your email first.";
-          showVerificationRequiredError(detailMsg, f.email.value.trim().toLowerCase());
-          return;
-        }
-        if (!loginRes.ok) {
-          const errData = await loginRes.json().catch(() => ({}));
-          throw new Error(errData.detail || "Sign in failed. Please try again.");
-        }
-
-        const data = await loginRes.json();
-
-        // Secure Session Storage
-        const store = $("remember").checked ? localStorage : sessionStorage;
-        store.setItem("bi_token", data.access_token);
-        store.setItem("bi_role", ROLES[currentRole].backendRole);
-
-        if (data.user) {
-          store.setItem("bi_user", JSON.stringify(data.user));
-        }
-
-        // Also sync localStorage so app.js and index.html instantly recognize user
-        localStorage.setItem("bi_token", data.access_token);
-        if (data.user) {
-          localStorage.setItem("bi_user", JSON.stringify(data.user));
-        }
-
-        const isNgo = (data.user && (data.user.role === "verifier" || data.user.role === "ngo")) || currentRole === "ngo";
-        const targetDashboard = isNgo ? "ngo-dashboard.html" : "dashboard.html";
-
-        // Trigger the Post-Login Network State View with auto-redirect to dashboard
-        showPostLoginView(data.user || { name: f.name ? f.name.value.trim() : "", email: f.email.value.trim(), role: isNgo ? "verifier" : "user" }, true, targetDashboard);
-
-      } catch (err) {
-        $("formErr").textContent = err instanceof TypeError
-          ? "Unable to connect to the backend server. Please verify the service is running on port 8000."
-          : err.message;
-        $("formErr").classList.add("show");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = label;
-      }
-    });
-
-    // 1-Click Fast Demo Credentials Filler
-    window.fillDemo = function(email, password, roleKey, name) {
-      applyRole(roleKey);
-      f.email.value = email;
-      f.password.value = password;
-      if (name) f.name.value = name;
-      clearErrors();
-      $("formSuccess").textContent = `Filled credentials for ${roleKey === "ngo" ? "NGO Partner" : "Community"}! Click Submit to sign in.`;
-      $("formSuccess").classList.add("show");
-    };
-
-    // Displays helpful, actionable guidance when an account is not found or password is wrong
-    function showLoginError(msg, email) {
-      const errBox = $("formErr");
-      if (msg.includes("Account not found") || msg.includes("not found")) {
-        errBox.innerHTML = `
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span>⚠️</span>
-              <strong style="color: #991B1B;">Account Not Found</strong>
+      // Reject unverified users with HTTP 403 and offer an inline Resend button
+      if (res.status === 403) {
+        error.innerHTML = `
+          <div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 10px;">
+            <div style="font-weight: 600; color: #991B1B;">⚠️ Verify your email first</div>
+            <div style="font-size: 13px; color: #7F1D1D; margin: 4px 0 6px;">
+              Please check your Gmail inbox for the verification link.
             </div>
-            <div style="font-size: 0.86rem; color: #7F1D1D; line-height: 1.45;">
-              No Beyond Identity account is registered for <strong>${email}</strong> yet.
-            </div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
-              <a href="register.html?email=${encodeURIComponent(email)}&role=${currentRole}" class="resend-btn" style="background: #0F766E;">
-                ✨ Create This Account Now
-              </a>
-              <button type="button" class="resend-btn" style="background: #1E293B;" onclick="onCustomGoogleBtnClick()">
-                G Sign in with Google
-              </button>
-            </div>
-          </div>
-        `;
-      } else if (msg.includes("Google account password") || msg.includes("Incorrect password")) {
-        errBox.innerHTML = `
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span>⚠️</span>
-              <strong style="color: #991B1B;">Incorrect Password</strong>
-            </div>
-            <div style="font-size: 0.86rem; color: #7F1D1D; line-height: 1.45;">
-              ${msg}
-            </div>
-            <div style="font-size: 0.80rem; color: #64748B; margin-top: 4px;">
-              💡 <em>Note: If you want to log in using Google without a password, click "Continue with Google" above.</em>
-            </div>
-          </div>
-        `;
-      } else {
-        errBox.textContent = msg;
-      }
-      errBox.classList.add("show");
-    }
-
-    // Displays clear 'Verify your email first' message with an inline Resend button
-    function showVerificationRequiredError(detailMsg, userEmail) {
-      const errBox = $("formErr");
-      errBox.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <span>⚠️</span>
-            <strong style="color: #991B1B;">Verify your email first</strong>
-          </div>
-          <div style="font-size: 0.86rem; color: #7F1D1D; line-height: 1.45;">
-            ${detailMsg}
-          </div>
-          <div>
-            <button type="button" id="inlineResendBtn" class="resend-btn">
+            <button type="button" class="resend-btn" id="resendVerificationBtn">
               ✉️ Resend verification email
             </button>
           </div>
-        </div>
-      `;
-      errBox.classList.add("show");
+        `;
 
-      const btn = $("inlineResendBtn");
-      if (btn) {
-        btn.addEventListener("click", async () => {
+        document.getElementById("resendVerificationBtn").onclick = async () => {
+          const btn = document.getElementById("resendVerificationBtn");
           btn.disabled = true;
           btn.textContent = "Sending link...";
           try {
-            const res = await fetch(`${API_BASE}/auth/resend-verification`, {
+            const r = await fetch(`${API_BASE}/auth/resend-verification`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email: userEmail })
+              body: JSON.stringify({ email })
             });
-            const data = await res.json();
-            if (res.ok) {
-              $("formSuccess").textContent = `✅ Verification email sent to ${userEmail}! Check your inbox and spam folder.`;
-              $("formSuccess").classList.add("show");
-              btn.textContent = "✓ Link Sent!";
+            const d = await r.json();
+            if (r.ok) {
+              error.innerHTML = `<span style="color:#15803D; font-weight:600;">✅ Verification link resent to ${email}! Check your Gmail.</span>`;
             } else {
-              errBox.textContent = data.detail || "Failed to resend verification email.";
+              error.textContent = d.detail || "Could not resend email.";
             }
-          } catch (e) {
-            errBox.textContent = "Unable to reach server. Please ensure the backend is running.";
+          } catch {
+            error.textContent = "Network error. Please try again.";
           }
-        });
-      }
-    }
-
-    // =========================================================
-    // Forgot Password Flow Modal Handlers
-    // =========================================================
-    const modal = $("forgotModal");
-    $("forgotLink").addEventListener("click", e => {
-      e.preventDefault();
-      modal.classList.add("active");
-      $("modalErr").textContent = "";
-      $("modalErr").classList.remove("show");
-      $("modalSuccess").textContent = "";
-      $("modalSuccess").classList.remove("show");
-      $("resetStep2").style.display = "none";
-      $("forgotSubmitBtn").textContent = "Send Recovery Token";
-      if (f.email.value) $("forgotEmail").value = f.email.value;
-    });
-
-    $("closeForgotModal").addEventListener("click", () => {
-      modal.classList.remove("active");
-    });
-
-    modal.addEventListener("click", e => {
-      if (e.target === modal) modal.classList.remove("active");
-    });
-
-    let passwordResetStage = 1;
-
-    $("forgotForm").addEventListener("submit", async e => {
-      e.preventDefault();
-      const email = $("forgotEmail").value.trim().toLowerCase();
-      const errBox = $("modalErr");
-      const succBox = $("modalSuccess");
-      errBox.classList.remove("show");
-      succBox.classList.remove("show");
-
-      if (passwordResetStage === 1) {
-        try {
-          $("forgotSubmitBtn").disabled = true;
-          $("forgotSubmitBtn").textContent = "Verifying email...";
-
-          const res = await fetch(`${API_BASE}/auth/forgot-password`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email })
-          });
-
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.detail || "No account found with this email address.");
-
-          succBox.textContent = "Token generated! Demo Token copied to field below.";
-          succBox.classList.add("show");
-          $("resetStep2").style.display = "block";
-          $("resetToken").value = data.reset_token;
-          $("forgotSubmitBtn").textContent = "Set New Password";
-          passwordResetStage = 2;
-        } catch (err) {
-          errBox.textContent = err.message;
-          errBox.classList.add("show");
-        } finally {
-          $("forgotSubmitBtn").disabled = false;
-        }
-      } else {
-        const token = $("resetToken").value.trim();
-        const newPassword = $("newPassword").value;
-        if (newPassword.length < 6) {
-          errBox.textContent = "New password must be at least 6 characters long.";
-          errBox.classList.add("show");
-          return;
-        }
-
-        try {
-          $("forgotSubmitBtn").disabled = true;
-          $("forgotSubmitBtn").textContent = "Updating password...";
-
-          const res = await fetch(`${API_BASE}/auth/reset-password`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token, new_password: newPassword })
-          });
-
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.detail || "Password reset failed. Please verify your token and try again.");
-
-          succBox.textContent = "Password updated successfully! You can now sign in with your new password.";
-          succBox.classList.add("show");
-
-          setTimeout(() => {
-            modal.classList.remove("active");
-            f.password.value = newPassword;
-            f.email.value = email;
-            passwordResetStage = 1;
-            $("forgotSubmitBtn").textContent = "Send Recovery Token";
-          }, 1500);
-        } catch (err) {
-          errBox.textContent = err.message;
-          errBox.classList.add("show");
-        } finally {
-          $("forgotSubmitBtn").disabled = false;
-        }
-      }
-    });
-
-    // =========================================================
-    // GOOGLE IDENTITY SERVICES HANDLERS
-    // =========================================================
-    async function handleGoogleCredentialResponse(response) {
-      clearErrors();
-      const errBox = $("formErr");
-
-      if (!response || !response.credential) {
-        errBox.textContent = "Google authentication did not return a valid credential.";
-        errBox.classList.add("show");
+        };
         return;
       }
 
-      // Read current role selected on UI: 'community' -> 'user', 'ngo' -> 'verifier'
-      const roleToSend = ROLES[currentRole].backendRole;
-
-      try {
-        if ($("customGoogleBtn")) $("customGoogleBtn").disabled = true;
-        errBox.textContent = "";
-        errBox.classList.remove("show");
-
-        const res = await fetch(`${API_BASE}/auth/google`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            credential: response.credential,
-            role: roleToSend
-          })
-        });
-
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.detail || "Google authentication failed on server.");
-        }
-
-        // Store JWT token & session
-        const store = $("remember").checked ? localStorage : sessionStorage;
-        store.setItem("bi_token", data.access_token);
-        store.setItem("bi_role", data.user ? data.user.role : roleToSend);
-        if (data.user) {
-          store.setItem("bi_user", JSON.stringify(data.user));
-        }
-
-        // Sync localStorage so portal instantly recognizes authenticated user
-        localStorage.setItem("bi_token", data.access_token);
-        if (data.user) {
-          localStorage.setItem("bi_user", JSON.stringify(data.user));
-        }
-
-        const isNgo = (data.user && (data.user.role === "verifier" || data.user.role === "ngo")) || roleToSend === "verifier";
-        const targetDashboard = isNgo ? "ngo-dashboard.html" : "dashboard.html";
-
-        // Show post-login celebration / network view with auto-redirect to dashboard
-        showPostLoginView(data.user || { name: "Friend", role: isNgo ? "verifier" : "user" }, true, targetDashboard);
-
-      } catch (err) {
-        errBox.textContent = err.message || "Failed to sign in with Google. Please try again.";
-        errBox.classList.add("show");
-      } finally {
-        if ($("customGoogleBtn")) $("customGoogleBtn").disabled = false;
-      }
-    }
-
-    window.onCustomGoogleBtnClick = function() {
-      if (GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE_CLIENT_ID")) {
-        const errBox = $("formErr");
-        errBox.innerHTML = `
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span>ℹ️</span>
-              <strong style="color: #1E293B;">Google Sign-In Setup Notice</strong>
+      if (!res.ok) {
+        const detail = data.detail || "Could not log in. Check your details and try again.";
+        if (detail.includes("Account not found") || detail.includes("not found")) {
+          error.innerHTML = `
+            <div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 10px;">
+              <div style="font-weight: 600; color: #991B1B;">⚠️ Account Not Found</div>
+              <div style="font-size: 13px; color: #7F1D1D; margin: 4px 0 6px;">
+                No Beyond Identity account is registered for <strong>${email}</strong> yet.
+              </div>
+              <a href="register.html?email=${encodeURIComponent(email)}&role=${role}" class="resend-btn" style="background:#7C3AED;">
+                ✨ Create This Account Now
+              </a>
             </div>
-            <div style="font-size: 0.86rem; color: #334155; line-height: 1.45;">
-              To enable the official Google 1-click popup, paste your Google Client ID into <code>login.html</code> and <code>.env</code>.
-            </div>
-            <div style="font-size: 0.82rem; color: #64748B;">
-              👉 To sign in with your email right now, register first by clicking <strong><a href="register.html" style="color: #0F766E; font-weight: 700;">Create an account</a></strong> below.
-            </div>
-          </div>
-        `;
-        errBox.classList.add("show");
-        return;
-      }
-      if (typeof google !== "undefined" && google.accounts && google.accounts.id) {
-        google.accounts.id.prompt();
-      }
-    };
-
-    // Initialize Google Identity Services
-    function initGoogleIdentity() {
-      if (typeof google === "undefined" || !google.accounts || !google.accounts.id) {
-        setTimeout(initGoogleIdentity, 300);
+          `;
+        } else {
+          error.textContent = detail;
+        }
         return;
       }
 
-      try {
-        google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleGoogleCredentialResponse,
-          auto_select: false,
-          cancel_on_tap_outside: true,
+      // Success: Save token & user details
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("bi_token", data.access_token);
+      localStorage.setItem("bi_role", role === "ngo" ? "verifier" : "user");
+      if (data.user) {
+        localStorage.setItem("bi_user", JSON.stringify(data.user));
+      }
+
+      // Redirect to community or ngo dashboard
+      window.location.href = role === "ngo" ? "ngo-dashboard.html" : "dashboard.html";
+    } catch {
+      error.textContent = "Could not log in. Check your details and try again.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Log in";
+    }
+  });
+
+  // Google sends us a signed credential; backend verifies it cryptographically
+  async function handleGoogle(response) {
+    error.innerHTML = "";
+    try {
+      const res = await fetch(GOOGLE_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential: response.credential, role })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || "Google login failed.");
+      
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("bi_token", data.access_token);
+      localStorage.setItem("bi_role", role === "ngo" ? "verifier" : "user");
+      if (data.user) {
+        localStorage.setItem("bi_user", JSON.stringify(data.user));
+      }
+
+      window.location.href = role === "ngo" ? "ngo-dashboard.html" : "dashboard.html";
+    } catch (err) {
+      error.textContent = err.message || "Google login failed.";
+    }
+  }
+
+  function onCustomGoogleClick() {
+    if (GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE_CLIENT_ID") || GOOGLE_CLIENT_ID.includes("PASTE_YOUR_GOOGLE_CLIENT_ID")) {
+      error.innerHTML = `
+        <div style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:8px; padding:10px; color:#1E40AF; font-size:13px; line-height:1.45;">
+          <strong>ℹ️ Google 1-Click Popup Setup:</strong><br>
+          Paste your Google Client ID into <code>login.html</code> and <code>.env</code> to enable automatic Google popups.<br>
+          <em>👉 To log in with email/password right now, click <strong><a href="register.html" style="color:#7C3AED; font-weight:600;">Create an account</a></strong> first.</em>
+        </div>
+      `;
+      return;
+    }
+    if (typeof google !== "undefined" && google.accounts && google.accounts.id) {
+      google.accounts.id.prompt();
+    }
+  }
+
+  function initGoogle() {
+    if (typeof google === "undefined" || !google.accounts || !google.accounts.id) return;
+
+    try {
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogle,
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+
+      if (!GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE_CLIENT_ID") && !GOOGLE_CLIENT_ID.includes("PASTE_YOUR_GOOGLE_CLIENT_ID")) {
+        const btnBox = document.getElementById("googleBtn");
+        btnBox.innerHTML = "";
+        google.accounts.id.renderButton(btnBox, {
+          theme: "outline", size: "large", shape: "pill", text: "continue_with", width: 320
         });
-
-        const btnContainer = $("googleBtnWrapper");
-        if (btnContainer && !GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE_CLIENT_ID")) {
-          google.accounts.id.renderButton(btnContainer, {
-            type: "standard",
-            theme: "outline",
-            size: "large",
-            text: "continue_with",
-            shape: "rectangular",
-            logo_alignment: "left",
-            width: 340,
-          });
-        }
-      } catch (e) {
-        console.warn("Google Identity init notice:", e);
       }
+    } catch (e) {
+      console.warn("Google identity init notice:", e);
     }
+  }
 
-    // Check initial route and params on load
-    const currentPath = window.location.pathname.toLowerCase();
-    const queryParams = new URLSearchParams(window.location.search);
-
-    // 1. Check email verification feedback from GET /auth/verify-email
-    if (queryParams.get("verified") === "1") {
-      $("formSuccess").textContent = "✅ Your Gmail address has been verified successfully! Please sign in with your password.";
-      $("formSuccess").classList.add("show");
-    } else if (queryParams.get("verified") === "0") {
-      const errMsg = queryParams.get("error") || "Verification link is invalid or has expired. Please sign in to resend.";
-      $("formErr").textContent = `❌ ${errMsg}`;
-      $("formErr").classList.add("show");
-    }
-
-    // 2. Role detection from route/params
-    if (currentPath.includes("ngo") || queryParams.get("role") === "ngo" || queryParams.get("role") === "verifier") {
-      applyRole("ngo");
-    } else {
-      applyRole("community");
-    }
-
-    // 3. Mode detection (Register vs Sign In)
-    const wantsRegister = currentPath.includes("register") || currentPath.includes("signup") || queryParams.get("tab") === "register" || queryParams.get("mode") === "register";
-
-    if (wantsRegister) {
-      // If user came to /login?tab=register or /signup, direct them smoothly to register.html
-      window.location.href = "register.html" + (queryParams.get("role") ? `?role=${queryParams.get("role")}` : "");
-    } else {
-      setAuthMode("signin");
-      // Check existing session only for login flow if not explicitly relogging in
-      if (!queryParams.has("relogin") && !queryParams.has("verified")) {
-        checkExistingSession();
-      }
-    }
-
-    // Initialize Google Identity Services
-    window.addEventListener("DOMContentLoaded", initGoogleIdentity);
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-      initGoogleIdentity();
-    }
-  </script>
+  window.addEventListener("DOMContentLoaded", initGoogle);
+</script>
+<script src="https://accounts.google.com/gsi/client" async defer onload="initGoogle()"></script>
 </body>
 </html>
