@@ -26,6 +26,47 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
+def ensure_sqlite_columns(target_engine=None):
+    """Lightweight SQLite schema migration for columns added without Alembic."""
+    eng = target_engine or engine
+    try:
+        with eng.connect() as conn:
+            cursor = conn.connection.cursor()
+            
+            # Check users table
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
+            if cursor.fetchone():
+                cursor.execute("PRAGMA table_info(users)")
+                cols = {row[1]: row for row in cursor.fetchall()}
+                if "is_verified" not in cols:
+                    cursor.execute("ALTER TABLE users ADD COLUMN is_verified BOOLEAN DEFAULT 1")
+                if "google_id" not in cols:
+                    cursor.execute("ALTER TABLE users ADD COLUMN google_id VARCHAR")
+                if "auth_provider" not in cols:
+                    cursor.execute("ALTER TABLE users ADD COLUMN auth_provider VARCHAR DEFAULT 'local'")
+
+            # Check incident_reports table
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='incident_reports'")
+            if cursor.fetchone():
+                cursor.execute("PRAGMA table_info(incident_reports)")
+                inc_cols = {row[1]: row for row in cursor.fetchall()}
+                if "public_visible" not in inc_cols:
+                    cursor.execute("ALTER TABLE incident_reports ADD COLUMN public_visible BOOLEAN DEFAULT 1")
+                if "reporter_consent_public" not in inc_cols:
+                    cursor.execute("ALTER TABLE incident_reports ADD COLUMN reporter_consent_public BOOLEAN DEFAULT 0")
+                if "public_summary" not in inc_cols:
+                    cursor.execute("ALTER TABLE incident_reports ADD COLUMN public_summary TEXT")
+                if "entity_type" not in inc_cols:
+                    cursor.execute("ALTER TABLE incident_reports ADD COLUMN entity_type VARCHAR")
+
+            conn.connection.commit()
+    except Exception:
+        pass
+
+
+ensure_sqlite_columns()
+
+
 def get_db():
     """FastAPI dependency: yields a DB session per request, closes it after."""
     db = SessionLocal()
@@ -33,3 +74,4 @@ def get_db():
         yield db
     finally:
         db.close()
+

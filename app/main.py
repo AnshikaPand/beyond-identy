@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from app.database import Base, engine
-from app.routers import auth, listings, incidents, awareness, health_assistant, chatbot
+from app.routers import auth, listings, incidents, awareness, health_assistant, chatbot, public_cases
 
 # Creates tables if they don't exist yet (fine for dev/mock-data phase;
 # use Alembic migrations once the schema stabilizes).
@@ -55,6 +55,20 @@ def _ensure_sqlite_columns():
 
             # Ensure all accounts are verified so username/password login works seamlessly
             cursor.execute("UPDATE users SET is_verified = 1 WHERE is_verified = 0 OR is_verified IS NULL")
+
+            # Lightweight migration for incident_reports public case board columns
+            cursor.execute("PRAGMA table_info(incident_reports)")
+            inc_info = cursor.fetchall()
+            inc_cols = {row[1]: row for row in inc_info}
+            if "public_visible" not in inc_cols:
+                cursor.execute("ALTER TABLE incident_reports ADD COLUMN public_visible BOOLEAN DEFAULT 1")
+            if "reporter_consent_public" not in inc_cols:
+                cursor.execute("ALTER TABLE incident_reports ADD COLUMN reporter_consent_public BOOLEAN DEFAULT 0")
+            if "public_summary" not in inc_cols:
+                cursor.execute("ALTER TABLE incident_reports ADD COLUMN public_summary TEXT")
+            if "entity_type" not in inc_cols:
+                cursor.execute("ALTER TABLE incident_reports ADD COLUMN entity_type VARCHAR")
+
             conn.connection.commit()
     except Exception as e:
         pass
@@ -69,6 +83,7 @@ REGISTER_FILE = STATIC_DIR / "register.html"
 ABOUT_FILE = STATIC_DIR / "about.html"
 DASHBOARD_FILE = STATIC_DIR / "dashboard.html"
 NGO_DASHBOARD_FILE = STATIC_DIR / "ngo-dashboard.html"
+CASES_FILE = STATIC_DIR / "cases.html"
 
 app = FastAPI(
     title="Beyond Identity API",
@@ -115,6 +130,7 @@ app.include_router(incidents.router)
 app.include_router(awareness.router)
 app.include_router(health_assistant.router)
 app.include_router(chatbot.router)
+app.include_router(public_cases.router)
 
 
 @app.get("/")
@@ -231,10 +247,26 @@ def serve_ngo_dashboard():
 
 
 @app.get("/cases")
-@app.get("/triage")
 @app.get("/cases.html")
-def serve_cases():
-    """Serves the frontend directly into the Case Triage Desk for phones and laptops."""
+@app.get("/case-board")
+def serve_community_case_board():
+    """Serves the public Community Case Board page for all visitors."""
+    target = CASES_FILE if CASES_FILE.exists() else INDEX_FILE
+    if target.exists():
+        return FileResponse(
+            str(target),
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
+    return {"message": "Community Case Board frontend not found"}
+
+
+@app.get("/triage")
+def serve_triage():
+    """Serves the internal Case Triage Desk for phones and laptops."""
     if INDEX_FILE.exists():
         return FileResponse(
             str(INDEX_FILE),

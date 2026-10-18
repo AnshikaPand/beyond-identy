@@ -1071,6 +1071,7 @@ function setupIncidentForm() {
       perpetrator_details: document.getElementById("inc-perpetrator").value || null,
       urgency_level: document.getElementById("inc-urgency").value,
       is_anonymous: document.getElementById("inc-anon").checked,
+      reporter_consent_public: !!document.getElementById("inc-consent-public")?.checked,
       contact_email: document.getElementById("inc-email").value || null,
     };
 
@@ -1893,11 +1894,17 @@ async function loadIncidents(filterType = "") {
             </span>
           `).join(" ");
 
-          const ngosList = (inc.matched_ngos || []).slice(0, 2).map((n) => `
-            <span style="display:inline-flex; align-items:center; gap:4px; font-size:11.5px; background:rgba(165,180,252,0.12); color:var(--accent-violet); padding:3px 8px; border-radius:6px; border:1px solid rgba(165,180,252,0.25);">
-              🤝 ${escapeHtml(n.name)} (${escapeHtml(n.helpline)})
-            </span>
-          `).join(" ");
+          const ngosList = (inc.matched_ngos || []).slice(0, 2).map((n) => {
+            const phone = (n.contact_phone || "").trim();
+            const phoneStr = phone ? ` (${escapeHtml(phone)})` : "";
+            return `
+              <span style="display:inline-flex; align-items:center; gap:4px; font-size:11.5px; background:rgba(165,180,252,0.12); color:var(--accent-violet); padding:3px 8px; border-radius:6px; border:1px solid rgba(165,180,252,0.25);">
+                🤝 ${escapeHtml(n.name)}${phoneStr}
+              </span>
+            `;
+          }).join(" ");
+
+          const dateDisplay = inc.incident_date || (inc.created_at ? inc.created_at.slice(0, 10) : "");
 
           return `
       <div class="listing-card" style="margin-bottom:16px; border:1px solid var(--border-subtle); border-radius:14px; padding:18px; background:var(--bg-card); box-shadow:0 4px 14px rgba(0,0,0,0.04);">
@@ -1914,7 +1921,10 @@ async function loadIncidents(filterType = "") {
         <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px; display:flex; flex-wrap:wrap; gap:12px;">
           <span>📍 <strong>${escapeHtml(inc.location_city || "Pan-India")}, ${escapeHtml(inc.location_state || "")}</strong></span>
           <span>${inc.is_anonymous ? "🕵️ Anonymous Report" : "👤 Community Member"}</span>
-          ${inc.incident_date ? `<span>📅 ${escapeHtml(inc.incident_date)}</span>` : ""}
+          <span>📅 <strong>${escapeHtml(dateDisplay || "Recent")}</strong></span>
+          <span style="font-size:11.5px; padding:2px 6px; border-radius:6px; background:${inc.public_visible && inc.reporter_consent_public ? 'rgba(16,185,129,0.12)' : 'rgba(244,63,94,0.12)'}; color:${inc.public_visible && inc.reporter_consent_public ? '#34D399' : '#FB7185'};">
+            ${inc.public_visible && inc.reporter_consent_public ? '🌐 Public Board: Visible' : '🔒 Public Board: Hidden'}
+          </span>
         </div>
         <p class="card-desc" style="font-size:14px; line-height:1.55; color:var(--text-secondary); margin-bottom:12px;">${escapeHtml(inc.description)}</p>
         
@@ -1927,6 +1937,8 @@ async function loadIncidents(filterType = "") {
           </div>
         ` : ""}
 
+        ${inc.public_summary ? `<div style="font-size:12.5px; color:#A78BFA; margin-bottom:10px; padding:6px 10px; border-radius:8px; background:rgba(168,85,247,0.08); border:1px solid rgba(168,85,247,0.25);"><strong>Public Summary:</strong> ${escapeHtml(inc.public_summary)}</div>` : ""}
+
         ${inc.case_notes ? `<div style="font-size:12.5px; color:var(--accent-cyan); margin-bottom:10px; padding:6px 10px; border-radius:8px; background:rgba(45,212,191,0.08); border:1px solid rgba(45,212,191,0.2);"><strong>Case Triage Notes:</strong> ${escapeHtml(inc.case_notes)}</div>` : ""}
         
         <div class="card-footer" style="padding-top:14px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -1934,9 +1946,11 @@ async function loadIncidents(filterType = "") {
           ${
             currentUser?.role === "verifier" || currentUser?.role === "admin"
               ? `
-            <div style="display:flex; gap:8px;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
               <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px; border-radius:8px;" onclick="updateIncidentStatusPrompt(${inc.id}, 'escalated_to_ngo')">Escalate to NGO</button>
               <button class="btn btn-primary" style="padding:6px 12px; font-size:12px; border-radius:8px;" onclick="updateIncidentStatusPrompt(${inc.id}, 'resolved')">Mark Resolved</button>
+              <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px; border-radius:8px; border-color:${inc.public_visible ? '#10B981' : '#F43F5E'}; color:${inc.public_visible ? '#34D399' : '#FB7185'};" onclick="toggleIncidentPublicVisibility(${inc.id}, ${!inc.public_visible})">${inc.public_visible ? '🌐 Public Board: ON' : '🔒 Public Board: OFF'}</button>
+              <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px; border-radius:8px;" onclick="editIncidentPublicSummaryPrompt(${inc.id})">✏️ Edit Summary</button>
             </div>
           `
               : ""
@@ -1949,6 +1963,45 @@ async function loadIncidents(filterType = "") {
       .join("");
   } catch (e) {
     container.innerHTML = `<div style="color:var(--accent-rose); padding:20px; background:rgba(244,63,94,0.08); border-radius:12px;">Error loading incidents: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+async function toggleIncidentPublicVisibility(incidentId, targetVisible) {
+  try {
+    const res = await fetch(`${API_BASE}/incidents/${incidentId}/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${currentAuthToken}`,
+      },
+      body: JSON.stringify({ public_visible: targetVisible }),
+    });
+    if (!res.ok) throw new Error("Failed to toggle public visibility");
+    alert(`Case #${incidentId} public visibility set to: ${targetVisible ? "VISIBLE" : "HIDDEN"}`);
+    loadIncidents();
+  } catch (err) {
+    alert("Visibility toggle failed: " + err.message);
+  }
+}
+
+async function editIncidentPublicSummaryPrompt(incidentId) {
+  const newSummary = prompt("Enter public summary (anonymized description shown to visitors on Case Board):", "");
+  if (newSummary === null) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/incidents/${incidentId}/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${currentAuthToken}`,
+      },
+      body: JSON.stringify({ public_summary: newSummary.trim() }),
+    });
+    if (!res.ok) throw new Error("Failed to update public summary");
+    alert(`Case #${incidentId} public summary updated successfully!`);
+    loadIncidents();
+  } catch (err) {
+    alert("Public summary update failed: " + err.message);
   }
 }
 

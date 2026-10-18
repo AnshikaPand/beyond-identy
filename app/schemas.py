@@ -158,6 +158,9 @@ class IncidentReportCreate(BaseModel):
     is_anonymous: bool = False
     contact_email: Optional[str] = None
     contact_phone: Optional[str] = None
+    reporter_consent_public: bool = False
+    public_summary: Optional[str] = None
+    entity_type: Optional[str] = None
 
 
 class IncidentReportOut(BaseModel):
@@ -176,6 +179,10 @@ class IncidentReportOut(BaseModel):
     is_anonymous: bool
     contact_email: Optional[str] = None
     contact_phone: Optional[str] = None
+    public_visible: bool = True
+    reporter_consent_public: bool = False
+    public_summary: Optional[str] = None
+    entity_type: Optional[str] = None
     matched_schemes: List[SchemeMatchOut] = []
     matched_ngos: List[NGOMatchOut] = []
     created_at: datetime
@@ -185,9 +192,65 @@ class IncidentReportOut(BaseModel):
 
 
 class IncidentStatusUpdate(BaseModel):
+    status: Optional[IncidentStatus] = None
+    case_notes: Optional[str] = None
+    assigned_ngo: Optional[str] = None
+    public_visible: Optional[bool] = None
+    public_summary: Optional[str] = None
+    entity_type: Optional[str] = None
+
+
+# ==========================================
+# 3b. Public Community Case Board Schemas
+# (Strict privacy whitelist - NO personal data, NO contact info, generic entity only)
+# ==========================================
+
+class PublicCaseItemOut(BaseModel):
+    id: int
+    incident_type: IncidentType
+    category_label: str
+    title: str
+    description: str
+    public_summary: Optional[str] = None
+    incident_date: Optional[str] = None
+    display_date: str
+    location_city: str
+    location_state: str
+    reporter_type: str  # "Anonymous Report" or "Community Member"
+    entity_type: str    # Generic sanitized type e.g. "Private company", "Government hospital", "Police station", "Landlord"
+    urgency_level: UrgencyLevel
     status: IncidentStatus
     case_notes: Optional[str] = None
     assigned_ngo: Optional[str] = None
+    matched_schemes: List[SchemeMatchOut] = []
+    matched_ngos: List[NGOMatchOut] = []
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class PublicCasesResponse(BaseModel):
+    items: List[PublicCaseItemOut]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+
+
+class PublicCasesStatsResponse(BaseModel):
+    total_cases: int
+    public_cases: int
+    private_cases: int
+    count_by_category: dict
+    count_by_status: dict
+    count_by_severity: dict
+    count_by_state: dict
+    cases_escalated_to_ngo: int
+    cases_resolved: int
+    cases_under_review: int
+    high_severity_count: int
+
 
 
 # ==========================================

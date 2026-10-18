@@ -62,6 +62,10 @@ def _to_incident_out(incident: models.IncidentReport) -> schemas.IncidentReportO
         is_anonymous=incident.is_anonymous,
         contact_email=incident.contact_email,
         contact_phone=incident.contact_phone,
+        public_visible=getattr(incident, "public_visible", True),
+        reporter_consent_public=getattr(incident, "reporter_consent_public", False),
+        public_summary=incident.public_summary,
+        entity_type=incident.entity_type,
         matched_schemes=matched_schemes,
         matched_ngos=matched_ngos,
         created_at=incident.created_at,
@@ -113,6 +117,10 @@ def report_incident(
         status=models.IncidentStatus.submitted,
         contact_email=report_in.contact_email or (current_user.email if current_user and not is_anon else None),
         contact_phone=report_in.contact_phone,
+        public_visible=True,
+        reporter_consent_public=bool(report_in.reporter_consent_public),
+        public_summary=report_in.public_summary or None,
+        entity_type=report_in.entity_type or None,
         matched_schemes_json=schemes_json,
         matched_ngos_json=ngos_json,
     )
@@ -180,11 +188,18 @@ def update_incident_status(
     if not incident:
         raise HTTPException(status_code=404, detail="Incident report not found")
 
-    incident.status = update_in.status
+    if update_in.status is not None:
+        incident.status = update_in.status
     if update_in.case_notes is not None:
         incident.case_notes = update_in.case_notes
     if update_in.assigned_ngo is not None:
         incident.assigned_ngo = update_in.assigned_ngo
+    if update_in.public_visible is not None:
+        incident.public_visible = update_in.public_visible
+    if update_in.public_summary is not None:
+        incident.public_summary = update_in.public_summary
+    if update_in.entity_type is not None:
+        incident.entity_type = update_in.entity_type
 
     db.commit()
     db.refresh(incident)

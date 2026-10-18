@@ -450,6 +450,45 @@ The database uses SQLite3 with relational foreign keys:
 
 ---
 
+---
+
+## 📋 Community Case Board & Public Transparency (`/cases`)
+
+The **Community Case Board** is a public, read-only transparency portal answering: *"What kind of cases come to Beyond Identity?"* It allows any visitor (guest or logged-in) across devices to understand discrimination patterns across India, statutory scheme linkages, and NGO triage interventions.
+
+### Public Routes & Endpoints
+| Route / Endpoint | Method | Description | Access |
+|---|---|---|---|
+| `/cases` / `/cases.html` | `GET` | Responsive standalone Case Board page (stats, charts, filters, cards) | **Public** (No login) |
+| `/api/public/cases` | `GET` | Paginated, filtered list of anonymized cases | **Public** (Rate-limited) |
+| `/api/public/cases/stats` | `GET` | Aggregate stats: total, public vs private, breakdown by category, state, severity, status | **Public** (Rate-limited) |
+
+#### Query Parameters for `GET /api/public/cases`:
+- `page` (int, default: 1): Page number.
+- `page_size` (int, default: 10, max: 50): Items per page.
+- `category` (string, optional): Filter by `workplace`, `healthcare_denial`, `housing_eviction`, `police_harassment`, `public_harassment`, `education`, `legal_documentation`, `other`.
+- `status` (string, optional): Filter by `submitted`, `under_review`, `escalated_to_ngo`, `resolved`, `legal_aid_assigned`.
+- `severity` (string, optional): Filter by `low`, `medium`, `high`, `immediate_sos`.
+- `state` (string, optional): Filter by Indian State / UT (e.g. `Maharashtra`, `Delhi`, `Karnataka`).
+- `search` (string, optional): Search query matched against title, description, public summary, and city.
+- `sort_by` (string, default: `newest`): `newest` or `oldest`.
+
+### 🔒 Server-Enforced Privacy Whitelist Rules
+Privacy is strictly enforced on the server via Pydantic response models (`PublicCaseItemOut`) and database query filters — never solely reliant on frontend hiding:
+1. **Never Return Reporter PII**: Reporter names, contact emails, phone numbers, internal user IDs, and exact street addresses are strictly stripped from all public responses.
+2. **City & State Level Only**: Location is limited to city and state (e.g. `Pune, Maharashtra`).
+3. **Generic Reporter Label**: Reporter type is strictly mapped to `"Anonymous Report"` or `"Community Member"`.
+4. **Sanitized Institutional Entity**: Real company, hospital, or police post names are never published; they are automatically mapped to generic institutional classifications (e.g. *"Private Company / Employer"*, *"Government Hospital"*, *"Police Station / Law Enforcement"*, *"Private Landlord"*).
+5. **Double Consent Gate**: Only reports where both `public_visible == True` AND `reporter_consent_public == True` are returned in public listings. Reports without consent are safely tallied in stats as `"private_cases"` but are completely excluded from listings.
+6. **Rate Limiting**: Public endpoints are protected by an in-memory sliding window rate limiter (120 requests/minute per client IP).
+
+### 🛡️ Admin & NGO Partner Controls
+Authorized NGO Verifiers and Admins (`role: verifier`, `role: admin`) can manage visibility via the Case Triage Desk:
+- **Toggle Public Visibility**: Instantly hide a case from the public board at any time via `PATCH /incidents/{id}/status` (`public_visible: false`).
+- **Edit Public Summary**: Update or anonymize public summaries before or after publishing (`public_summary: "..."`).
+
+---
+
 ## 📁 Project Directory Structure
 
 ```
@@ -458,36 +497,45 @@ beyond_identity_backend/
 ├── app/
 │   ├── __init__.py                 # Application package initializer
 │   ├── config.py                   # Settings & environment variables (SECRET_KEY, DB_URL)
-│   ├── database.py                 # SQLAlchemy engine, session maker, Base declarative
-│   ├── main.py                     # FastAPI app factory, CORS middleware, static mounts
-│   ├── models.py                   # SQLAlchemy ORM database models
-│   ├── schemas.py                  # Pydantic v2 validation & response schemas
-│   ├── seed.py                     # Database initialization & sample seeding script
+│   ├── database.py                 # SQLAlchemy engine, session maker, SQLite column migrator
+│   ├── main.py                     # FastAPI app factory, CORS middleware, page routes
+│   ├── models.py                   # SQLAlchemy ORM models (Users, Listings, IncidentReport)
+│   ├── schemas.py                  # Pydantic v2 schemas & strict public privacy whitelists
+│   ├── seed.py                     # Database initialization & 15 realistic sample cases
 │   │
 │   ├── routers/
 │   │   ├── __init__.py
 │   │   ├── auth.py                 # Authentication routes (login, register, me)
 │   │   ├── listings.py             # Opportunities directory routes
-│   │   ├── incidents.py            # Discrimination reporting & scheme matcher routes
+│   │   ├── incidents.py            # Discrimination reporting & triage status routes
+│   │   ├── public_cases.py         # Public Community Case Board endpoints & rate limiting
 │   │   ├── awareness.py            # Legal Rights awareness engine routes
-│   │   └── health_assistant.py     # Health decision tree routes
+│   │   ├── health_assistant.py     # Health decision tree routes
+│   │   └── chatbot.py              # 24/7 AI chatbox query & voice routes
 │   │
 │   ├── services/
 │   │   ├── __init__.py
+│   │   ├── matcher.py              # Statutory Indian scheme & verified NGO matcher
 │   │   ├── awareness_kb.py         # Statutory knowledge base & matching heuristics
 │   │   └── health_assistant.py     # WPATH SOC v8 decision tree state machine
 │   │
 │   └── static/
 │       ├── index.html              # Main single-page application & guest landing
+│       ├── cases.html              # Dedicated Community Case Board (stats, charts, filters)
 │       ├── login.html              # Dedicated full-page authentication portal
+│       ├── about.html              # About Beyond Identity & statutory mission
 │       ├── css/
-│       │   └── styles.css          # Core design system & Tri-Theme (Day/Night/Auto)
+│       │   ├── styles.css          # Core design system & Tri-Theme (Day/Night/Auto)
+│       │   └── redesign.css        # Modern glassmorphism & responsive components
 │       └── js/
 │           └── app.js              # Frontend client logic, API calls, theme switcher
 │
 ├── tests/
 │   ├── __init__.py
-│   └── test_api.py                 # 20 automated unit tests (Pytest + HTTPX)
+│   ├── test_api.py                 # Core API unit tests (auth, listings, incidents, triage)
+│   ├── test_public_cases.py        # Case board privacy, consent filter, stats, & rate limit tests
+│   ├── test_chatbot.py             # Chatbot voice & query tests
+│   └── test_knowledge_base.py      # Awareness & legal knowledge base tests
 │
 ├── requirements.txt                # Python package dependencies
 ├── beyond_identity.db              # SQLite3 database (generated on seed)

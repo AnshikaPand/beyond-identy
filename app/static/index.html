@@ -78,6 +78,9 @@
       <!-- Center: Main Navigation Links + More Dropdown -->
       <nav class="nav-links-menu" id="nav-links-menu" aria-label="Main Navigation">
         <a href="#landing-hero-section" class="nav-link active">Home</a>
+        <a href="/cases" class="nav-link" id="nav-case-board-link">
+          <span>📋</span> <strong>Case Board</strong>
+        </a>
         <a href="#tab-chat" class="nav-link nav-chat-link auth-only-nav" id="nav-open-chat-btn">
           <span class="nav-chat-icon">🤖</span> <strong>Chatbot</strong>
         </a>
@@ -105,12 +108,16 @@
               <span class="dropdown-item-icon">🚨</span>
               <span>Report Incident</span>
             </a>
+            <a href="/cases" class="dropdown-item" role="menuitem" id="nav-link-caseboard">
+              <span class="dropdown-item-icon">📋</span>
+              <span>Community Case Board</span>
+            </a>
             <a href="/about" class="dropdown-item" role="menuitem" id="nav-link-about">
               <span class="dropdown-item-icon">ℹ️</span>
               <span>About</span>
             </a>
             <a href="#tab-cases" class="dropdown-item" role="menuitem" id="nav-link-cases">
-              <span class="dropdown-item-icon">📋</span>
+              <span class="dropdown-item-icon">🛡️</span>
               <span>Case Triage Desk</span>
             </a>
           </div>
@@ -144,6 +151,7 @@
     <div class="nav-mobile-drawer" id="nav-mobile-drawer">
       <div class="nav-mobile-drawer-inner">
         <a href="#landing-hero-section" class="nav-mobile-link active">Home</a>
+        <a href="/cases" class="nav-mobile-link" id="nav-mobile-caseboard-link">📋 Community Case Board</a>
         <a href="/login" class="nav-mobile-link guest-only-nav" style="font-weight: 700; color: #14B8A6;">🔐 Sign In</a>
         <a href="#tab-chat" class="nav-mobile-link nav-chat-mobile-link auth-only-nav" id="nav-mobile-chat-link">🤖 Chatbot (Voice)</a>
         <a href="#tab-listings" class="nav-mobile-link auth-only-nav" id="nav-mobile-listings-link">💼 Opportunity</a>
@@ -181,8 +189,11 @@
           <a href="/report/anonymous" class="btn btn-secondary" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(244, 63, 94, 0.35); color: #FB7185; border-radius: 10px;">
             <span>🚨</span> Anonymous Report
           </a>
+          <a href="/cases" class="btn btn-secondary" id="hero-btn-caseboard" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; border-radius: 10px;">
+            <span>📋</span> Case Board
+          </a>
           <a href="#tab-cases" class="btn btn-secondary" id="hero-btn-triage" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(45, 212, 191, 0.4); color: #2DD4BF; border-radius: 10px;">
-            <span>📋</span> Case Triage Desk
+            <span>🛡️</span> Case Triage Desk
           </a>
         </div>
       </div>
@@ -555,6 +566,15 @@
             <label for="inc-email">Contact Email for Confidential Updates</label>
             <input type="email" id="inc-email" placeholder="Optional contact email" />
           </div>
+        </div>
+
+        <!-- Public Case Board Consent Checkbox -->
+        <div class="form-group" style="display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; margin-bottom: 0;">
+          <input type="checkbox" id="inc-consent-public" style="width: 20px; height: 20px; margin-top: 2px;" />
+          <label for="inc-consent-public" style="margin-bottom: 0; cursor: pointer; font-size: 13.5px; line-height: 1.4;">
+            <strong>Allow my case to appear anonymously on the public Case Board</strong><br />
+            <span style="color: var(--text-muted); font-size: 12.5px;">Your personal name, contact information, and alleged entity names are NEVER published. Only general category, city, state, and anonymous details are shared.</span>
+          </label>
         </div>
 
         <div style="margin-top: 28px;">

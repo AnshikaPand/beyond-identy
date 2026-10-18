@@ -153,8 +153,15 @@ class IncidentReport(Base):
     matched_schemes_json = Column(Text, nullable=True)
     matched_ngos_json = Column(Text, nullable=True)
 
+    # Public Community Case Board controls
+    public_visible = Column(Boolean, default=True, nullable=False)
+    reporter_consent_public = Column(Boolean, default=False, nullable=False)
+    public_summary = Column(Text, nullable=True)
+    entity_type = Column(String, nullable=True)  # Generic type e.g. "Private company", "Government hospital"
+
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     reporter = relationship("User", foreign_keys=[user_id], back_populates="incident_reports")
+
 
