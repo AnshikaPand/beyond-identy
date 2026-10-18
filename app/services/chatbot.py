@@ -595,40 +595,46 @@ def answer_chatbot_query(
         reply = kb_match["answer"]
         suggestions: List[schemas.ChatbotItemOut] = []
 
-        if qid == "crisis_safety":
+        tag = kb_match.get("tag") or kb_match.get("category")
+
+        if qid == "crisis_safety" or tag in ("self_harm_support", "crisis_safety"):
             intent = "emergency_crisis"
             reply = (
+                kb_match.get("answer") or
                 "You are not alone. Call Tele-MANAS 14416 (free, 24/7 mental health support). "
                 "If you are in immediate danger, call 112. "
                 "Direct community crisis support is also available 24/7 at 868989330, and NALSA free legal aid at 15100."
             )
             suggested_prompts = ["Tele-MANAS: 14416", "Emergency: 112", "Helpline: 868989330"]
 
-        elif qid == 1:
+        elif tag == "greeting" or qid == 1:
             intent = "chitchat_greeting"
             suggested_prompts = []
-        elif qid == 2:
+        elif tag == "how_are_you" or qid == 2:
             intent = "chitchat_howareyou"
             suggested_prompts = []
-        elif qid == 3:
+        elif tag == "user_fine" or qid == 3:
             intent = "chitchat_user_good"
             suggested_prompts = []
-        elif qid == 4:
+        elif tag == "user_sad" or qid == 4:
             intent = "chitchat_mood_sad"
-            suggested_prompts = ["Tele-MANAS: 14416"]
-        elif qid == 5:
+            suggested_prompts = ["Tele-MANAS: 14416", "Direct Helpline: 868989330"]
+        elif tag == "who_are_you" or qid == 5:
             intent = "chitchat_identity"
             suggested_prompts = []
         elif qid == 6:
             intent = "chitchat_capabilities"
             suggested_prompts = []
-        elif qid == 7:
+        elif tag == "thanks" or qid == 7:
             intent = "chitchat_thanks"
             suggested_prompts = []
-        elif qid == 8:
+        elif tag in ("good_morning", "good_afternoon", "good_evening") or qid == 8:
             intent = "chitchat_time_greeting"
             suggested_prompts = []
-        elif qid == 9:
+        elif tag == "good_night":
+            intent = "good_night"
+            suggested_prompts = []
+        elif tag == "goodbye" or qid == 9:
             intent = "chitchat_farewell"
             suggested_prompts = []
         elif qid == 10:
@@ -646,10 +652,36 @@ def answer_chatbot_query(
         elif qid == 24:
             intent = "basics_terminology"
             suggested_prompts = ["What rights do transgender persons have in India?", "How to get TG Certificate"]
-        elif qid in (12, 13, 16):
+        elif tag == "user_is_transgender":
+            intent = "user_is_transgender"
+            suggested_prompts = ["What are my legal rights in India?", "How to get TG Certificate", "Find Community Support"]
+        elif tag == "just_realised_identity":
+            intent = "just_realised_identity"
+            suggested_prompts = ["Gender Identity Basics", "LGBTQIA+ Affirmative Counsellors", "Peer Support Groups"]
+        elif tag == "afraid_to_come_out":
+            intent = "afraid_to_come_out"
+            suggested_prompts = ["Tips for Talking to Family", "Support Groups", "Tele-MANAS: 14416"]
+        elif tag == "family_rejected":
+            intent = "family_rejected"
+            suggested_prompts = ["Garima Greh Shelters", "Emergency: 112", "Helpline: 868989330"]
+            suggestions = search_listings_in_db(db=db, intent="housing", query=query, limit=3)
+        elif tag == "bullied_discriminated":
+            intent = "bullied_discriminated"
+            suggested_prompts = ["Report Discrimination Tab", "Free Legal Aid: 15100", "Workplace Protections"]
+        elif tag == "feeling_unsafe":
+            intent = "emergency_crisis"
+            suggested_prompts = ["Emergency: 112", "Tele-MANAS: 14416", "Helpline: 868989330"]
+        elif tag == "mental_health_support":
+            intent = "healthcare"
+            suggested_prompts = ["Tele-MANAS: 14416", "Find Affirming Therapists", "Helpline: 868989330"]
+            suggestions = search_listings_in_db(db=db, intent="healthcare", query="mental health counsellor therapy", limit=3)
+        elif tag == "legal_rights" or qid in (12, 13, 16):
             intent = "legal_rights"
             suggested_prompts = ["Free Legal Aid: 15100", "TG Certificate Portal", "Report Discrimination"]
-        elif qid == 14:
+        elif tag == "id_certificate":
+            intent = "legal_rights"
+            suggested_prompts = ["National Portal Link", "Aadhaar / Document Update", "DM Certificate Steps"]
+        elif tag == "job_support" or qid == 14:
             intent = "employment"
             suggested_prompts = ["Find Inclusive Jobs", "File Complaint with Complaints Officer"]
             suggestions = search_listings_in_db(db=db, intent="employment", query=query, limit=3)
@@ -660,14 +692,27 @@ def answer_chatbot_query(
             intent = "housing"
             suggested_prompts = ["Garima Greh Shelters", "Tenant Protections Section 12"]
             suggestions = search_listings_in_db(db=db, intent="housing", query=query, limit=3)
-        elif qid in (18, 19):
+        elif tag == "healthcare_support" or qid in (18, 19):
             intent = "healthcare"
             suggested_prompts = ["Ayushman Bharat TG Plus", "HRT Medical Guidance"]
             suggestions = search_listings_in_db(db=db, intent="healthcare", query=query, limit=3)
-        elif qid == 20:
+        elif tag == "government_schemes" or qid == 20:
             intent = "scholarship_schemes"
             suggested_prompts = ["SMILE Scheme Portal", "Skill Training PM-DAKSH"]
             suggestions = search_listings_in_db(db=db, intent="scholarship_schemes", query=query, limit=3)
+        elif tag == "ally_how_to_support":
+            intent = "ally_how_to_support"
+            suggested_prompts = ["Tips for Friends & Family", "Terminology Guide", "Why Pronouns Matter"]
+        elif tag == "pronouns_name":
+            intent = "pronouns_name"
+            suggested_prompts = ["Why Pronouns Matter", "Name Change on Documents", "Deadnaming Explained"]
+        elif tag == "community_support":
+            intent = "community"
+            suggested_prompts = ["Find NGO Partners", "Community Mentorship", "Volunteer Opportunities"]
+            suggestions = search_listings_in_db(db=db, intent="community", query=query, limit=3)
+        elif tag == "compliment_bot":
+            intent = "chitchat_compliment"
+            suggested_prompts = []
         elif qid == 21:
             intent = "emergency_crisis"
             reply = (
@@ -677,7 +722,7 @@ def answer_chatbot_query(
             )
             suggested_prompts = ["Call Tele-MANAS: 14416", "Emergency: 112"]
         else:
-            intent = kb_match.get("category", "general")
+            intent = tag or kb_match.get("category", "general")
             suggested_prompts = []
 
         return schemas.ChatbotQueryResponse(

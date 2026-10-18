@@ -149,3 +149,11 @@ def get_chatbot_stats(db: Session = Depends(get_db)):
         "nalsa_legal_aid": "15100",
         "national_portal": "https://transgender.dosje.gov.in",
     }
+
+
+@router.get("/intents")
+def get_chatbot_intents():
+    """Returns all 29 conversational intents with tags, patterns, and responses."""
+    from app.data import knowledge_base
+    return {"intents": knowledge_base.get_all_intents()}
+

@@ -20,10 +20,12 @@ except ImportError:
     HAS_RAPIDFUZZ = False
 
 JSON_DATA_PATH = Path(__file__).resolve().parent / "chatbot_data.json"
+INTENTS_PATH = Path(__file__).resolve().parent / "intents.json"
 
 CRISIS_SAFETY_ANSWER = (
     "You are not alone. Call Tele-MANAS 14416 (free, 24/7 mental health support). "
-    "If you are in immediate danger, call 112."
+    "If you are in immediate danger, call 112. "
+    "Transgender Community Helpline: 868989330, NALSA Free Legal Aid: 15100."
 )
 
 FALLBACK_ANSWER = (
@@ -31,19 +33,35 @@ FALLBACK_ANSWER = (
     "You can try one of the topics above, or call the helpline for direct help."
 )
 
-# Load questions from JSON file
+# Load questions and intents from JSON files
 def load_kb_data() -> Dict[str, Any]:
+    data = {
+        "safety_rule": {"triggers": [], "answer": CRISIS_SAFETY_ANSWER},
+        "fallback": {"answer": FALLBACK_ANSWER},
+        "questions": [],
+        "intents": [],
+    }
     if JSON_DATA_PATH.exists():
         try:
             with open(JSON_DATA_PATH, "r", encoding="utf-8") as f:
-                return json.load(f)
+                d = json.load(f)
+                data.update(d)
         except Exception:
             pass
-    return {"safety_rule": {"triggers": [], "answer": CRISIS_SAFETY_ANSWER}, "fallback": {"answer": FALLBACK_ANSWER}, "questions": []}
+    if INTENTS_PATH.exists():
+        try:
+            with open(INTENTS_PATH, "r", encoding="utf-8") as f:
+                d = json.load(f)
+                if "intents" in d and (not data.get("intents") or len(data.get("intents", [])) < len(d.get("intents", []))):
+                    data["intents"] = d["intents"]
+        except Exception:
+            pass
+    return data
 
 
 KB_DATA = load_kb_data()
 QUESTIONS: List[Dict[str, Any]] = KB_DATA.get("questions", [])
+INTENTS: List[Dict[str, Any]] = KB_DATA.get("intents", [])
 
 CRISIS_KEYWORDS = [
     "suicide",
@@ -164,8 +182,8 @@ def _calculate_trigger_score(norm_query: str, norm_trigger: str) -> float:
 
 def find_best_match(query: str, threshold: float = 0.65) -> Optional[Dict[str, Any]]:
     """
-    Finds the best matching item from the knowledge base.
-    Returns dictionary with {id, category, question, answer, score, matched_trigger} or None.
+    Finds the best matching item from the knowledge base and conversational intents.
+    Returns dictionary with {id, tag, category, question, answer, responses, score, matched_trigger, is_crisis} or None.
     """
     if not query or not query.strip():
         return None
@@ -174,9 +192,11 @@ def find_best_match(query: str, threshold: float = 0.65) -> Optional[Dict[str, A
     if is_crisis_query(query):
         return {
             "id": "crisis_safety",
+            "tag": "self_harm_support",
             "category": "crisis",
             "question": "Safety & Crisis SOS",
             "answer": CRISIS_SAFETY_ANSWER,
+            "responses": [CRISIS_SAFETY_ANSWER],
             "score": 1.0,
             "matched_trigger": "safety_rule",
             "is_crisis": True,
@@ -189,7 +209,9 @@ def find_best_match(query: str, threshold: float = 0.65) -> Optional[Dict[str, A
     best_item: Optional[Dict[str, Any]] = None
     best_score = 0.0
     best_trigger = ""
+    is_intent_match = False
 
+    # 1. Search in questions (preserves question IDs 1-24 for existing test suite)
     for item in QUESTIONS:
         triggers = item.get("triggers", [])
         for trigger in triggers:
@@ -199,17 +221,53 @@ def find_best_match(query: str, threshold: float = 0.65) -> Optional[Dict[str, A
                 best_score = score
                 best_trigger = trigger
                 best_item = item
+                is_intent_match = False
+
+    # 2. Search in intents (user-provided conversational intents)
+    for intent in INTENTS:
+        patterns = intent.get("patterns", [])
+        for pattern in patterns:
+            norm_pattern = normalize_text(pattern)
+            score = _calculate_trigger_score(norm_query, norm_pattern)
+            # Only override if score is strictly greater than question score
+            if score > best_score:
+                best_score = score
+                best_trigger = pattern
+                best_item = intent
+                is_intent_match = True
 
     if best_score >= threshold and best_item is not None:
-        return {
-            "id": best_item.get("id"),
-            "category": best_item.get("category"),
-            "question": best_item.get("question"),
-            "answer": best_item.get("answer"),
-            "score": round(best_score, 3),
-            "matched_trigger": best_trigger,
-            "is_crisis": False,
-        }
+        if is_intent_match:
+            responses = best_item.get("responses", [])
+            tag = best_item.get("tag", "general")
+            chosen_answer = responses[0] if responses else FALLBACK_ANSWER
+            if len(responses) > 1:
+                import random
+                chosen_answer = random.choice(responses)
+            return {
+                "id": tag,
+                "tag": tag,
+                "category": tag,
+                "question": tag,
+                "answer": chosen_answer,
+                "responses": responses,
+                "score": round(best_score, 3),
+                "matched_trigger": best_trigger,
+                "is_crisis": tag in ("self_harm_support", "feeling_unsafe"),
+            }
+        else:
+            ans = best_item.get("answer", "")
+            return {
+                "id": best_item.get("id"),
+                "tag": best_item.get("category"),
+                "category": best_item.get("category"),
+                "question": best_item.get("question"),
+                "answer": ans,
+                "responses": [ans],
+                "score": round(best_score, 3),
+                "matched_trigger": best_trigger,
+                "is_crisis": False,
+            }
 
     return None
 
@@ -217,6 +275,11 @@ def find_best_match(query: str, threshold: float = 0.65) -> Optional[Dict[str, A
 def get_all_knowledge_items() -> List[Dict[str, Any]]:
     """Returns all Q&A items defined in the knowledge base."""
     return QUESTIONS
+
+
+def get_all_intents() -> List[Dict[str, Any]]:
+    """Returns all conversational intents."""
+    return INTENTS
 
 
 def answer_query(query: str, threshold: float = 0.65) -> Tuple[str, Optional[Dict[str, Any]]]:
