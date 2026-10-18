@@ -97,7 +97,7 @@ if frontend_env and frontend_env not in origins:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
+    allow_origin_regex=r".*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -230,12 +230,21 @@ def serve_ngo_dashboard():
     return {"message": "NGO Dashboard not found"}
 
 
-@app.get("/portal")
-@app.get("/report/anonymous")
-def serve_portal_routes():
+@app.get("/cases")
+@app.get("/triage")
+@app.get("/cases.html")
+def serve_cases():
+    """Serves the frontend directly into the Case Triage Desk for phones and laptops."""
     if INDEX_FILE.exists():
-        return FileResponse(str(INDEX_FILE))
-    return {"message": "Portal frontend not found"}
+        return FileResponse(
+            str(INDEX_FILE),
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
+    return {"message": "Case triage frontend not found"}
 
 
 

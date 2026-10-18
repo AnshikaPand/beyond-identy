@@ -129,25 +129,21 @@ def list_incidents(
     incident_type: Optional[models.IncidentType] = None,
     urgency_level: Optional[models.UrgencyLevel] = None,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(auth.get_current_user),
+    current_user: Optional[models.User] = Depends(auth.get_optional_current_user),
 ):
     """
-    List incident reports.
-    - Regular users see only their own filed incidents.
-    - Verifiers and Admins see all incidents, with filtering capabilities.
+    List incident reports for the Case Triage Desk.
+    Visible to all users, visitors, and devices (phones and laptops) for community transparency and triage tracking.
+    Supports filtering by status, type, and urgency level.
     """
     query = db.query(models.IncidentReport)
 
-    if current_user.role == models.UserRole.user:
-        query = query.filter(models.IncidentReport.user_id == current_user.id)
-    else:
-        # Verifiers & Admins can filter by status, type, urgency
-        if status:
-            query = query.filter(models.IncidentReport.status == status)
-        if incident_type:
-            query = query.filter(models.IncidentReport.incident_type == incident_type)
-        if urgency_level:
-            query = query.filter(models.IncidentReport.urgency_level == urgency_level)
+    if status:
+        query = query.filter(models.IncidentReport.status == status)
+    if incident_type:
+        query = query.filter(models.IncidentReport.incident_type == incident_type)
+    if urgency_level:
+        query = query.filter(models.IncidentReport.urgency_level == urgency_level)
 
     incidents = query.order_by(models.IncidentReport.created_at.desc()).all()
     return [_to_incident_out(i) for i in incidents]
@@ -157,15 +153,12 @@ def list_incidents(
 def get_incident(
     incident_id: int,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(auth.get_current_user),
+    current_user: Optional[models.User] = Depends(auth.get_optional_current_user),
 ):
-    """Get single incident details. Regular users can only access their own reports."""
+    """Get single incident details. Visible for transparent case triage."""
     incident = db.query(models.IncidentReport).filter(models.IncidentReport.id == incident_id).first()
     if not incident:
         raise HTTPException(status_code=404, detail="Incident report not found")
-
-    if current_user.role == models.UserRole.user and incident.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="You do not have permission to view this incident")
 
     return _to_incident_out(incident)
 

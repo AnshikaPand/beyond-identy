@@ -109,6 +109,10 @@
               <span class="dropdown-item-icon">ℹ️</span>
               <span>About</span>
             </a>
+            <a href="#tab-cases" class="dropdown-item" role="menuitem" id="nav-link-cases">
+              <span class="dropdown-item-icon">📋</span>
+              <span>Case Triage Desk</span>
+            </a>
           </div>
         </div>
       </nav>
@@ -146,6 +150,7 @@
         <a href="#tab-awareness" class="nav-mobile-link auth-only-nav" id="nav-mobile-awareness-link">⚖️ Rights</a>
         <a href="#tab-health" class="nav-mobile-link auth-only-nav" id="nav-mobile-health-link">🩺 Health Assistant</a>
         <a href="#tab-report" class="nav-mobile-link auth-only-nav" id="nav-mobile-report-link">🚨 Report Incident</a>
+        <a href="#tab-cases" class="nav-mobile-link" id="nav-mobile-cases-link">📋 Case Triage Desk</a>
         <a href="/about" class="nav-mobile-link auth-only-nav" id="nav-mobile-about-link">ℹ️ About</a>
       </div>
     </div>
@@ -175,6 +180,9 @@
           </a>
           <a href="/report/anonymous" class="btn btn-secondary" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(244, 63, 94, 0.35); color: #FB7185; border-radius: 10px;">
             <span>🚨</span> Anonymous Report
+          </a>
+          <a href="#tab-cases" class="btn btn-secondary" id="hero-btn-triage" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(45, 212, 191, 0.4); color: #2DD4BF; border-radius: 10px;">
+            <span>📋</span> Case Triage Desk
           </a>
         </div>
       </div>
@@ -242,7 +250,7 @@
         <button class="tab-btn" data-tab="tab-health">
           <span>🩺</span> Health Assistant
         </button>
-        <button class="tab-btn" id="tab-btn-cases" data-tab="tab-cases" style="display: none;">
+        <button class="tab-btn" id="tab-btn-cases" data-tab="tab-cases">
           <span>📋</span> Case Triage Desk
         </button>
       </nav>
@@ -649,14 +657,25 @@
       </div>
     </section>
 
-    <!-- TAB 5: Incident Case Management (For Verifiers & Admins) -->
+    <!-- TAB 5: Incident Case Management (Visible for All Users, Phones & Laptops) -->
     <section class="tab-panel" id="tab-cases">
       <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 14px;">
         <div>
-          <span class="decision-badge">🛡️ NGO Moderation & Legal Escalation</span>
+          <span class="decision-badge">🛡️ Community Incident Triage & Transparency Desk</span>
           <h3 style="font-size: 24px; margin: 6px 0;">Discrimination Case Triage Desk</h3>
-          <p style="color: var(--text-muted); font-size: 14px;">Review reported incidents, examine matched government schemes, assign NGO cases, and manage legal aid escalations.</p>
+          <p style="color: var(--text-muted); font-size: 14px;">Open incident triage and case monitoring for all devices and community members across India. Track reported incidents, matched government schemes, and legal aid redressal.</p>
         </div>
+        <div id="cases-header-action" style="display: flex; gap: 8px;"></div>
+      </div>
+
+      <!-- Quick Triage Category Filters -->
+      <div class="cases-filter-bar" id="cases-filter-bar" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+        <button type="button" class="btn btn-secondary cases-filter-btn active" data-case-filter="" style="padding: 6px 14px; font-size: 12.5px; border-radius: 20px;">All Cases</button>
+        <button type="button" class="btn btn-secondary cases-filter-btn" data-case-filter="workplace" style="padding: 6px 14px; font-size: 12.5px; border-radius: 20px;">💼 Workplace</button>
+        <button type="button" class="btn btn-secondary cases-filter-btn" data-case-filter="healthcare_denial" style="padding: 6px 14px; font-size: 12.5px; border-radius: 20px;">🩺 Healthcare</button>
+        <button type="button" class="btn btn-secondary cases-filter-btn" data-case-filter="housing_eviction" style="padding: 6px 14px; font-size: 12.5px; border-radius: 20px;">🏠 Housing</button>
+        <button type="button" class="btn btn-secondary cases-filter-btn" data-case-filter="police_harassment" style="padding: 6px 14px; font-size: 12.5px; border-radius: 20px;">👮 Police Harassment</button>
+        <button type="button" class="btn btn-secondary cases-filter-btn" data-case-filter="public_place" style="padding: 6px 14px; font-size: 12.5px; border-radius: 20px;">🏙️ Public Place</button>
       </div>
 
       <div id="cases-container">

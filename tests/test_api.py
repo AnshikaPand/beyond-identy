@@ -331,6 +331,22 @@ def test_list_and_update_incidents_rbac():
     assert user_patch_res.status_code == 403
 
 
+def test_list_incidents_public_case_triage_desk():
+    # Public access without any auth token (e.g. from any phone or laptop)
+    res = client.get("/incidents/")
+    assert res.status_code == 200
+    incidents = res.json()
+    assert isinstance(incidents, list)
+    assert len(incidents) >= 1
+
+    # Filter by incident_type
+    filtered_res = client.get("/incidents/?incident_type=workplace")
+    assert filtered_res.status_code == 200
+    filtered_list = filtered_res.json()
+    assert all(i["incident_type"] == "workplace" for i in filtered_list)
+
+
+
 # ==========================================
 # 5. Awareness Module Tests
 # ==========================================

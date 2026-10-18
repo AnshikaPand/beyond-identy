@@ -58,10 +58,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const currentHash = window.location.hash.toLowerCase();
   const requestedTab = params.get("tab")?.toLowerCase();
 
-  // Only authenticated users navigate straight to tab-chat or requested tab
+  const isCasesRequested = (
+    requestedTab === "tab-cases" ||
+    requestedTab === "cases" ||
+    currentHash === "#tab-cases" ||
+    currentPath.includes("/cases") ||
+    currentPath.includes("/triage")
+  );
+
+  // Authenticated users or direct case triage requests navigate straight to target
   if (currentUser && currentAuthToken) {
-    const target = (requestedTab && document.getElementById(requestedTab)) ? requestedTab : "tab-chat";
+    const target = isCasesRequested ? "tab-cases" : ((requestedTab && document.getElementById(requestedTab)) ? requestedTab : "tab-chat");
     switchToTab(target);
+  } else if (isCasesRequested) {
+    switchToTab("tab-cases");
   } else {
     // Unauthenticated guest: keep single Home as default view
     document.body.classList.remove("tab-chat-active", "portal-view-active");
@@ -136,12 +146,12 @@ function applyTheme(theme) {
 // Tabs Navigation
 // ==========================================
 function switchToTab(targetId) {
-  // Guests are restricted to Home screen; any internal tab navigation requires login
+  // All visitors (including unauthenticated guests on phones and laptops) can view the Case Triage Desk
   const isGuest = !currentUser || !currentAuthToken;
-  if (isGuest) {
+  if (isGuest && targetId !== "tab-cases") {
     showToast("Please sign in to access portal features.", "info");
     setTimeout(() => {
-      window.location.href = targetId === "tab-cases" ? "/login?role=ngo" : "/login";
+      window.location.href = "/login";
     }, 350);
     return;
   }
@@ -216,6 +226,24 @@ function setupTabs() {
     btn.addEventListener("click", () => {
       const targetId = btn.getAttribute("data-tab");
       switchToTab(targetId);
+    });
+  });
+
+  // Links pointing to #tab-cases (from More dropdown, mobile drawer, hero button)
+  document.querySelectorAll('a[href="#tab-cases"]').forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      switchToTab("tab-cases");
+    });
+  });
+
+  // Filter chips in Case Triage Desk
+  document.querySelectorAll(".cases-filter-btn").forEach((fBtn) => {
+    fBtn.addEventListener("click", () => {
+      document.querySelectorAll(".cases-filter-btn").forEach((b) => b.classList.remove("active"));
+      fBtn.classList.add("active");
+      const filterType = fBtn.getAttribute("data-case-filter") || "";
+      loadIncidents(filterType);
     });
   });
 
@@ -697,10 +725,10 @@ function renderUserStatus() {
       });
     }
 
-    // Show Verifier tab if verifier or admin
+    // Case Triage Desk is visible for all users and devices
     const verifierTab = document.getElementById("tab-btn-cases");
     if (verifierTab) {
-      verifierTab.style.display = (currentUser.role === "verifier" || currentUser.role === "admin") ? "flex" : "none";
+      verifierTab.style.display = "flex";
     }
 
     // Show floating launcher for authenticated users if not on chat tab
@@ -1806,73 +1834,121 @@ function renderHealthNode(node, disclaimer) {
 }
 
 // ==========================================
-// Incidents / Case Management (for Verifiers)
+// Incidents / Case Management (Visible to All)
 // ==========================================
-async function loadIncidents() {
+async function loadIncidents(filterType = "") {
   const container = document.getElementById("cases-container");
   if (!container) return;
 
-  if (!currentAuthToken) {
-    container.innerHTML = `
-      <div style="text-align:center; padding:40px;">
-        <p style="color:var(--text-muted); margin-bottom:16px;">Log in as an NGO Verifier or Admin to view and manage discrimination cases.</p>
-        <button class="btn btn-primary" onclick="document.getElementById('login-modal').classList.add('active')">Log In as Verifier</button>
-      </div>
-    `;
-    return;
+  const headerAction = document.getElementById("cases-header-action");
+  if (headerAction) {
+    if (currentUser?.role === "verifier" || currentUser?.role === "admin") {
+      headerAction.innerHTML = `
+        <span style="font-size:12px; color:var(--accent-cyan); display:flex; align-items:center; gap:6px; background:rgba(45,212,191,0.1); padding:6px 12px; border-radius:20px; border:1px solid rgba(45,212,191,0.25);">
+          🛡️ NGO Verifier: <strong>${escapeHtml(currentUser.name || currentUser.email)}</strong>
+        </span>
+      `;
+    } else {
+      headerAction.innerHTML = `
+        <a href="/login?role=ngo" class="btn btn-secondary" style="font-size:12px; padding:6px 14px; text-decoration:none; border-radius:20px;">
+          🏢 NGO Partner Sign In
+        </a>
+      `;
+    }
   }
 
-  container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">Loading filed incidents...</div>`;
+  container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);"><span style="display:inline-block; font-size:24px;">⏳</span><p style="margin-top:8px;">Loading filed discrimination cases...</p></div>`;
 
   try {
-    const res = await fetch(`${API_BASE}/incidents/`, {
-      headers: { Authorization: `Bearer ${currentAuthToken}` },
-    });
+    const headers = {};
+    if (currentAuthToken) {
+      headers["Authorization"] = `Bearer ${currentAuthToken}`;
+    }
+    const queryUrl = filterType ? `${API_BASE}/incidents/?incident_type=${encodeURIComponent(filterType)}` : `${API_BASE}/incidents/`;
+    const res = await fetch(queryUrl, { headers });
     if (!res.ok) throw new Error("Could not load incidents");
     const incidents = await res.json();
 
     if (incidents.length === 0) {
-      container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">No reported incidents found.</div>`;
+      container.innerHTML = `
+        <div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--bg-tertiary); border-radius:16px; border:1px solid var(--border-subtle);">
+          <div style="font-size:32px; margin-bottom:8px;">📋</div>
+          <p style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">No cases found${filterType ? ` for category "${escapeHtml(filterType)}"` : ""}</p>
+          <p style="font-size:13px;">Community members can safely report discrimination using the <a href="#tab-report" style="color:var(--accent-cyan);" onclick="switchToTab('tab-report')">Report Incident</a> module.</p>
+        </div>
+      `;
       return;
     }
 
     container.innerHTML = incidents
       .map(
-        (inc) => `
-      <div class="listing-card" style="margin-bottom:16px;">
-        <div class="card-top">
-          <span class="category-tag">🚨 ${inc.incident_type.toUpperCase()} (${inc.urgency_level.toUpperCase()})</span>
-          <span class="badge badge-pending">${inc.status}</span>
+        (inc) => {
+          const urgencyColor = inc.urgency_level === "high" ? "#FB7185" : inc.urgency_level === "medium" ? "#FBBF24" : "#34D399";
+          const statusBadgeClass = inc.status === "resolved" ? "badge-verified" : inc.status === "escalated_to_ngo" ? "badge-featured" : "badge-pending";
+          const statusLabel = inc.status === "escalated_to_ngo" ? "ESCALATED TO NGO" : inc.status.toUpperCase();
+
+          const schemesList = (inc.matched_schemes || []).slice(0, 2).map((s) => `
+            <span style="display:inline-flex; align-items:center; gap:4px; font-size:11.5px; background:rgba(45,212,191,0.12); color:var(--accent-cyan); padding:3px 8px; border-radius:6px; border:1px solid rgba(45,212,191,0.25);">
+              🏛️ ${escapeHtml(s.name)}
+            </span>
+          `).join(" ");
+
+          const ngosList = (inc.matched_ngos || []).slice(0, 2).map((n) => `
+            <span style="display:inline-flex; align-items:center; gap:4px; font-size:11.5px; background:rgba(165,180,252,0.12); color:var(--accent-violet); padding:3px 8px; border-radius:6px; border:1px solid rgba(165,180,252,0.25);">
+              🤝 ${escapeHtml(n.name)} (${escapeHtml(n.helpline)})
+            </span>
+          `).join(" ");
+
+          return `
+      <div class="listing-card" style="margin-bottom:16px; border:1px solid var(--border-subtle); border-radius:14px; padding:18px; background:var(--bg-card); box-shadow:0 4px 14px rgba(0,0,0,0.04);">
+        <div class="card-top" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="category-tag" style="font-weight:700; font-size:12px;">🚨 ${inc.incident_type ? inc.incident_type.replace('_', ' ').toUpperCase() : 'INCIDENT'}</span>
+            <span style="font-size:11px; font-weight:700; color:${urgencyColor}; border:1px solid ${urgencyColor}44; padding:2px 8px; border-radius:12px; background:${urgencyColor}15;">
+              ⚠️ ${inc.urgency_level ? inc.urgency_level.toUpperCase() : 'NORMAL'}
+            </span>
+          </div>
+          <span class="badge ${statusBadgeClass}" style="font-size:11px; font-weight:700;">${statusLabel}</span>
         </div>
-        <h3 class="card-title">${escapeHtml(inc.title)}</h3>
-        <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
-          📍 ${escapeHtml(inc.location_city)}, ${escapeHtml(inc.location_state)} | 
-          ${inc.is_anonymous ? "🕵️ Anonymous" : "👤 Authenticated"} |
-          ${inc.incident_date ? `📅 ${inc.incident_date}` : ""}
+        <h3 class="card-title" style="font-size:17px; margin-bottom:6px; color:var(--text-primary);">${escapeHtml(inc.title)}</h3>
+        <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px; display:flex; flex-wrap:wrap; gap:12px;">
+          <span>📍 <strong>${escapeHtml(inc.location_city || "Pan-India")}, ${escapeHtml(inc.location_state || "")}</strong></span>
+          <span>${inc.is_anonymous ? "🕵️ Anonymous Report" : "👤 Community Member"}</span>
+          ${inc.incident_date ? `<span>📅 ${escapeHtml(inc.incident_date)}</span>` : ""}
         </div>
-        <p class="card-desc">${escapeHtml(inc.description)}</p>
-        ${inc.perpetrator_details ? `<div class="case-perpetrator"><strong>Alleged Entity:</strong> ${escapeHtml(inc.perpetrator_details)}</div>` : ""}
-        ${inc.case_notes ? `<div style="font-size:12.5px; color:var(--accent-cyan); margin-bottom:10px;"><strong>Case Notes:</strong> ${escapeHtml(inc.case_notes)}</div>` : ""}
+        <p class="card-desc" style="font-size:14px; line-height:1.55; color:var(--text-secondary); margin-bottom:12px;">${escapeHtml(inc.description)}</p>
         
-        <div class="card-footer" style="padding-top:14px;">
-          <span>Assigned: <strong>${escapeHtml(inc.assigned_ngo || "Pending Assignment")}</strong></span>
+        ${inc.perpetrator_details ? `<div class="case-perpetrator" style="font-size:12.5px; margin-bottom:10px; padding:6px 10px; border-radius:8px; background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.2); color:var(--accent-rose);"><strong>Alleged Entity:</strong> ${escapeHtml(inc.perpetrator_details)}</div>` : ""}
+        
+        ${schemesList || ngosList ? `
+          <div style="margin-bottom:12px; display:flex; flex-wrap:wrap; gap:6px;">
+            ${schemesList}
+            ${ngosList}
+          </div>
+        ` : ""}
+
+        ${inc.case_notes ? `<div style="font-size:12.5px; color:var(--accent-cyan); margin-bottom:10px; padding:6px 10px; border-radius:8px; background:rgba(45,212,191,0.08); border:1px solid rgba(45,212,191,0.2);"><strong>Case Triage Notes:</strong> ${escapeHtml(inc.case_notes)}</div>` : ""}
+        
+        <div class="card-footer" style="padding-top:14px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <span style="font-size:13px; color:var(--text-muted);">Assigned Partner: <strong style="color:var(--text-primary);">${escapeHtml(inc.assigned_ngo || "National Triage Cell / Pending")}</strong></span>
           ${
             currentUser?.role === "verifier" || currentUser?.role === "admin"
               ? `
             <div style="display:flex; gap:8px;">
-              <button class="btn btn-secondary" style="padding:4px 10px; font-size:12px;" onclick="updateIncidentStatusPrompt(${inc.id}, 'escalated_to_ngo')">Escalate to NGO</button>
-              <button class="btn btn-primary" style="padding:4px 10px; font-size:12px;" onclick="updateIncidentStatusPrompt(${inc.id}, 'resolved')">Mark Resolved</button>
+              <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px; border-radius:8px;" onclick="updateIncidentStatusPrompt(${inc.id}, 'escalated_to_ngo')">Escalate to NGO</button>
+              <button class="btn btn-primary" style="padding:6px 12px; font-size:12px; border-radius:8px;" onclick="updateIncidentStatusPrompt(${inc.id}, 'resolved')">Mark Resolved</button>
             </div>
           `
               : ""
           }
         </div>
       </div>
-    `
+    `;
+        }
       )
       .join("");
   } catch (e) {
-    container.innerHTML = `<div style="color:var(--accent-rose); padding:20px;">Error: ${e.message}</div>`;
+    container.innerHTML = `<div style="color:var(--accent-rose); padding:20px; background:rgba(244,63,94,0.08); border-radius:12px;">Error loading incidents: ${escapeHtml(e.message)}</div>`;
   }
 }
 
