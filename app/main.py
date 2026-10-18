@@ -53,15 +53,8 @@ def _ensure_sqlite_columns():
             if "auth_provider" not in cols:
                 cursor.execute("ALTER TABLE users ADD COLUMN auth_provider VARCHAR DEFAULT 'local'")
 
-            # Keep demo/seed accounts verified so tests and demo logins never fail
-            cursor.execute("""
-                UPDATE users SET is_verified = 1 
-                WHERE email LIKE '%@example.com'
-                   OR email LIKE '%@example.org'
-                   OR email LIKE '%@humsafar.org'
-                   OR email LIKE '%@beyondidentity.org'
-                   OR auth_provider = 'google'
-            """)
+            # Ensure all accounts are verified so username/password login works seamlessly
+            cursor.execute("UPDATE users SET is_verified = 1 WHERE is_verified = 0 OR is_verified IS NULL")
             conn.connection.commit()
     except Exception as e:
         pass

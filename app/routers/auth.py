@@ -18,18 +18,17 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 def register(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
     """
     Public User Registration.
-    - Requires valid @gmail.com address.
-    - Password must be at least 8 characters long, hashed with bcrypt.
-    - Initializes user with is_verified = False.
-    - Dispatches a verification email with a 24-hour signed link.
+    - Password must be at least 6 characters long, hashed with bcrypt.
+    - Initializes user with is_verified = True for immediate username/password login.
     """
     clean_email = user_in.email.strip().lower()
+    clean_name = user_in.name.strip()
 
-    # 1. Enforce minimum 8 characters for password
-    if len(user_in.password.strip()) < 8:
+    # 1. Enforce minimum 6 characters for password
+    if len(user_in.password.strip()) < 6:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Password must be at least 8 characters long (at least 6 characters required)",
+            detail="Password must be at least 6 characters long (8 characters recommended)",
         )
 
     # 2. Block self-assignment of admin role
@@ -39,41 +38,31 @@ def register(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
             detail="Admin role cannot be self-assigned through public registration",
         )
 
-    # 3. Email domain validation: require @gmail.com for real user accounts
-    # (Allow test/internal fixture domains for automated testing suite)
-    is_test_domain = clean_email.endswith(("@example.com", "@example.org", "@humsafar.org", "@beyondidentity.org"))
-    if not (clean_email.endswith("@gmail.com") or is_test_domain):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Registration requires a valid @gmail.com address",
-        )
-
-    # 4. Check for existing account
+    # 3. Check for existing account
     existing = db.query(models.User).filter(models.User.email == clean_email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
     user_role = user_in.role if user_in.role else models.UserRole.user
 
-    # Test fixture accounts are pre-verified so automated tests pass; real accounts start unverified
-    is_verified_initial = True if is_test_domain else False
-
     user = models.User(
-        name=user_in.name.strip(),
+        name=clean_name,
         email=clean_email,
         hashed_password=auth.hash_password(user_in.password),
         role=user_role,
-        is_verified=is_verified_initial,
+        is_verified=True,  # Immediately verified for direct username/password sign-in
         auth_provider="local",
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    # 5. Dispatch email verification link (24-hour expiration)
-    if not is_verified_initial:
+    # Optional verification email attempt (non-blocking)
+    try:
         verify_token = auth.create_email_verification_token(clean_email)
         send_verification_email(clean_email, user.name, verify_token)
+    except Exception:
+        pass
 
     return user
 
@@ -146,14 +135,24 @@ async def login(
     if "application/json" in content_type:
         try:
             body = await request.json()
-            email = body.get("email") or body.get("username")
+            email = (
+                body.get("email")
+                or body.get("username")
+                or body.get("user_id")
+                or body.get("identifier")
+            )
             password = body.get("password")
         except Exception:
             pass
     else:
         try:
             form = await request.form()
-            email = form.get("username") or form.get("email")
+            email = (
+                form.get("username")
+                or form.get("email")
+                or form.get("user_id")
+                or form.get("identifier")
+            )
             password = form.get("password")
         except Exception:
             pass
@@ -161,15 +160,21 @@ async def login(
     if not email or not password:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email and password are required",
+            detail="Username / email and password are required",
         )
 
-    clean_email = str(email).strip().lower()
-    user = db.query(models.User).filter(models.User.email == clean_email).first()
+    identifier = str(email).strip()
+    if identifier.isdigit():
+        user = db.query(models.User).filter(models.User.id == int(identifier)).first()
+    else:
+        user = db.query(models.User).filter(
+            (models.User.email == identifier.lower()) | (models.User.name.ilike(identifier))
+        ).first()
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Account not found. Please click 'Create an account' to register first, or use 'Continue with Google'.",
+            detail="Account not found. Please click 'Create an account' to register first.",
         )
     if not auth.verify_password(str(password), user.hashed_password):
         raise HTTPException(
@@ -177,12 +182,10 @@ async def login(
             detail="Incorrect email or password",
         )
 
-    # Reject unverified accounts
+    # Auto-activate user on successful password verification
     if not user.is_verified:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Verify your email first. Please check your Gmail inbox or click Resend Verification.",
-        )
+        user.is_verified = True
+        db.commit()
 
     token = auth.create_access_token(data={"sub": str(user.id)})
     return schemas.Token(access_token=token, token_type="bearer", user=user)
@@ -191,25 +194,28 @@ async def login(
 @router.post("/login-json", response_model=schemas.Token)
 def login_json(credentials: schemas.UserLoginJSON, db: Session = Depends(get_db)):
     """JSON-based authentication endpoint for web frontends."""
-    clean_email = credentials.email.strip().lower()
-    user = db.query(models.User).filter(models.User.email == clean_email).first()
+    identifier = credentials.email.strip()
+    if identifier.isdigit():
+        user = db.query(models.User).filter(models.User.id == int(identifier)).first()
+    else:
+        user = db.query(models.User).filter(
+            (models.User.email == identifier.lower()) | (models.User.name.ilike(identifier))
+        ).first()
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Account not found. Please click 'Create an account' to register first, or use 'Continue with Google'.",
+            detail="Account not found. Please click 'Create an account' to register first.",
         )
     if not auth.verify_password(credentials.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect password. Please note: Enter your Beyond Identity account password, not your Google account password.",
+            detail="Incorrect email or password",
         )
 
-    # Reject unverified accounts
     if not user.is_verified:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Verify your email first. Please check your Gmail inbox or click Resend Verification.",
-        )
+        user.is_verified = True
+        db.commit()
 
     token = auth.create_access_token(data={"sub": str(user.id)})
     return schemas.Token(access_token=token, token_type="bearer", user=user)

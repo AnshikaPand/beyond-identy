@@ -779,80 +779,59 @@ def test_registration_password_min_8_chars():
     assert "8 characters" in res.json()["detail"]
 
 
-def test_registration_gmail_only_enforcement():
-    """Real users must supply an @gmail.com address."""
+def test_registration_allows_any_valid_email():
+    """Users can register with any standard valid email and username."""
+    import uuid
+    uid = uuid.uuid4().hex[:6]
     res = client.post("/auth/register", json={
-        "name": "Yahoo User",
-        "email": "invaliduser@yahoo.com",
+        "name": f"UsernameUser_{uid}",
+        "email": f"customuser_{uid}@yahoo.com",
         "password": "securepassword123",
         "role": "user"
     })
-    assert res.status_code == 400
-    assert "Registration requires a valid @gmail.com address" in res.json()["detail"]
+    assert res.status_code == 201
+    data = res.json()
+    assert data["email"] == f"customuser_{uid}@yahoo.com"
+    assert data["name"] == f"UsernameUser_{uid}"
+    assert data["is_verified"] is True
 
 
-def test_gmail_verification_lifecycle():
+def test_username_password_direct_login():
     """
-    Complete lifecycle test:
-    1. Register with @gmail.com -> user created with is_verified = False.
-    2. Attempt login before verification -> rejected with HTTP 403.
-    3. Generate token & call GET /auth/verify-email?token=... -> verified & redirected.
-    4. Attempt login after verification -> succeeds with HTTP 200 and issues JWT.
-    5. Test resend-verification endpoint.
+    Username and password login workflow:
+    1. Register user with username, email, and password.
+    2. Login using username (name) and password.
+    3. Login using email and password.
     """
     import uuid
-    from app import auth
+    uid = uuid.uuid4().hex[:6]
+    username = f"user_{uid}"
+    email = f"user_{uid}@example.com"
+    password = "MySecurePassword123"
 
-    test_email = f"lifecycle_{uuid.uuid4().hex[:8]}@gmail.com"
-    test_password = "verifiedpassword123"
-
-    # Step 1: Register user
     reg_res = client.post("/auth/register", json={
-        "name": "Lifecycle Member",
-        "email": test_email,
-        "password": test_password,
+        "name": username,
+        "email": email,
+        "password": password,
         "role": "user"
     })
     assert reg_res.status_code == 201
-    reg_data = reg_res.json()
-    assert reg_data["email"] == test_email
-    assert reg_data["is_verified"] is False
 
-    # Step 2: Attempt login before verification (both JSON and form-data)
-    json_login_res = client.post("/auth/login-json", json={
-        "email": test_email,
-        "password": test_password
+    # Login with username & password
+    user_login = client.post("/auth/login", data={
+        "username": username,
+        "password": password
     })
-    assert json_login_res.status_code == 403
-    assert "Verify your email first" in json_login_res.json()["detail"]
+    assert user_login.status_code == 200
+    assert user_login.json()["user"]["name"] == username
 
-    form_login_res = client.post("/auth/login", data={
-        "username": test_email,
-        "password": test_password
+    # Login with email & password via JSON
+    email_login = client.post("/auth/login-json", json={
+        "email": email,
+        "password": password
     })
-    assert form_login_res.status_code == 403
-    assert "Verify your email first" in form_login_res.json()["detail"]
-
-    # Step 3: Resend verification email
-    resend_res = client.post("/auth/resend-verification", json={"email": test_email})
-    assert resend_res.status_code == 200
-    assert resend_res.json()["is_verified"] is False
-
-    # Step 4: Verify email using signed token
-    token = auth.create_email_verification_token(test_email)
-    verify_res = client.get(f"/auth/verify-email?token={token}", follow_redirects=False)
-    assert verify_res.status_code == 303
-    assert "verified=1" in verify_res.headers["location"]
-
-    # Step 5: Login after verification (should succeed immediately)
-    success_login = client.post("/auth/login-json", json={
-        "email": test_email,
-        "password": test_password
-    })
-    assert success_login.status_code == 200
-    login_data = success_login.json()
-    assert "access_token" in login_data
-    assert login_data["user"]["is_verified"] is True
+    assert email_login.status_code == 200
+    assert email_login.json()["user"]["email"] == email
 
 
 def test_verify_email_invalid_token():

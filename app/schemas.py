@@ -29,7 +29,7 @@ class UserCreate(BaseModel):
 
 
 class UserLoginJSON(BaseModel):
-    email: EmailStr
+    email: str  # Accepts username, email, or user ID
     password: str
 
 
