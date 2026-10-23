@@ -150,8 +150,8 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "name": "Tweet Foundation (Transgender Welfare Equity and Empowerment Trust)",
         "focus_area": "Emergency Shelter (Garima Greh), Transition Support, and Livelihoods",
         "location": "New Delhi & Mumbai",
-        "contact_email": "support@tweet.org.in",
-        "contact_phone": "+91-9810012345",
+        "contact_email": "contact@tweetindia.org",
+        "contact_phone": "+91-9315550875",
         "services_offered": [
             "Immediate safe shelter for trans masculine and feminine youth",
             "Emergency crisis intervention for family violence",
@@ -171,7 +171,7 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "focus_area": "Advocacy, Affirmative Counseling, and Crisis Support",
         "location": "New Delhi / NCR",
         "contact_email": "info@nazariyaqfrg.com",
-        "contact_phone": "+91-9818155444",
+        "contact_phone": "+91-9818151707",
         "services_offered": [
             "Affirmative mental health helpline",
             "Mediation in educational harassment cases",
@@ -189,8 +189,8 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "name": "Sahodari Foundation",
         "focus_area": "Transgender Rights, Legal Redress, and Arts-Based Education",
         "location": "Chennai & Pollachi, Tamil Nadu",
-        "contact_email": "reach@sahodari.org",
-        "contact_phone": "+91-9942371987",
+        "contact_email": "reachsahodari@gmail.com",
+        "contact_phone": "+91-7639741916",
         "services_offered": [
             "24/7 Redressal for human rights violations in South India",
             "Assistance with state welfare board pensions and housing",
@@ -208,8 +208,8 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "name": "Mitr Trust",
         "focus_area": "Community Protection, Anti-Extortion Legal Defense, and Healthcare",
         "location": "New Delhi",
-        "contact_email": "contact@mitrtrust.org",
-        "contact_phone": "+91-11-25337890",
+        "contact_email": "mitrcbodelhi@gmail.com",
+        "contact_phone": "+91-9910899755",
         "services_offered": [
             "Urgent on-ground intervention in police station disputes",
             "STI/HIV testing and free clinical referrals",
@@ -226,8 +226,8 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "name": "Sappho for Equality",
         "focus_area": "Eastern India Queer & Trans Rights, Crisis Management, and Legal Aid",
         "location": "Kolkata, West Bengal",
-        "contact_email": "sapphoqueer@rediffmail.com",
-        "contact_phone": "+91-33-24419998",
+        "contact_email": "sappho1999@gmail.com",
+        "contact_phone": "+91-9831518320",
         "services_offered": [
             "24/7 Crisis helpline for assault and eviction",
             "Free legal representation through partner high-court advocates",

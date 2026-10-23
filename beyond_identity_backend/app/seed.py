@@ -156,7 +156,7 @@ def seed():
             description="Secure emergency shelter with meals, medical care, counseling, and vocational training under MoSJE.",
             organization_name="Tweet Foundation & MoSJE",
             location="New Delhi & Mumbai",
-            contact_info="support@tweet.org.in / +91-9810012345",
+            contact_info="contact@tweetindia.org / +91-9315550875",
             status=models.VerificationStatus.verified,
             verification_notes="Verified Garima Greh partner facility.",
         ),

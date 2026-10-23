@@ -79,13 +79,13 @@ DECISION_NODES: Dict[str, Dict[str, Any]] = {
         "recommended_actions": [
             "Dial Tele-MANAS (14416) — Govt of India's 24x7 multi-lingual tele-mental health service.",
             "Dial Kiran Helpline (1800-599-0019) for psychiatric triage and distress relief.",
-            "If you are facing domestic violence or homelessness, contact Tweet Foundation emergency transit shelter at +91-9810012345.",
+            "If you are facing domestic violence or homelessness, contact Tweet Foundation emergency transit shelter at +91-9315550875.",
         ],
         "helpline_contacts": [
             "Tele-MANAS: 14416 (Toll-Free, 24x7)",
             "Kiran Mental Health: 1800-599-0019 (24x7)",
             "Vandrevala Foundation: +91-9999666555",
-            "Tweet Foundation Shelter SOS: +91-9810012345",
+            "Tweet Foundation Shelter SOS: +91-9315550875",
         ],
         "options": [
             {
@@ -360,7 +360,7 @@ DECISION_NODES: Dict[str, Dict[str, Any]] = {
         ],
         "helpline_contacts": [
             "Tele-MANAS: 14416 (24x7 Free Mental Health)",
-            "Nazariya Affirmative Support: +91-9818155444",
+            "Nazariya Affirmative Support: +91-9818151707",
         ],
         "options": [
             {

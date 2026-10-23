@@ -132,7 +132,7 @@ AWARENESS_TOPICS: List[Dict[str, Any]] = [
         ],
         "remedies": [
             "Dial 15100 (National Legal Services Authority 24x7 helpline) to immediately get an assigned legal aid advocate.",
-            "Contact local crisis NGO (Mitr Trust: +91-11-25337890, Humsafar: +91-22-26673800).",
+            "Contact local crisis NGO (Mitr Trust: +91-9910899755, Humsafar: +91-22-26673800).",
             "File a complaint with the Police Complaints Authority (PCA) or State Human Rights Commission (SHRC) for police misconduct.",
         ],
         "official_portal": "https://nalsa.gov.in",

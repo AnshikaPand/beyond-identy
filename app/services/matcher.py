@@ -384,8 +384,8 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "name": "Tweet Foundation (Transgender Welfare Equity and Empowerment Trust)",
         "focus_area": "Emergency Shelter (Garima Greh), Transition Support, and Livelihoods",
         "location": "New Delhi & Mumbai",
-        "contact_email": "support@tweet.org.in",
-        "contact_phone": "+91-9810012345",
+        "contact_email": "contact@tweetindia.org",
+        "contact_phone": "+91-9315550875",
         "services_offered": [
             "Immediate safe shelter for trans masculine and feminine youth",
             "Emergency crisis intervention for family violence",
@@ -405,7 +405,7 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "focus_area": "Advocacy, Affirmative Counseling, and Crisis Support",
         "location": "New Delhi / NCR",
         "contact_email": "info@nazariyaqfrg.com",
-        "contact_phone": "+91-9818155444",
+        "contact_phone": "+91-9818151707",
         "services_offered": [
             "Affirmative mental health helpline",
             "Mediation in educational harassment cases",
@@ -423,8 +423,8 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "name": "Sahodari Foundation",
         "focus_area": "Transgender Rights, Legal Redress, and Arts-Based Education",
         "location": "Chennai & Pollachi, Tamil Nadu",
-        "contact_email": "reach@sahodari.org",
-        "contact_phone": "+91-9942371987",
+        "contact_email": "reachsahodari@gmail.com",
+        "contact_phone": "+91-7639741916",
         "services_offered": [
             "24/7 Redressal for human rights violations in South India",
             "Assistance with state welfare board pensions and housing",
@@ -442,8 +442,8 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "name": "Mitr Trust",
         "focus_area": "Community Protection, Anti-Extortion Legal Defense, and Healthcare",
         "location": "New Delhi",
-        "contact_email": "contact@mitrtrust.org",
-        "contact_phone": "+91-11-25337890",
+        "contact_email": "mitrcbodelhi@gmail.com",
+        "contact_phone": "+91-9910899755",
         "services_offered": [
             "Urgent on-ground intervention in police station disputes",
             "STI/HIV testing and free clinical referrals",
@@ -460,8 +460,8 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "name": "Sappho for Equality",
         "focus_area": "Eastern India Queer & Trans Rights, Crisis Management, and Legal Aid",
         "location": "Kolkata, West Bengal",
-        "contact_email": "sapphoqueer@rediffmail.com",
-        "contact_phone": "+91-33-24419998",
+        "contact_email": "sappho1999@gmail.com",
+        "contact_phone": "+91-9831518320",
         "services_offered": [
             "24/7 Crisis helpline for assault and eviction",
             "Free legal representation through partner high-court advocates",
@@ -480,7 +480,7 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "focus_area": "Corporate Diversity Hiring, Transgender Employment & Upskilling",
         "location": "Chennai, Tamil Nadu (Pan-India corporate partnerships)",
         "contact_email": "connect@periferry.com",
-        "contact_phone": "+91-44-48529900",
+        "contact_phone": None,
         "services_offered": [
             "Corporate hiring pipeline partner with 320+ trained and placed trans individuals",
             "Workplace sensitization and equal opportunity training",
@@ -499,7 +499,7 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "focus_area": "Transgender & Intersex Rights, Community Leadership, and Legal Support",
         "location": "Chennai, Tamil Nadu",
         "contact_email": "born2win.trust@gmail.com",
-        "contact_phone": "+91-9884210987",
+        "contact_phone": None,
         "services_offered": [
             "Non-profit run entirely by and for transgender and intersex persons",
             "Emergency community relief and peer counseling",
@@ -519,8 +519,8 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "name": "Naz Foundation (India) Trust",
         "focus_area": "LGBTQIA+ Healthcare, HIV/AIDS Care, and Affirmative Sexual Health",
         "location": "New Delhi",
-        "contact_email": "naz@nazindia.org",
-        "contact_phone": "+91-11-26321882",
+        "contact_email": "info@nazindia.org",
+        "contact_phone": "+91-8800329176",
         "services_offered": [
             "Inclusive HIV/AIDS care and non-discriminatory clinical testing",
             "Affirmative sexual and reproductive health consultations",
@@ -538,7 +538,7 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
         "focus_area": "LGBTIQA+ Collective, Workplace Directory, and Resource Referral",
         "location": "Chennai, Tamil Nadu",
         "contact_email": "orinam.net@gmail.com",
-        "contact_phone": "+91-44-24987654",
+        "contact_phone": "+91-9841557983",
         "services_offered": [
             "All-volunteer LGBTIQA+ collective operating since 2003",
             "Maintains an audited directory of trans-inclusive employers",
@@ -552,6 +552,25 @@ VERIFIED_NGOS: List[Dict[str, Any]] = [
             IncidentType.other,
         ],
         "states": ["all", "tamil nadu", "karnataka", "kerala"],
+    },
+    {
+        "name": "Queerythm",
+        "focus_area": "24/7 Crisis Intervention, Legal Support, and Peer Counseling",
+        "location": "Thiruvananthapuram, Kerala (South India)",
+        "contact_email": "queerythm@gmail.com",
+        "contact_phone": "+91-9745545559",
+        "services_offered": [
+            "24/7 Suicide prevention and crisis support helpline in English, Malayalam, and Tamil",
+            "Emergency intervention for unlawful psychiatric conversion therapy",
+            "Legal redressal and safe home referral network",
+        ],
+        "applicable_types": [
+            IncidentType.healthcare_denial,
+            IncidentType.police_harassment,
+            IncidentType.public_harassment,
+            IncidentType.housing_eviction,
+        ],
+        "states": ["all", "kerala", "tamil nadu", "karnataka"],
     },
 ]
 

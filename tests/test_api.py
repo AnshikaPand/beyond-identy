@@ -857,4 +857,30 @@ def test_verify_email_invalid_token():
     assert "verified=0" in verify_res.headers["location"]
 
 
+def test_verified_ngo_phone_authenticity():
+    """Verifies that all verified NGOs have genuine phone numbers, or None if no public phone exists."""
+    from app.services.matcher import VERIFIED_NGOS
+
+    fake_patterns = ["12345", "9810012345", "9818155444", "9942371987", "25337890", "24419998", "48529900", "9884210987", "24987654"]
+
+    for ngo in VERIFIED_NGOS:
+        phone = ngo.get("contact_phone")
+        if phone:
+            for fake in fake_patterns:
+                assert fake not in phone, f"Fake number pattern {fake} found in {ngo['name']}: {phone}"
+            # Must start with +91
+            assert phone.startswith("+91"), f"Invalid country code in {ngo['name']}: {phone}"
+
+    # Specific checks
+    ngo_map = {n["name"]: n for n in VERIFIED_NGOS}
+    assert ngo_map["The Humsafar Trust"]["contact_phone"] == "+91-22-26673800"
+    assert ngo_map["Tweet Foundation (Transgender Welfare Equity and Empowerment Trust)"]["contact_phone"] == "+91-9315550875"
+    assert ngo_map["Nazariya: A Queer Feminist Resource Group"]["contact_phone"] == "+91-9818151707"
+    assert ngo_map["Sahodari Foundation"]["contact_phone"] == "+91-7639741916"
+    assert ngo_map["Mitr Trust"]["contact_phone"] == "+91-9910899755"
+    assert ngo_map["PeriFerry"]["contact_phone"] is None
+    assert ngo_map["Born2Win Social Welfare Trust"]["contact_phone"] is None
+
+
+
 
