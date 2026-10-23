@@ -190,6 +190,14 @@ def test_consent_filtering_unconsented_cases_are_not_listed():
     # Unconsented case MUST NOT be visible
     assert unconsented_id not in pub_ids, "Unconsented case MUST NOT appear in public case board listing!"
 
+    # Teardown
+    db = SessionLocal()
+    try:
+        db.query(models.IncidentReport).filter(models.IncidentReport.id.in_([consented_id, unconsented_id])).delete(synchronize_session=False)
+        db.commit()
+    finally:
+        db.close()
+
 
 def test_public_cases_stats_endpoint():
     """
@@ -292,6 +300,14 @@ def test_admin_ngo_toggle_public_visibility(verifier_token):
     # Now verify it has been removed from the public board
     pub_res2 = client.get("/api/public/cases?page_size=50")
     assert inc_id not in [i["id"] for i in pub_res2.json()["items"]], "Hidden case must not appear publicly"
+
+    # Teardown
+    db = SessionLocal()
+    try:
+        db.query(models.IncidentReport).filter(models.IncidentReport.id == inc_id).delete()
+        db.commit()
+    finally:
+        db.close()
 
 
 def test_sanitize_entity_type_helper():

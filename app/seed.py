@@ -1406,6 +1406,19 @@ def seed():
         ),
     ]
 
+    test_incident_titles = [
+        "Admin Visibility Toggle Test Case",
+        "Private Confidential Case Test No Consent Given",
+        "Consented Public Workplace Discrimination Case Test",
+        "Harassment and extortion at railway station",
+        "Unlawful denial of promotion following transition disclosure",
+        "Unlawful eviction from rented room in Chennai",
+        "Hospital refused to provide gender affirmation hormone treatment",
+    ]
+    for t in test_incident_titles:
+        db.query(models.IncidentReport).filter(models.IncidentReport.title == t).delete()
+    db.commit()
+
     for inc_data in sample_incidents:
         exists = db.query(models.IncidentReport).filter(models.IncidentReport.title == inc_data["title"]).first()
         if exists:

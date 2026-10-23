@@ -11,6 +11,7 @@ Covers:
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
+from app import models
 
 client = TestClient(app)
 
@@ -61,12 +62,65 @@ def test_user_registration_and_login():
     assert login_res.status_code == 200
     token_data = login_res.json()
     assert "access_token" in token_data
+    assert "user" in token_data and token_data["user"]["email"] == user_payload["email"]
     token = token_data["access_token"]
 
     # Access /auth/me with token
     me_res = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert me_res.status_code == 200
     assert me_res.json()["email"] == user_payload["email"]
+
+
+def test_registration_with_verifier_role():
+    verifier_payload = {
+        "name": "Humsafar Trust Partner",
+        "email": "partner@humsafar.org",
+        "password": "PartnerPassword123!",
+        "role": "verifier"
+    }
+    res = client.post("/auth/register", json=verifier_payload)
+    if res.status_code == 201:
+        data = res.json()
+        assert data["role"] == "verifier"
+        assert data["email"] == verifier_payload["email"]
+
+
+def test_registration_rejects_admin_role():
+    admin_payload = {
+        "name": "Unauthorized Admin",
+        "email": "fakeadmin@example.org",
+        "password": "FakePassword123!",
+        "role": "admin"
+    }
+    res = client.post("/auth/register", json=admin_payload)
+    assert res.status_code == 403
+    assert "Admin role cannot be self-assigned" in res.json()["detail"]
+
+
+def test_registration_password_length():
+    short_pwd_payload = {
+        "name": "Short Password User",
+        "email": "shortpwd@example.org",
+        "password": "123"
+    }
+    res = client.post("/auth/register", json=short_pwd_payload)
+    assert res.status_code == 400
+    assert "at least 6 characters" in res.json()["detail"]
+
+
+def test_login_json_success():
+    # Login via JSON endpoint
+    json_payload = {
+        "email": "admin@beyondidentity.org",
+        "password": "admin123"
+    }
+    res = client.post("/auth/login-json", json=json_payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
+    assert data["user"]["email"] == "admin@beyondidentity.org"
+    assert data["user"]["role"] == "admin"
 
 
 def test_login_invalid_password():
@@ -76,6 +130,43 @@ def test_login_invalid_password():
     )
     assert res.status_code == 401
     assert "Incorrect email or password" in res.json()["detail"]
+
+
+def test_forgot_password_flow():
+    # 1. Non-existent email fails
+    bad_res = client.post("/auth/forgot-password", json={"email": "nonexistent@nowhere.org"})
+    assert bad_res.status_code == 404
+
+    # 2. Existing user succeeds and receives token
+    res = client.post("/auth/forgot-password", json={"email": "user@example.com"})
+    assert res.status_code == 200
+    data = res.json()
+    assert "reset_token" in data
+    assert data["email"] == "user@example.com"
+    token = data["reset_token"]
+
+    # 3. Reset password with short password fails
+    short_res = client.post("/auth/reset-password", json={"token": token, "new_password": "123"})
+    assert short_res.status_code == 400
+    assert "at least 6 characters" in short_res.json()["detail"]
+
+    # 4. Reset with invalid token fails
+    invalid_res = client.post("/auth/reset-password", json={"token": "invalid.jwt.token", "new_password": "NewValidPassword123!"})
+    assert invalid_res.status_code == 400
+
+    # 5. Reset with valid token succeeds
+    reset_res = client.post("/auth/reset-password", json={"token": token, "new_password": "NewUserPassword456!"})
+    assert reset_res.status_code == 200
+    assert "successfully updated" in reset_res.json()["message"]
+
+    # 6. Verify login with new password succeeds
+    login_new = client.post("/auth/login-json", json={"email": "user@example.com", "password": "NewUserPassword456!"})
+    assert login_new.status_code == 200
+
+    # 7. Restore original password for subsequent tests
+    tok2 = client.post("/auth/forgot-password", json={"email": "user@example.com"}).json()["reset_token"]
+    client.post("/auth/reset-password", json={"token": tok2, "new_password": "user123"})
+
 
 
 # Helper function to get token for demo users
@@ -111,7 +202,7 @@ def test_create_and_verify_listing():
         "description": "Full-stack developer role with LGBTQ+ affirmative workplace culture.",
         "organization_name": "InclusiTech Labs",
         "location": "Bengaluru, Karnataka",
-        "contact_info": "careers@inclusitech.io",
+        "contact_info": "careers@inclusitech.io / +91-80-41860000",
     }
     create_res = client.post(
         "/listings/",
@@ -136,6 +227,16 @@ def test_create_and_verify_listing():
     assert verify_res.status_code == 200
     assert verify_res.json()["status"] == "verified"
     assert verify_res.json()["verification_notes"] == verify_payload["verification_notes"]
+
+    # Teardown: clean up test listing so it doesn't pollute the directory database
+    from app.database import SessionLocal
+    from app import models
+    _clean_db = SessionLocal()
+    try:
+        _clean_db.query(models.Listing).filter(models.Listing.id == listing_id).delete()
+        _clean_db.commit()
+    finally:
+        _clean_db.close()
 
 
 # ==========================================
@@ -178,6 +279,15 @@ def test_report_discrimination_incident_authenticated():
     ngo_names = [n["name"] for n in data["matched_ngos"]]
     assert any("Humsafar" in name or "Tweet" in name or "Nazariya" in name for name in ngo_names)
 
+    # Teardown
+    from app.database import SessionLocal
+    _clean_db = SessionLocal()
+    try:
+        _clean_db.query(models.IncidentReport).filter(models.IncidentReport.id == data["id"]).delete()
+        _clean_db.commit()
+    finally:
+        _clean_db.close()
+
 
 def test_report_discrimination_incident_anonymous():
     # Anonymous reports require no Auth header
@@ -198,9 +308,19 @@ def test_report_discrimination_incident_anonymous():
     data = res.json()
     assert data["is_anonymous"] is True
     assert data["incident_type"] == "police_harassment"
+
     # Urgent police harassment must match NALSA free legal aid
     scheme_names = [s["name"] for s in data["matched_schemes"]]
     assert any("NALSA" in name for name in scheme_names)
+
+    # Teardown
+    from app.database import SessionLocal
+    _clean_db = SessionLocal()
+    try:
+        _clean_db.query(models.IncidentReport).filter(models.IncidentReport.id == data["id"]).delete()
+        _clean_db.commit()
+    finally:
+        _clean_db.close()
 
 
 def test_list_and_update_incidents_rbac():
@@ -239,6 +359,22 @@ def test_list_and_update_incidents_rbac():
         headers={"Authorization": f"Bearer {user_token}"},
     )
     assert user_patch_res.status_code == 403
+
+
+def test_list_incidents_public_case_triage_desk():
+    # Public access without any auth token (e.g. from any phone or laptop)
+    res = client.get("/incidents/")
+    assert res.status_code == 200
+    incidents = res.json()
+    assert isinstance(incidents, list)
+    assert len(incidents) >= 1
+
+    # Filter by incident_type
+    filtered_res = client.get("/incidents/?incident_type=workplace")
+    assert filtered_res.status_code == 200
+    filtered_list = filtered_res.json()
+    assert all(i["incident_type"] == "workplace" for i in filtered_list)
+
 
 
 # ==========================================
@@ -285,6 +421,38 @@ def test_awareness_query_police_harassment():
     data = res.json()
     assert len(data["actionable_steps"]) > 0
     assert "15100" in data["legal_aid_contact"]
+
+
+def test_awareness_chat_form():
+    payload = {
+        "messages": [
+            {"role": "user", "content": "What are my rights if my landlord forces me out?"}
+        ],
+        "voice_mode": False,
+    }
+    res = client.post("/awareness/chat", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert "reply" in data
+    assert "speech_text" in data
+    assert len(data["reply"]) > 0
+    assert len(data["speech_text"]) > 0
+    assert len(data["actionable_steps"]) > 0
+
+
+def test_awareness_talking_form():
+    payload = {
+        "messages": [
+            {"role": "user", "content": "Can an employer discriminate in salary?"}
+        ],
+        "voice_mode": True,
+    }
+    res = client.post("/awareness/chat", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert "reply" in data
+    assert "speech_text" in data
+    assert "15100" in data["speech_text"] or "14566" in data["speech_text"] or "protected" in data["speech_text"]
 
 
 # ==========================================
@@ -355,3 +523,433 @@ def test_health_assistant_traversal_to_surgery_ayushman():
     assert node["node_id"] == "surgery_ayushman"
     assert "Ayushman Bharat" in node["title"]
     assert "5,00,000" in node["message"] or "5,00,000" in (node.get("clinical_notes") or "")
+
+
+def test_static_frontend_and_assets():
+    # Browser request to root endpoint receives index.html
+    html_res = client.get("/", headers={"Accept": "text/html,application/xhtml+xml"})
+    assert html_res.status_code == 200
+    assert "Beyond Identity" in html_res.text
+    assert "styles.css" in html_res.text
+    assert "app.js" in html_res.text
+
+    # Dedicated /app endpoint
+    app_res = client.get("/app")
+    assert app_res.status_code == 200
+    assert "Beyond Identity" in app_res.text
+
+    # Static CSS and JS assets
+    css_res = client.get("/static/css/styles.css")
+    assert css_res.status_code == 200
+    assert "var(--bg-primary)" in css_res.text
+
+    js_res = client.get("/static/js/app.js")
+    assert js_res.status_code == 200
+    assert "setupTabs" in js_res.text
+
+
+# ==========================================
+# 7. Transgender Parents Domain & Q&A Manager Tests
+# ==========================================
+
+def test_transgender_parents_qa_domain():
+    from app.data import PARENTS_QA, ALL_QA
+
+    # Exactly 20 questions in domain 5
+    assert len(PARENTS_QA) == 20
+    assert len(ALL_QA) >= 220
+
+    # IDs strictly 201 to 220
+    parent_ids = [q["id"] for q in PARENTS_QA]
+    assert parent_ids == list(range(201, 221))
+
+    # Validate structure and completeness
+    for q in PARENTS_QA:
+        assert q["category"] == "Transgender Parents & Family Protections"
+        assert len(q["question"]) > 10
+        assert len(q["answer"]) > 25
+        assert len(q["applicable_law"]) > 5
+        assert len(q["keywords"]) >= 3
+
+
+def test_qa_manager_aggregation_and_search():
+    from app.data import get_all_qa, search_qa, get_qa_by_id, get_categories
+
+    # Total questions
+    all_items = get_all_qa()
+    assert len(all_items) >= 220
+
+    # Filter by category
+    parent_items = get_all_qa(category="Transgender Parents")
+    assert len(parent_items) == 20
+
+    # Categories list
+    cats = get_categories()
+    assert "Transgender Parents & Family Protections" in cats
+
+    # Search for adoption
+    adopt_res = search_qa("adopt child cara")
+    assert len(adopt_res) > 0
+    assert any("CARA" in item["applicable_law"] or "adopt" in item["question"].lower() for item in adopt_res)
+
+    # Search for custody
+    custody_res = search_qa("custody family court")
+    assert len(custody_res) > 0
+
+    # Get by ID
+    qa_201 = get_qa_by_id(201)
+    assert qa_201 is not None
+    assert "adopt" in qa_201["question"].lower()
+
+    # Non-existent ID
+    assert get_qa_by_id(99999) is None
+
+
+def test_awareness_transgender_parents_topic():
+    res = client.get("/awareness/topics/transgender_parents_and_family")
+    assert res.status_code == 200
+    topic = res.json()
+    assert topic["id"] == "transgender_parents_and_family"
+    assert "Transgender Parents" in topic["title"]
+    assert "CARA" in topic["act_or_ruling"] or "TG Act" in topic["act_or_ruling"]
+    assert len(topic["key_rights"]) >= 5
+    assert len(topic["remedies"]) >= 4
+
+
+def test_awareness_query_parents_adoption():
+    query_payload = {
+        "query": "Can a transgender parent legally adopt a child under Indian law through CARA?",
+    }
+    res = client.post("/awareness/query", json=query_payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert "Parents" in data["matched_topic"] or "Transgender" in data["matched_topic"]
+    assert len(data["actionable_steps"]) > 0
+    assert "cara" in " ".join(data["official_portals"]).lower() or "nalsa" in " ".join(data["official_portals"]).lower()
+
+
+def test_qa_api_endpoints():
+    # 1. List all categories
+    cats_res = client.get("/awareness/qa/categories")
+    assert cats_res.status_code == 200
+    categories = cats_res.json()
+    assert "Transgender Parents & Family Protections" in categories
+
+    # 2. Browse QA items (paginated)
+    qa_res = client.get("/awareness/qa?limit=10&page=1")
+    assert qa_res.status_code == 200
+    qa_data = qa_res.json()
+    assert qa_data["total"] >= 220
+    assert len(qa_data["items"]) == 10
+    assert qa_data["page"] == 1
+
+    # 3. Filter QA items by parent category
+    parent_qa_res = client.get("/awareness/qa?category=Transgender+Parents")
+    assert parent_qa_res.status_code == 200
+    parent_qa_data = parent_qa_res.json()
+    assert parent_qa_data["total"] == 20
+
+    # 4. Search QA items
+    search_res = client.get("/awareness/qa?q=cryopreservation")
+    assert search_res.status_code == 200
+    search_data = search_res.json()
+    assert search_data["total"] > 0
+    assert any("fertility" in item["answer"].lower() or "cryopreservation" in item["question"].lower() for item in search_data["items"])
+
+    # 5. Get single QA item by ID
+    single_res = client.get("/awareness/qa/201")
+    assert single_res.status_code == 200
+    item_201 = single_res.json()
+    assert item_201["id"] == 201
+    assert "adopt" in item_201["question"].lower()
+
+    # 6. Not found
+    nf_res = client.get("/awareness/qa/99999")
+    assert nf_res.status_code == 404
+
+
+# ==========================================
+# 7. Verified Government Schemes Tests
+# ==========================================
+
+def test_government_schemes_listings_filtering():
+    """Verify that government schemes can be retrieved via /listings/?category=scheme and aliases."""
+    # Test primary category 'scheme'
+    res = client.get("/listings/?category=scheme")
+    assert res.status_code == 200
+    schemes = res.json()
+    assert len(schemes) >= 15
+
+    titles = [s["title"] for s in schemes]
+    # Check national umbrella schemes
+    assert any("SMILE" in t for t in titles)
+    assert any("Ayushman Bharat" in t for t in titles)
+    assert any("National Portal" in t for t in titles)
+    assert any("Garima Greh" in t for t in titles)
+    assert any("NALSA" in t for t in titles)
+    assert any("PM-DAKSH" in t for t in titles)
+
+    # Check state schemes
+    assert any("Kerala Mazhavillu" in t for t in titles)
+    assert any("Tamil Nadu" in t for t in titles)
+    assert any("Karnataka Mythri" in t for t in titles)
+    assert any("Odisha Sweekruti" in t for t in titles)
+    assert any("Rajasthan" in t for t in titles)
+    assert any("Maharashtra" in t for t in titles)
+
+    # Check government link integrity
+    for s in schemes:
+        assert s["category"] == "scheme"
+        assert s["status"] == "verified"
+        assert len(s["description"]) > 20
+        assert s["organization_name"] is not None
+
+    # Test alias 'government_scheme'
+    alias_res = client.get("/listings/?category=government_scheme")
+    assert alias_res.status_code == 200
+    assert len(alias_res.json()) == len(schemes)
+
+
+def test_scheme_state_matching_engine():
+    """Verify intelligent matcher maps state-specific and central schemes accurately."""
+    # Test Kerala healthcare denial incident
+    kerala_payload = {
+        "incident_type": "healthcare_denial",
+        "title": "Hospital refused to provide gender affirmation hormone treatment",
+        "description": "Private clinic in Thiruvananthapuram refused consultation citing non-recognition of trans identities.",
+        "location_city": "Thiruvananthapuram",
+        "location_state": "Kerala",
+        "urgency_level": "medium",
+        "is_anonymous": True,
+    }
+    k_res = client.post("/incidents/", json=kerala_payload)
+    assert k_res.status_code == 201
+    k_data = k_res.json()
+    k_schemes = [s["name"] for s in k_data["matched_schemes"]]
+    # Should match Kerala Mazhavillu and Ayushman Bharat PM-JAY
+    assert any("Kerala Mazhavillu" in name for name in k_schemes)
+    assert any("Ayushman Bharat" in name for name in k_schemes)
+
+    # Test Tamil Nadu housing eviction incident
+    tn_payload = {
+        "incident_type": "housing_eviction",
+        "title": "Unlawful eviction from rented room in Chennai",
+        "description": "Landlord forced tenant to vacate within 24 hours upon learning of transgender identity.",
+        "location_city": "Chennai",
+        "location_state": "Tamil Nadu",
+        "urgency_level": "high",
+        "is_anonymous": True,
+    }
+    tn_res = client.post("/incidents/", json=tn_payload)
+    assert tn_res.status_code == 201
+    tn_data = tn_res.json()
+    tn_schemes = [s["name"] for s in tn_data["matched_schemes"]]
+    # Should match Tamil Nadu Transgender Welfare Board and Garima Greh
+    assert any("Tamil Nadu" in name for name in tn_schemes)
+    assert any("Garima Greh" in name for name in tn_schemes)
+
+
+# =========================================================================
+# Google Sign-In (OAuth 2.0) Tests
+# =========================================================================
+
+def test_google_auth_invalid_token():
+    """Sending an invalid/garbage token should fail verification with HTTP 400."""
+    res = client.post("/auth/google", json={"credential": "invalid_token_xyz", "role": "user"})
+    assert res.status_code == 400
+    assert "Google authentication failed" in res.json()["detail"] or "Invalid" in res.json()["detail"]
+
+
+def test_google_auth_success_new_and_existing_user(monkeypatch):
+    """Verifies that valid Google ID token registers a new user and logs in existing user."""
+    from google.oauth2 import id_token
+
+    mock_google_user = {
+        "email": "testgoogleuser@gmail.com",
+        "name": "Google Test User",
+        "sub": "google_sub_998877",
+        "email_verified": True,
+    }
+
+    # Mock verify_oauth2_token to return valid payload
+    monkeypatch.setattr(id_token, "verify_oauth2_token", lambda *args, **kwargs: mock_google_user)
+
+    # 1. First Google sign-in (Registers new account)
+    reg_res = client.post("/auth/google", json={"credential": "valid_mock_token", "role": "community"})
+    assert reg_res.status_code == 200
+    reg_data = reg_res.json()
+    assert "access_token" in reg_data
+    assert reg_data["user"]["email"] == "testgoogleuser@gmail.com"
+    assert reg_data["user"]["name"] == "Google Test User"
+    assert reg_data["user"]["role"] == "user"
+
+    # 2. Second Google sign-in with same account (Logs in existing account)
+    login_res = client.post("/auth/google", json={"credential": "valid_mock_token", "role": "community"})
+    assert login_res.status_code == 200
+    login_data = login_res.json()
+    assert "access_token" in login_data
+    assert login_data["user"]["id"] == reg_data["user"]["id"]
+
+
+def test_google_auth_unverified_email_rejected(monkeypatch):
+    """Google tokens with unverified emails must be rejected."""
+    from google.oauth2 import id_token
+
+    unverified_payload = {
+        "email": "unverified@gmail.com",
+        "name": "Unverified User",
+        "sub": "google_sub_112233",
+        "email_verified": False,
+    }
+
+    monkeypatch.setattr(id_token, "verify_oauth2_token", lambda *args, **kwargs: unverified_payload)
+
+    res = client.post("/auth/google", json={"credential": "mock_unverified_token", "role": "community"})
+    assert res.status_code == 400
+    assert "not verified" in res.json()["detail"]
+
+
+# =========================================================================
+# Email Verification & Real Gmail Registration Tests
+# =========================================================================
+
+def test_registration_password_min_8_chars():
+    """Password must be at least 8 characters."""
+    res = client.post("/auth/register", json={
+        "name": "Short Password User",
+        "email": "shortpwuser@gmail.com",
+        "password": "short",
+        "role": "user"
+    })
+    assert res.status_code == 400
+    assert "8 characters" in res.json()["detail"]
+
+
+def test_registration_allows_any_valid_email():
+    """Users can register with any standard valid email and username."""
+    import uuid
+    uid = uuid.uuid4().hex[:6]
+    res = client.post("/auth/register", json={
+        "name": f"UsernameUser_{uid}",
+        "email": f"customuser_{uid}@yahoo.com",
+        "password": "securepassword123",
+        "role": "user"
+    })
+    assert res.status_code == 201
+    data = res.json()
+    assert data["email"] == f"customuser_{uid}@yahoo.com"
+    assert data["name"] == f"UsernameUser_{uid}"
+    assert data["is_verified"] is True
+
+
+def test_username_password_direct_login():
+    """
+    Username and password login workflow:
+    1. Register user with username, email, and password.
+    2. Login using username (name) and password.
+    3. Login using email and password.
+    """
+    import uuid
+    uid = uuid.uuid4().hex[:6]
+    username = f"user_{uid}"
+    email = f"user_{uid}@example.com"
+    password = "MySecurePassword123"
+
+    reg_res = client.post("/auth/register", json={
+        "name": username,
+        "email": email,
+        "password": password,
+        "role": "user"
+    })
+    assert reg_res.status_code == 201
+
+    # Login with username & password
+    user_login = client.post("/auth/login", data={
+        "username": username,
+        "password": password
+    })
+    assert user_login.status_code == 200
+    assert user_login.json()["user"]["name"] == username
+
+    # Login with email & password via JSON
+    email_login = client.post("/auth/login-json", json={
+        "email": email,
+        "password": password
+    })
+    assert email_login.status_code == 200
+    assert email_login.json()["user"]["email"] == email
+
+
+def test_verify_email_invalid_token():
+    """Invalid or corrupted verification token redirects to login with error parameter."""
+    verify_res = client.get("/auth/verify-email?token=invalid.tampered.token", follow_redirects=False)
+    assert verify_res.status_code == 303
+    assert "verified=0" in verify_res.headers["location"]
+
+
+def test_verified_ngo_phone_authenticity():
+    """Verifies that all verified NGOs have genuine phone numbers, or None if no public phone exists."""
+    from app.services.matcher import VERIFIED_NGOS
+
+    fake_patterns = ["12345", "9810012345", "9818155444", "9942371987", "25337890", "24419998", "48529900", "9884210987", "24987654"]
+
+    for ngo in VERIFIED_NGOS:
+        phone = ngo.get("contact_phone")
+        if phone:
+            for fake in fake_patterns:
+                assert fake not in phone, f"Fake number pattern {fake} found in {ngo['name']}: {phone}"
+            # Must start with +91
+            assert phone.startswith("+91"), f"Invalid country code in {ngo['name']}: {phone}"
+
+    # Specific checks
+    ngo_map = {n["name"]: n for n in VERIFIED_NGOS}
+    assert ngo_map["The Humsafar Trust"]["contact_phone"] == "+91-22-26673800"
+    assert ngo_map["Tweet Foundation (Transgender Welfare Equity and Empowerment Trust)"]["contact_phone"] == "+91-9315550875"
+    assert ngo_map["Nazariya: A Queer Feminist Resource Group"]["contact_phone"] == "+91-9818151707"
+    assert ngo_map["Sahodari Foundation"]["contact_phone"] == "+91-7639741916"
+    assert ngo_map["Mitr Trust"]["contact_phone"] == "+91-9910899755"
+    assert ngo_map["PeriFerry"]["contact_phone"] is None
+    assert ngo_map["Born2Win Social Welfare Trust"]["contact_phone"] is None
+
+
+def test_listings_search_query():
+    """Verify that listings search endpoint supports filtering by keyword across title, org, location, and contact."""
+    # Search by college name
+    res_college = client.get("/listings/?search=Tata+Institute+of+Social+Sciences")
+    assert res_college.status_code == 200
+    college_data = res_college.json()
+    assert len(college_data) >= 1
+    assert any("TISS" in item["title"] or "Tata Institute" in item["organization_name"] for item in college_data)
+
+    # Search by workplace name
+    res_workplace = client.get("/listings/?search=Lalit+Suri")
+    assert res_workplace.status_code == 200
+    workplace_data = res_workplace.json()
+    assert len(workplace_data) >= 1
+    assert any("Lalit" in item["organization_name"] for item in workplace_data)
+
+    # Search by NGO / helpline phone number
+    res_phone = client.get("/listings/?search=26673800")
+    assert res_phone.status_code == 200
+    phone_data = res_phone.json()
+    assert len(phone_data) >= 1
+    assert any("Humsafar" in item["organization_name"] for item in phone_data)
+
+
+def test_opportunity_directory_real_contacts():
+    """Verify that seeded college, workplace, and NGO listings contain real authentic phone numbers."""
+    res = client.get("/listings/")
+    assert res.status_code == 200
+    listings = res.json()
+
+    # Check that known real organizations exist in directory with valid phone formatting
+    org_contacts = {l["organization_name"]: l.get("contact_info", "") for l in listings}
+
+    assert "The Humsafar Trust" in org_contacts
+    assert "+91-22-26673800" in org_contacts["The Humsafar Trust"]
+
+    assert "The Lalit Suri Hospitality Group" in org_contacts
+    assert "+91-11-44447777" in org_contacts["The Lalit Suri Hospitality Group"]
+
+    assert "Tata Institute of Social Sciences (TISS)" in org_contacts
+    assert "+91-22-25525252" in org_contacts["Tata Institute of Social Sciences (TISS)"]

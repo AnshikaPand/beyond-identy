@@ -11,6 +11,7 @@ Covers:
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
+from app import models
 
 client = TestClient(app)
 
@@ -278,6 +279,15 @@ def test_report_discrimination_incident_authenticated():
     ngo_names = [n["name"] for n in data["matched_ngos"]]
     assert any("Humsafar" in name or "Tweet" in name or "Nazariya" in name for name in ngo_names)
 
+    # Teardown
+    from app.database import SessionLocal
+    _clean_db = SessionLocal()
+    try:
+        _clean_db.query(models.IncidentReport).filter(models.IncidentReport.id == data["id"]).delete()
+        _clean_db.commit()
+    finally:
+        _clean_db.close()
+
 
 def test_report_discrimination_incident_anonymous():
     # Anonymous reports require no Auth header
@@ -298,9 +308,19 @@ def test_report_discrimination_incident_anonymous():
     data = res.json()
     assert data["is_anonymous"] is True
     assert data["incident_type"] == "police_harassment"
+
     # Urgent police harassment must match NALSA free legal aid
     scheme_names = [s["name"] for s in data["matched_schemes"]]
     assert any("NALSA" in name for name in scheme_names)
+
+    # Teardown
+    from app.database import SessionLocal
+    _clean_db = SessionLocal()
+    try:
+        _clean_db.query(models.IncidentReport).filter(models.IncidentReport.id == data["id"]).delete()
+        _clean_db.commit()
+    finally:
+        _clean_db.close()
 
 
 def test_list_and_update_incidents_rbac():

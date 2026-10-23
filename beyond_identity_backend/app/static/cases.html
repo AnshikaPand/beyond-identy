@@ -1,0 +1,2259 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community Case Board — Beyond Identity | Public Discrimination Transparency</title>
+  <meta name="description" content="Community Case Board: Anonymous, transparent view of discrimination cases reported on Beyond Identity. Explore real cases, welfare schemes matched, and NGO redressal across India." />
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Core & Redesign Stylesheets -->
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <link rel="stylesheet" href="/static/css/redesign.css" />
+
+  <style>
+    /* Dedicated Styling for Community Case Board */
+    .cases-page-container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+
+    /* Hero Masthead */
+    .cases-hero-card {
+      background: var(--bi-surface-card, rgba(17, 24, 39, 0.88));
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.12));
+      border-radius: var(--radius-xl, 22px);
+      padding: 34px 30px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cases-hero-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--pride-gradient, linear-gradient(90deg, #5bcefa 0%, #f5a9b8 25%, #ffffff 50%, #f5a9b8 75%, #5bcefa 100%));
+    }
+
+    .hero-top-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .cases-live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: var(--radius-full, 9999px);
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      font-size: 12px;
+      font-weight: 700;
+      color: #34d399;
+    }
+
+    .cases-pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse-ring 2s infinite ease-out;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .cases-privacy-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: var(--radius-full, 9999px);
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--bi-sky, #38bdf8);
+    }
+
+    .cases-hero-title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin: 0 0 10px;
+      color: var(--bi-text-main, #f8fafc);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .cases-hero-subtitle {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--bi-text-secondary, #cbd5e1);
+      margin: 0;
+      max-width: 850px;
+    }
+
+    /* Stats Grid */
+    .cases-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .stat-metric-card {
+      background: var(--bi-surface-card, rgba(17, 24, 39, 0.75));
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.1));
+      border-radius: var(--radius-lg, 16px);
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .stat-metric-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 10px 24px -5px rgba(0, 0, 0, 0.35);
+    }
+
+    .stat-metric-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stat-metric-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--bi-text-muted, #94a3b8);
+    }
+
+    .stat-metric-icon {
+      font-size: 18px;
+    }
+
+    .stat-metric-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--bi-text-main, #f8fafc);
+      letter-spacing: -0.02em;
+    }
+
+    .stat-metric-sub {
+      font-size: 11.5px;
+      color: var(--bi-text-muted, #94a3b8);
+    }
+
+    /* Charts Row */
+    .cases-charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 860px) {
+      .cases-charts-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-panel-card {
+      background: var(--bi-surface-card, rgba(17, 24, 39, 0.75));
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.1));
+      border-radius: var(--radius-lg, 16px);
+      padding: 20px;
+      backdrop-filter: blur(12px);
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .chart-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--bi-text-main, #f8fafc);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .chart-bars-list {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .chart-bar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .chart-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      color: var(--bi-text-secondary, #cbd5e1);
+      font-weight: 500;
+    }
+
+    .chart-bar-track {
+      width: 100%;
+      height: 9px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .chart-bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Filters Section */
+    .cases-filter-section {
+      background: var(--bi-surface-card, rgba(17, 24, 39, 0.8));
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.1));
+      border-radius: var(--radius-lg, 18px);
+      padding: 20px 22px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .filter-chips-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+
+    .filter-chip-btn {
+      white-space: nowrap;
+      padding: 7px 15px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: var(--radius-full, 9999px);
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.12));
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--bi-text-secondary, #cbd5e1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-chip-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--bi-text-main, #f8fafc);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+
+    .filter-chip-btn.active {
+      background: var(--primary, #6366f1);
+      border-color: var(--primary, #6366f1);
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.35);
+    }
+
+    .filter-controls-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-search-box {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+
+    .filter-search-input {
+      width: 100%;
+      padding: 10px 14px 10px 36px;
+      border-radius: var(--radius-md, 10px);
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.12));
+      background: rgba(0, 0, 0, 0.25);
+      color: var(--bi-text-main, #f8fafc);
+      font-size: 13.5px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .filter-search-input:focus {
+      border-color: var(--accent-cyan, #38bdf8);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .search-icon-adornment {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: var(--bi-text-muted, #94a3b8);
+      pointer-events: none;
+    }
+
+    .filter-select {
+      padding: 10px 14px;
+      border-radius: var(--radius-md, 10px);
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.12));
+      background: rgba(18, 24, 41, 0.9);
+      color: var(--bi-text-main, #f8fafc);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filter-select option {
+      background: #111827;
+      color: #f8fafc;
+    }
+
+    .btn-clear-filters {
+      padding: 9px 16px;
+      border-radius: var(--radius-md, 10px);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      background: rgba(244, 63, 94, 0.08);
+      color: #fb7185;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-clear-filters:hover {
+      background: rgba(244, 63, 94, 0.18);
+    }
+
+    /* Floating New Cases Alert Banner */
+    .new-cases-alert-banner {
+      display: none;
+      position: sticky;
+      top: 80px;
+      z-index: 40;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #092e2b 0%, #0f3836 100%);
+      border: 1px solid rgba(45, 212, 191, 0.4);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      padding: 12px 18px;
+      color: #ffffff;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .new-cases-alert-banner.visible {
+      display: flex;
+    }
+
+    /* Case Cards Grid */
+    .cases-cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .case-card {
+      background: var(--bi-surface-card, rgba(17, 24, 39, 0.78));
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.1));
+      border-radius: var(--radius-lg, 16px);
+      padding: 22px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .case-card:hover {
+      border-color: rgba(99, 102, 241, 0.35);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .case-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .case-card-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .case-cat-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(99, 102, 241, 0.14);
+      color: var(--accent-cyan, #38bdf8);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+    }
+
+    .case-sev-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .case-sev-badge.high {
+      background: rgba(244, 63, 94, 0.15);
+      color: #fb7185;
+      border: 1px solid rgba(244, 63, 94, 0.35);
+    }
+
+    .case-sev-badge.medium {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .case-sev-badge.low {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .case-status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .case-status-badge.submitted {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .case-status-badge.under_review {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .case-status-badge.escalated_to_ngo {
+      background: rgba(168, 85, 247, 0.18);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    .case-status-badge.resolved {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .case-card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--bi-text-main, #f8fafc);
+      margin: 0 0 8px;
+      line-height: 1.4;
+    }
+
+    .case-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 13px;
+      color: var(--bi-text-muted, #94a3b8);
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    .case-meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .case-card-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--bi-text-secondary, #cbd5e1);
+      margin: 0 0 14px;
+    }
+
+    .case-entity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(244, 63, 94, 0.08);
+      border: 1px solid rgba(244, 63, 94, 0.22);
+      color: #fb7185;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    .case-chips-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .scheme-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      background: rgba(45, 212, 191, 0.12);
+      color: var(--accent-cyan, #38bdf8);
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(45, 212, 191, 0.25);
+    }
+
+    .ngo-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      background: rgba(165, 180, 252, 0.12);
+      color: var(--accent-violet, #a855f7);
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(165, 180, 252, 0.25);
+    }
+
+    .case-notes-box {
+      font-size: 13px;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .case-card-footer {
+      padding-top: 14px;
+      border-top: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.08));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--bi-text-muted, #94a3b8);
+    }
+
+    /* Skeleton Loading State */
+    .skeleton-card {
+      background: var(--bi-surface-card, rgba(17, 24, 39, 0.78));
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.1));
+      border-radius: var(--radius-lg, 16px);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .skeleton-line {
+      height: 14px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.05) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Empty & Error States */
+    .cases-state-box {
+      text-align: center;
+      padding: 48px 20px;
+      background: var(--bi-surface-card, rgba(17, 24, 39, 0.75));
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.1));
+      border-radius: var(--radius-lg, 18px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cases-state-icon {
+      font-size: 40px;
+    }
+
+    .cases-state-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--bi-text-main, #f8fafc);
+      margin: 0;
+    }
+
+    .cases-state-desc {
+      font-size: 14px;
+      color: var(--bi-text-muted, #94a3b8);
+      max-width: 480px;
+      margin: 0;
+    }
+
+    /* Pagination Controls */
+    .cases-pagination-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding-top: 10px;
+    }
+
+    .pagination-page-info {
+      font-size: 13.5px;
+      color: var(--bi-text-secondary, #cbd5e1);
+    }
+
+    .pagination-buttons-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .pagination-btn {
+      padding: 8px 16px;
+      border-radius: var(--radius-md, 10px);
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.14));
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--bi-text-main, #f8fafc);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+      background: rgba(99, 102, 241, 0.18);
+      border-color: var(--primary, #6366f1);
+    }
+
+    .pagination-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Bottom Disclaimer & CTA */
+    .cases-bottom-cta {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(236, 72, 153, 0.08) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius-xl, 20px);
+      padding: 28px 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin-top: 36px;
+    }
+
+    .bottom-cta-title {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--bi-text-main, #f8fafc);
+      margin: 0;
+    }
+
+    .bottom-cta-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--bi-text-secondary, #cbd5e1);
+      max-width: 650px;
+      margin: 0;
+    }
+
+    .bottom-crisis-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--bi-text-muted, #94a3b8);
+      margin-top: 6px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--bi-border-subtle, rgba(255, 255, 255, 0.1));
+      width: 100%;
+    }
+
+    .crisis-pill-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+      .cases-page-container {
+        padding: 20px 14px 60px;
+      }
+      .cases-hero-card,
+      .cases-filter-section,
+      .cases-bottom-cta {
+        padding: 20px 16px;
+      }
+      .cases-hero-title {
+        font-size: 24px;
+      }
+      .stat-metric-value {
+    /* Dossier & Report Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.84);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-content {
+      background: var(--bi-surface-card, #111827);
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.15));
+      border-radius: 20px;
+      max-width: 740px;
+      width: 100%;
+      padding: 30px;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px -15px rgba(0,0,0,0.7);
+    }
+    .close-modal {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--bi-text-muted, #94a3b8);
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+    .close-modal:hover { color: #f8fafc; }
+    .btn-case-dossier:hover {
+      background: rgba(56, 189, 248, 0.22) !important;
+      border-color: #38bdf8 !important;
+      transform: translateY(-1px);
+    }
+    .dossier-section {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .dossier-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .dossier-sec-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #38bdf8;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .form-group-modal {
+      margin-bottom: 16px;
+    }
+    .form-group-modal label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--bi-text-secondary, #cbd5e1);
+      margin-bottom: 6px;
+    }
+    .form-group-modal input,
+    .form-group-modal select,
+    .form-group-modal textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--bi-text-main, #f8fafc);
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+    .form-group-modal textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+    .form-group-modal input:focus,
+    .form-group-modal select:focus,
+    .form-group-modal textarea:focus {
+      border-color: #38bdf8;
+      background: rgba(255, 255, 255, 0.09);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Emergency Crisis Helpline Top Banner -->
+  <aside class="emergency-helpline-bar" aria-label="Emergency Crisis Support">
+    <span>🚨 <strong>24/7 Crisis &amp; Support:</strong></span>
+    <a href="tel:868989330" title="Call 24/7 Helpline">
+      📞 868989330
+    </a>
+    <span style="opacity: 0.9; font-size: 11.5px;">| Tele-MANAS: 14416 | Free Legal Aid (NALSA): 15100</span>
+  </aside>
+
+  <!-- Subtle Pride Flag Accent Line -->
+  <div class="pride-accent-strip" aria-hidden="true"></div>
+
+  <!-- Single-Row Navigation Bar -->
+  <header class="navbar" id="main-site-navbar">
+    <div class="container nav-content">
+      <!-- Left: Logo Mark & Brand Identity -->
+      <a href="/" class="nav-brand-mark" aria-label="Beyond Identity Home">
+        <span class="nav-pride-icon">🏳️‍⚧️</span>
+        <div class="nav-brand-text">
+          <span class="nav-brand-name"><strong class="brand-bold">Beyond Identity</strong></span>
+          <span class="nav-brand-tagline">Beyond Labels, Everyone Equal</span>
+        </div>
+      </a>
+
+      <!-- Center: Main Navigation Links + Dropdown -->
+      <nav class="nav-links-menu" id="nav-links-menu" aria-label="Main Navigation">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/cases" class="nav-link active" id="nav-case-board-link">
+          <span>📋</span> <strong>Case Board</strong>
+        </a>
+        <a href="/?tab=chat" class="nav-link nav-chat-link" id="nav-open-chat-btn">
+          <span class="nav-chat-icon">🤖</span> <span>Chatbot</span>
+        </a>
+
+        <!-- More Dropdown -->
+        <div class="nav-dropdown" id="nav-more-dropdown">
+          <button type="button" class="nav-link nav-dropdown-btn" id="nav-more-toggle" aria-expanded="false" aria-haspopup="true">
+            <span>More</span>
+            <svg class="dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="nav-dropdown-menu" id="nav-more-menu" role="menu">
+            <a href="/?tab=listings" class="dropdown-item" role="menuitem">
+              <span class="dropdown-item-icon">💼</span>
+              <span>Opportunity</span>
+            </a>
+            <a href="/?tab=awareness" class="dropdown-item" role="menuitem">
+              <span class="dropdown-item-icon">⚖️</span>
+              <span>Rights Awareness</span>
+            </a>
+            <a href="/?tab=health" class="dropdown-item" role="menuitem">
+              <span class="dropdown-item-icon">🩺</span>
+              <span>Health Assistant</span>
+            </a>
+            <a href="/?tab=report" class="dropdown-item" role="menuitem">
+              <span class="dropdown-item-icon">🚨</span>
+              <span>Report Incident</span>
+            </a>
+            <a href="/about" class="dropdown-item" role="menuitem">
+              <span class="dropdown-item-icon">ℹ️</span>
+              <span>About</span>
+            </a>
+            <a href="/triage" class="dropdown-item" role="menuitem">
+              <span class="dropdown-item-icon">🛡️</span>
+              <span>Case Triage Desk</span>
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Right: Upper Controls: Day / Night / Auto + Sign In -->
+      <div class="nav-actions-group">
+        <!-- Theme Switcher Segmented Control (Day, Night, Auto) -->
+        <div class="theme-switch-group" id="theme-switch-container" title="Select Theme: Day, Night, or Auto">
+          <button type="button" class="theme-switch-btn" data-theme-val="light" title="Day Theme" aria-label="Day Theme">☀️ Day</button>
+          <button type="button" class="theme-switch-btn" data-theme-val="dark" title="Night Theme" aria-label="Night Theme">🌙 Night</button>
+          <button type="button" class="theme-switch-btn active" data-theme-val="system" title="Auto Theme" aria-label="Auto Theme">💻 Auto</button>
+        </div>
+
+        <!-- User Action: Report / Sign In -->
+        <div class="nav-actions" id="auth-actions-container">
+          <a href="/?tab=report" class="btn btn-primary" style="padding: 8px 16px; font-size: 13px; text-decoration: none; font-weight: 700;">
+            <span>🚨</span> Report Case
+          </a>
+        </div>
+
+        <!-- Mobile Hamburger Toggle Button -->
+        <button type="button" class="nav-mobile-toggle" id="nav-mobile-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Navigation Drawer -->
+    <div class="nav-mobile-drawer" id="nav-mobile-drawer">
+      <div class="nav-mobile-drawer-inner">
+        <a href="/" class="nav-mobile-link">Home</a>
+        <a href="/cases" class="nav-mobile-link active">📋 Community Case Board</a>
+        <a href="/?tab=chat" class="nav-mobile-link">🤖 Chatbot (Voice)</a>
+        <a href="/?tab=listings" class="nav-mobile-link">💼 Opportunity Directory</a>
+        <a href="/?tab=awareness" class="nav-mobile-link">⚖️ Rights Awareness</a>
+        <a href="/?tab=health" class="nav-mobile-link">🩺 Health Assistant</a>
+        <a href="/?tab=report" class="nav-mobile-link">🚨 Report Incident</a>
+        <a href="/about" class="nav-mobile-link">ℹ️ About</a>
+        <a href="/triage" class="nav-mobile-link">🛡️ Case Triage Desk</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Case Board Container -->
+  <main class="cases-page-container">
+
+    <!-- Hero Masthead Section -->
+    <section class="cases-hero-card" aria-labelledby="cases-board-heading">
+      <div class="hero-top-badges">
+        <span class="cases-live-pill">
+          <span class="cases-pulse-dot" aria-hidden="true"></span>
+          <span>Live Community Registry Across India</span>
+        </span>
+        <span class="cases-privacy-pill">
+          <span>🔒 Strict Privacy Whitelist Enforced (Section 18 TG Act)</span>
+        </span>
+        <span style="font-size: 12px; font-weight: 600; color: #34d399; background: rgba(52, 211, 153, 0.12); padding: 5px 12px; border-radius: 9999px; border: 1px solid rgba(52, 211, 153, 0.3);">
+          ⚡ Real Citizen Cases
+        </span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 18px; margin-top: 6px;">
+        <div style="flex: 1; min-width: 300px;">
+          <h1 class="cases-hero-title" id="cases-board-heading" style="margin: 0 0 10px;">
+            <span>Community Cases &amp; Discrimination Registry</span>
+          </h1>
+          <p class="cases-hero-subtitle">
+            An independent, transparent public record of discrimination incidents reported by citizens across India.
+            Explore authentic grievances submitted by community members, matched Indian welfare schemes (SMILE, Garima Greh, AB-PMJAY), legal aid tracking, and verified partner NGO interventions.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+          <button type="button" class="btn btn-primary" id="btn-hero-report-case" style="padding: 11px 22px; font-size: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(20, 184, 166, 0.35);">
+            <span>🚨</span> Report a Discrimination Case
+          </button>
+          <a href="/" class="btn btn-secondary" style="padding: 11px 18px; font-size: 13.5px; text-decoration: none; font-weight: 600; border-radius: 12px; display: inline-flex; align-items: center; gap: 6px;">
+            <span>🏠</span> Main Portal
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Stats Row (5 Metrics) -->
+    <section class="cases-stats-grid" id="cases-stats-grid" aria-label="Aggregate Incident Statistics">
+      <div class="stat-metric-card">
+        <div class="stat-metric-top">
+          <span class="stat-metric-label">Total Cases</span>
+          <span class="stat-metric-icon">📋</span>
+        </div>
+        <div class="stat-metric-value" id="stat-total-cases">--</div>
+        <div class="stat-metric-sub" id="stat-public-sub">Publicly listed</div>
+      </div>
+
+      <div class="stat-metric-card">
+        <div class="stat-metric-top">
+          <span class="stat-metric-label">Escalated to NGO</span>
+          <span class="stat-metric-icon">🤝</span>
+        </div>
+        <div class="stat-metric-value" id="stat-escalated-cases" style="color: #c084fc;">--</div>
+        <div class="stat-metric-sub">Active NGO legal/crisis desk</div>
+      </div>
+
+      <div class="stat-metric-card">
+        <div class="stat-metric-top">
+          <span class="stat-metric-label">Under Review</span>
+          <span class="stat-metric-icon">🔍</span>
+        </div>
+        <div class="stat-metric-value" id="stat-under-review" style="color: #38bdf8;">--</div>
+        <div class="stat-metric-sub">Triage verification ongoing</div>
+      </div>
+
+      <div class="stat-metric-card">
+        <div class="stat-metric-top">
+          <span class="stat-metric-label">Cases Resolved</span>
+          <span class="stat-metric-icon">✅</span>
+        </div>
+        <div class="stat-metric-value" id="stat-resolved-cases" style="color: #34d399;">--</div>
+        <div class="stat-metric-sub">Remedied with scheme/legal aid</div>
+      </div>
+
+      <div class="stat-metric-card">
+        <div class="stat-metric-top">
+          <span class="stat-metric-label">High Severity</span>
+          <span class="stat-metric-icon">⚠️</span>
+        </div>
+        <div class="stat-metric-value" id="stat-high-severity" style="color: #fb7185;">--</div>
+        <div class="stat-metric-sub">Urgent threat / SOS priority</div>
+      </div>
+    </section>
+
+    <!-- Charts Section: Cases by Category & Cases by State -->
+    <section class="cases-charts-row" aria-label="Visual Case Breakdowns">
+      <!-- Chart 1: By Category -->
+      <div class="chart-panel-card">
+        <div class="chart-header">
+          <h3 class="chart-title">
+            <span>🏷️</span> Cases by Discrimination Category
+          </h3>
+          <span style="font-size: 11.5px; color: var(--bi-text-muted);">Relative Share</span>
+        </div>
+        <div class="chart-bars-list" id="category-chart-bars">
+          <!-- Populated by JS -->
+          <div style="color: var(--bi-text-muted); font-size: 13px; text-align: center; padding: 20px;">
+            Loading category metrics...
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart 2: By State -->
+      <div class="chart-panel-card">
+        <div class="chart-header">
+          <h3 class="chart-title">
+            <span>📍</span> Geographic Spread (Top States)
+          </h3>
+          <span style="font-size: 11.5px; color: var(--bi-text-muted);">State-wise Reports</span>
+        </div>
+        <div class="chart-bars-list" id="state-chart-bars">
+          <!-- Populated by JS -->
+          <div style="color: var(--bi-text-muted); font-size: 13px; text-align: center; padding: 20px;">
+            Loading state metrics...
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Filters Toolbar -->
+    <section class="cases-filter-section" aria-label="Filter discrimination reports">
+      <!-- Category Filter Chips -->
+      <div class="filter-chips-scroll" id="category-chips-bar" role="tablist" aria-label="Category Filters">
+        <button type="button" class="filter-chip-btn active" data-cat="" role="tab" aria-selected="true">
+          <span>All Cases</span>
+        </button>
+        <button type="button" class="filter-chip-btn" data-cat="workplace" role="tab" aria-selected="false">
+          <span>💼 Workplace</span>
+        </button>
+        <button type="button" class="filter-chip-btn" data-cat="healthcare_denial" role="tab" aria-selected="false">
+          <span>🩺 Healthcare</span>
+        </button>
+        <button type="button" class="filter-chip-btn" data-cat="housing_eviction" role="tab" aria-selected="false">
+          <span>🏠 Housing</span>
+        </button>
+        <button type="button" class="filter-chip-btn" data-cat="police_harassment" role="tab" aria-selected="false">
+          <span>👮 Police Harassment</span>
+        </button>
+        <button type="button" class="filter-chip-btn" data-cat="public_harassment" role="tab" aria-selected="false">
+          <span>🏙️ Public Place</span>
+        </button>
+        <button type="button" class="filter-chip-btn" data-cat="education" role="tab" aria-selected="false">
+          <span>🎓 Education</span>
+        </button>
+        <button type="button" class="filter-chip-btn" data-cat="legal_documentation" role="tab" aria-selected="false">
+          <span>⚖️ Legal ID</span>
+        </button>
+        <button type="button" class="filter-chip-btn" data-cat="other" role="tab" aria-selected="false">
+          <span>📌 Other</span>
+        </button>
+      </div>
+
+      <!-- Controls Row: Search, Status, Severity, State, Clear -->
+      <div class="filter-controls-row">
+        <!-- Search Box -->
+        <div class="filter-search-box">
+          <span class="search-icon-adornment" aria-hidden="true">🔍</span>
+          <input 
+            type="text" 
+            id="cases-search-input" 
+            class="filter-search-input" 
+            placeholder="Search by keywords, city, description..." 
+            aria-label="Search discrimination reports"
+          />
+        </div>
+
+        <!-- Status Dropdown -->
+        <select id="filter-status-select" class="filter-select" aria-label="Filter by Status">
+          <option value="">All Statuses</option>
+          <option value="submitted">Submitted</option>
+          <option value="under_review">Under Review</option>
+          <option value="escalated_to_ngo">Escalated to NGO</option>
+          <option value="resolved">Resolved</option>
+          <option value="legal_aid_assigned">Legal Aid Assigned</option>
+        </select>
+
+        <!-- Severity Dropdown -->
+        <select id="filter-severity-select" class="filter-select" aria-label="Filter by Severity">
+          <option value="">All Severities</option>
+          <option value="low">Low Severity</option>
+          <option value="medium">Medium Severity</option>
+          <option value="high">High Severity</option>
+          <option value="immediate_sos">Immediate SOS</option>
+        </select>
+
+        <!-- State Dropdown -->
+        <select id="filter-state-select" class="filter-select" aria-label="Filter by Indian State">
+          <option value="">All Indian States</option>
+          <option value="Maharashtra">Maharashtra</option>
+          <option value="Delhi">Delhi</option>
+          <option value="Karnataka">Karnataka</option>
+          <option value="Tamil Nadu">Tamil Nadu</option>
+          <option value="West Bengal">West Bengal</option>
+          <option value="Telangana">Telangana</option>
+          <option value="Gujarat">Gujarat</option>
+          <option value="Uttar Pradesh">Uttar Pradesh</option>
+          <option value="Rajasthan">Rajasthan</option>
+          <option value="Kerala">Kerala</option>
+          <option value="Punjab">Punjab</option>
+        </select>
+
+        <!-- Sorting -->
+        <select id="filter-sort-select" class="filter-select" aria-label="Sort Cases">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+        </select>
+
+        <!-- Clear Button -->
+        <button type="button" class="btn-clear-filters" id="btn-clear-filters" title="Reset all search filters">
+          <span>✕</span> Clear Filters
+        </button>
+      </div>
+    </section>
+
+    <!-- Real-Time Auto-Refresh Notification Banner -->
+    <div class="new-cases-alert-banner" id="new-cases-alert-banner" role="status" aria-live="polite">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 20px;">✨</span>
+        <span style="font-size: 14px; font-weight: 600;">New discrimination cases have been reported in real-time.</span>
+      </div>
+      <button type="button" id="btn-load-new-cases" style="padding: 6px 14px; background: #2dd4bf; border: none; border-radius: 8px; color: #042f2e; font-weight: 700; font-size: 13px; cursor: pointer; transition: opacity 0.2s;">
+        Update Board
+      </button>
+    </div>
+
+    <!-- Case Cards Container -->
+    <section class="cases-cards-grid" id="cases-cards-container" aria-label="Community Discrimination Cases List" aria-live="polite">
+      <!-- Injected via JavaScript (Skeleton / Cards / Empty state) -->
+    </section>
+
+    <!-- Pagination Controls -->
+    <div class="cases-pagination-row" id="cases-pagination-bar" style="display: none;">
+      <div class="pagination-page-info" id="pagination-info-text">
+        Showing 1 to 10 of 15 cases
+      </div>
+      <div class="pagination-buttons-group">
+        <button type="button" class="pagination-btn" id="btn-prev-page" disabled>
+          ← Previous
+        </button>
+        <button type="button" class="pagination-btn" id="btn-next-page">
+          Next →
+        </button>
+      </div>
+    </div>
+
+    <!-- Bottom Disclaimer & Report CTA Note -->
+    <section class="cases-bottom-cta">
+      <div style="font-size: 32px;">🛡️</div>
+      <h2 class="bottom-cta-title">Confidentiality &amp; Community Protection</h2>
+      <p class="bottom-cta-desc">
+        All cases on this public board are displayed strictly anonymously with reporter consent. Personal identifiers, names, phone numbers, emails, exact home addresses, and private entity names are <strong>never</strong> shared or published.
+      </p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 4px;">
+        <a href="/?tab=report" class="btn btn-primary" style="padding: 12px 24px; font-size: 14.5px; text-decoration: none; font-weight: 700; border-radius: 12px;">
+          <span>🚨</span> Report a Discrimination Incident
+        </a>
+        <a href="/about" class="btn btn-secondary" style="padding: 12px 20px; font-size: 14px; text-decoration: none; font-weight: 600; border-radius: 12px;">
+          <span>ℹ️</span> Learn About Our Mission
+        </a>
+      </div>
+
+      <!-- 24/7 Crisis Support Strip -->
+      <div class="bottom-crisis-strip">
+        <span>🚨 <strong>24/7 Crisis Helplines:</strong></span>
+        <span class="crisis-pill-item">📞 Crisis Support: <a href="tel:868989330" style="color: inherit; text-decoration: underline;">868989330</a></span>
+        <span>•</span>
+        <span class="crisis-pill-item">🧠 Tele-MANAS: <a href="tel:14416" style="color: inherit; text-decoration: underline;">14416</a></span>
+        <span>•</span>
+        <span class="crisis-pill-item">⚖️ Free Legal Aid (NALSA): <a href="tel:15100" style="color: inherit; text-decoration: underline;">15100</a></span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal 1: Full Case Dossier Modal -->
+  <div class="modal-overlay" id="case-dossier-modal" role="dialog" aria-modal="true" aria-labelledby="dossier-modal-title">
+    <div class="modal-content" style="max-width: 760px;">
+      <button type="button" class="close-modal" id="close-dossier-modal" aria-label="Close Dossier">✕</button>
+      <div id="case-dossier-body">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Quick Community Incident Report Modal -->
+  <div class="modal-overlay" id="report-case-modal" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
+    <div class="modal-content" style="max-width: 680px;">
+      <button type="button" class="close-modal" id="close-report-modal" aria-label="Close Report Form">✕</button>
+      <div style="margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #2dd4bf; letter-spacing: 0.05em;">Confidential Citizen Filing</span>
+        <h2 id="report-modal-title" style="margin: 4px 0 6px; font-size: 22px; color: #f8fafc;">Report a Discrimination Case</h2>
+        <p style="font-size: 13.5px; color: var(--bi-text-secondary); margin: 0;">Submit an incident report. It will be matched automatically with statutory Indian welfare schemes and verified partner NGO triage desks.</p>
+      </div>
+
+      <form id="quick-case-report-form">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group-modal">
+            <label for="modal-inc-type">Discrimination Category *</label>
+            <select id="modal-inc-type" required>
+              <option value="workplace">Workplace (Wrongful Termination, Harassment)</option>
+              <option value="healthcare_denial">Healthcare Denial (Refusal of Care, Lack of Trans Ward)</option>
+              <option value="housing_eviction">Housing &amp; Eviction (Arbitrary Eviction, Refusal to Rent)</option>
+              <option value="education">Education (Ragging, Denied Admission, Hostel Denial)</option>
+              <option value="police_harassment">Police Harassment (Extortion, Abuse, Detention)</option>
+              <option value="public_harassment">Public Harassment (Refused Public Space, Mall, Transport)</option>
+              <option value="legal_documentation">Legal Documentation (Name/Gender Certificate Rejection)</option>
+            </select>
+          </div>
+          <div class="form-group-modal">
+            <label for="modal-inc-urgency">Urgency Level *</label>
+            <select id="modal-inc-urgency" required>
+              <option value="low">Low — General inquiry / Record keeping</option>
+              <option value="medium" selected>Medium — Requires NGO review &amp; guidance</option>
+              <option value="high">High — Imminent threat to livelihood / housing</option>
+              <option value="immediate_sos">Immediate SOS — Safety danger / Police post</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group-modal">
+          <label for="modal-inc-title">Case Title *</label>
+          <input type="text" id="modal-inc-title" placeholder="e.g., Unlawful termination after gender transition disclosure" required />
+        </div>
+
+        <div class="form-group-modal">
+          <label for="modal-inc-desc">Grievance Narrative / Description *</label>
+          <textarea id="modal-inc-desc" placeholder="Describe what transpired, dates, and what assistance is needed..." required></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group-modal">
+            <label for="modal-inc-city">City *</label>
+            <input type="text" id="modal-inc-city" placeholder="e.g., Mumbai, Bengaluru, Delhi" required />
+          </div>
+          <div class="form-group-modal">
+            <label for="modal-inc-state">State / UT *</label>
+            <input type="text" id="modal-inc-state" placeholder="e.g., Maharashtra, Karnataka, Delhi" required />
+          </div>
+        </div>
+
+        <div class="form-group-modal">
+          <label for="modal-inc-entity">Alleged Entity / Institution (Optional)</label>
+          <input type="text" id="modal-inc-entity" placeholder="e.g., ABC Tech Pvt Ltd, Landlord Mr. Sharma" />
+          <span style="font-size: 11px; color: var(--bi-text-muted);">Real names are never published on the public board — only generic categories (e.g., 'Private Employer').</span>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin: 16px 0; align-items: flex-start;">
+          <input type="checkbox" id="modal-inc-consent" checked style="width: 18px; height: 18px; margin-top: 3px;" />
+          <label for="modal-inc-consent" style="font-size: 13px; color: var(--bi-text-secondary); cursor: pointer; line-height: 1.4;">
+            <strong>Display on Public Community Cases Board</strong> (Strictly anonymized; personal names and contacts are never published).
+          </label>
+        </div>
+
+        <div id="modal-report-status" style="margin-bottom: 12px; display: none;"></div>
+
+        <button type="submit" class="btn btn-primary" id="btn-submit-quick-report" style="width: 100%; padding: 13px; font-size: 15px; font-weight: 700; border-radius: 10px;">
+          Submit Incident Report &amp; Match Indian Welfare Schemes
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript Logic for Community Case Board -->
+  <script>
+    (function() {
+      "use strict";
+
+      const API_BASE = "";
+      let currentPage = 1;
+      const pageSize = 10;
+      let totalItems = 0;
+      let totalPages = 1;
+      let activeCategory = "";
+      let searchTimeout = null;
+      let lastKnownTotalCases = null;
+
+      // Color palette for category charts
+      const CATEGORY_COLORS = {
+        workplace: "linear-gradient(90deg, #6366f1, #818cf8)",
+        healthcare_denial: "linear-gradient(90deg, #06b6d4, #38bdf8)",
+        housing_eviction: "linear-gradient(90deg, #f59e0b, #fbbf24)",
+        police_harassment: "linear-gradient(90deg, #f43f5e, #fb7185)",
+        public_harassment: "linear-gradient(90deg, #ec4899, #f472b6)",
+        education: "linear-gradient(90deg, #10b981, #34d399)",
+        legal_documentation: "linear-gradient(90deg, #8b5cf6, #a78bfa)",
+        other: "linear-gradient(90deg, #64748b, #94a3b8)",
+      };
+
+      const CATEGORY_DISPLAY_NAMES = {
+        workplace: "💼 Workplace",
+        healthcare_denial: "🩺 Healthcare Denial",
+        housing_eviction: "🏠 Housing & Eviction",
+        police_harassment: "👮 Police Harassment",
+        public_harassment: "🏙️ Public Place Harassment",
+        education: "🎓 Education & Campus",
+        legal_documentation: "⚖️ Legal ID & Documents",
+        other: "📌 Other",
+      };
+
+      // Utility to escape HTML
+      function escapeHtml(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      // Initialize Theme System (Light, Dark, System)
+      function initTheme() {
+        const savedTheme = localStorage.getItem("bi_theme") || "system";
+        applyTheme(savedTheme);
+
+        document.querySelectorAll(".theme-switch-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const val = btn.getAttribute("data-theme-val");
+            applyTheme(val);
+            localStorage.setItem("bi_theme", val);
+          });
+        });
+
+        // Listen for OS color scheme change
+        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+          if (localStorage.getItem("bi_theme") === "system") {
+            applyTheme("system");
+          }
+        });
+      }
+
+      function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.querySelectorAll(".theme-switch-btn").forEach(btn => {
+          if (btn.getAttribute("data-theme-val") === theme) {
+            btn.classList.add("active");
+          } else {
+            btn.classList.remove("active");
+          }
+        });
+      }
+
+      // Mobile drawer toggle
+      function initMobileNav() {
+        const toggleBtn = document.getElementById("nav-mobile-toggle");
+        const drawer = document.getElementById("nav-mobile-drawer");
+        if (toggleBtn && drawer) {
+          toggleBtn.addEventListener("click", () => {
+            const isOpen = drawer.classList.contains("active");
+            if (isOpen) {
+              drawer.classList.remove("active");
+              toggleBtn.setAttribute("aria-expanded", "false");
+            } else {
+              drawer.classList.add("active");
+              toggleBtn.setAttribute("aria-expanded", "true");
+            }
+          });
+        }
+      }
+
+      // Load Aggregate Stats & Render Visual Charts
+      async function loadStats() {
+        try {
+          const res = await fetch(`${API_BASE}/api/public/cases/stats`);
+          if (!res.ok) throw new Error("Failed to load statistics");
+          const stats = await res.json();
+
+          // Populate Top Metrics
+          document.getElementById("stat-total-cases").innerText = stats.total_cases ?? 0;
+          document.getElementById("stat-public-sub").innerText = `${stats.public_cases ?? 0} public (${stats.private_cases ?? 0} private confidential)`;
+          document.getElementById("stat-escalated-cases").innerText = stats.cases_escalated_to_ngo ?? 0;
+          document.getElementById("stat-under-review").innerText = stats.cases_under_review ?? 0;
+          document.getElementById("stat-resolved-cases").innerText = stats.cases_resolved ?? 0;
+          document.getElementById("stat-high-severity").innerText = stats.high_severity_count ?? 0;
+
+          // Render Category Bar Chart
+          renderCategoryChart(stats.count_by_category || {}, stats.public_cases || 1);
+
+          // Render State Bar Chart
+          renderStateChart(stats.count_by_state || {}, stats.public_cases || 1);
+
+          // Update known total for auto-refresh detection
+          lastKnownTotalCases = stats.total_cases;
+        } catch (err) {
+          console.error("Error loading stats:", err);
+        }
+      }
+
+      // Render Cases by Category Chart
+      function renderCategoryChart(catCounts, total) {
+        const container = document.getElementById("category-chart-bars");
+        if (!container) return;
+
+        const entries = Object.entries(catCounts);
+        if (entries.length === 0) {
+          container.innerHTML = `<div style="color:var(--bi-text-muted); font-size:13px; text-align:center; padding:18px;">No category data yet.</div>`;
+          return;
+        }
+
+        // Sort descending by count
+        entries.sort((a, b) => b[1] - a[1]);
+
+        let html = "";
+        entries.forEach(([catKey, count]) => {
+          const pct = Math.max(8, Math.round((count / (total || 1)) * 100));
+          const label = CATEGORY_DISPLAY_NAMES[catKey] || catKey.replace(/_/g, " ").toUpperCase();
+          const gradient = CATEGORY_COLORS[catKey] || "linear-gradient(90deg, #6366f1, #818cf8)";
+
+          html += `
+            <div class="chart-bar-item">
+              <div class="chart-bar-labels">
+                <span>${label}</span>
+                <span><strong>${count}</strong> <span style="opacity:0.75; font-size:11.5px;">(${pct}%)</span></span>
+              </div>
+              <div class="chart-bar-track">
+                <div class="chart-bar-fill" style="width: ${pct}%; background: ${gradient};"></div>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      }
+
+      // Render Cases by State Chart
+      function renderStateChart(stateCounts, total) {
+        const container = document.getElementById("state-chart-bars");
+        if (!container) return;
+
+        const entries = Object.entries(stateCounts);
+        if (entries.length === 0) {
+          container.innerHTML = `<div style="color:var(--bi-text-muted); font-size:13px; text-align:center; padding:18px;">No geographic data yet.</div>`;
+          return;
+        }
+
+        // Sort descending by count, take top 6
+        entries.sort((a, b) => b[1] - a[1]);
+        const topEntries = entries.slice(0, 6);
+
+        let html = "";
+        topEntries.forEach(([stateName, count]) => {
+          const pct = Math.max(8, Math.round((count / (total || 1)) * 100));
+          html += `
+            <div class="chart-bar-item">
+              <div class="chart-bar-labels">
+                <span>📍 ${escapeHtml(stateName)}</span>
+                <span><strong>${count}</strong> <span style="opacity:0.75; font-size:11.5px;">(${pct}%)</span></span>
+              </div>
+              <div class="chart-bar-track">
+                <div class="chart-bar-fill" style="width: ${pct}%; background: linear-gradient(90deg, #38bdf8, #818cf8);"></div>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      }
+
+      // Skeleton Loader HTML
+      function renderSkeleton() {
+        const container = document.getElementById("cases-cards-container");
+        container.innerHTML = `
+          <div class="skeleton-card">
+            <div class="skeleton-line" style="width: 25%;"></div>
+            <div class="skeleton-line" style="width: 70%; height: 20px;"></div>
+            <div class="skeleton-line" style="width: 45%;"></div>
+            <div class="skeleton-line" style="width: 100%; height: 40px;"></div>
+          </div>
+          <div class="skeleton-card">
+            <div class="skeleton-line" style="width: 20%;"></div>
+            <div class="skeleton-line" style="width: 60%; height: 20px;"></div>
+            <div class="skeleton-line" style="width: 35%;"></div>
+            <div class="skeleton-line" style="width: 100%; height: 40px;"></div>
+          </div>
+          <div class="skeleton-card">
+            <div class="skeleton-line" style="width: 30%;"></div>
+            <div class="skeleton-line" style="width: 65%; height: 20px;"></div>
+            <div class="skeleton-line" style="width: 40%;"></div>
+            <div class="skeleton-line" style="width: 100%; height: 40px;"></div>
+          </div>
+        `;
+      }
+
+      // Fetch and Render Public Cases
+      async function loadCases() {
+        renderSkeleton();
+
+        const searchVal = document.getElementById("cases-search-input").value.trim();
+        const statusVal = document.getElementById("filter-status-select").value;
+        const severityVal = document.getElementById("filter-severity-select").value;
+        const stateVal = document.getElementById("filter-state-select").value;
+        const sortVal = document.getElementById("filter-sort-select").value;
+
+        const params = new URLSearchParams({
+          page: currentPage.toString(),
+          page_size: pageSize.toString(),
+          sort_by: sortVal,
+        });
+
+        if (activeCategory) params.append("category", activeCategory);
+        if (statusVal) params.append("status", statusVal);
+        if (severityVal) params.append("severity", severityVal);
+        if (stateVal) params.append("state", stateVal);
+        if (searchVal) params.append("search", searchVal);
+
+        try {
+          const res = await fetch(`${API_BASE}/api/public/cases?${params.toString()}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to load cases`);
+          const data = await res.json();
+
+          totalItems = data.total;
+          totalPages = data.total_pages;
+
+          renderCards(data.items);
+          renderPagination();
+        } catch (err) {
+          renderErrorState(err.message);
+        }
+      }
+
+      // Render Cards List
+      function renderCards(items) {
+        window.currentLoadedCases = items || [];
+        const container = document.getElementById("cases-cards-container");
+        if (!items || items.length === 0) {
+          container.innerHTML = `
+            <div class="cases-state-box">
+              <span class="cases-state-icon">📋</span>
+              <h3 class="cases-state-title">No Cases Found for These Filters</h3>
+              <p class="cases-state-desc">Try clearing your search query or selecting a different category or status.</p>
+              <button type="button" class="btn btn-secondary" onclick="window.resetCasesFilters()" style="margin-top: 8px;">
+                Reset All Filters
+              </button>
+            </div>
+          `;
+          document.getElementById("cases-pagination-bar").style.display = "none";
+          return;
+        }
+
+        container.innerHTML = items.map(c => {
+          const sevClass = c.urgency_level === "high" || c.urgency_level === "immediate_sos" 
+            ? "high" : c.urgency_level === "medium" ? "medium" : "low";
+
+          const sevLabel = c.urgency_level === "immediate_sos" 
+            ? "🚨 IMMEDIATE SOS" : c.urgency_level === "high" ? "⚠️ HIGH SEVERITY" : c.urgency_level === "medium" ? "⚡ MEDIUM" : "🟢 LOW";
+
+          const statClass = c.status || "submitted";
+          const statLabel = c.status === "escalated_to_ngo" ? "ESCALATED TO NGO" : c.status === "legal_aid_assigned" ? "LEGAL AID ASSIGNED" : (c.status || "SUBMITTED").replace(/_/g, " ").toUpperCase();
+
+          // Government Schemes chips
+          const schemesHtml = (c.matched_schemes || []).slice(0, 3).map(s => `
+            <span class="scheme-chip">
+              🏛️ ${escapeHtml(s.name)}
+            </span>
+          `).join("");
+
+          // NGO Chips - FIX EMPTY () BUG: Only include phone if it is non-empty!
+          const ngosHtml = (c.matched_ngos || []).slice(0, 2).map(n => {
+            const phone = (n.contact_phone || "").trim();
+            const phoneStr = phone ? ` (${escapeHtml(phone)})` : "";
+            return `
+              <span class="ngo-chip">
+                🤝 ${escapeHtml(n.name)}${phoneStr}
+              </span>
+            `;
+          }).join("");
+
+          // Guaranteed Date on Every Card
+          const dateStr = c.display_date || (c.created_at ? c.created_at.slice(0, 10) : "Recent");
+
+          return `
+            <article class="case-card" aria-label="Incident #${c.id}: ${escapeHtml(c.title)}" style="cursor: pointer;" onclick="window.openCaseDossierModal(${c.id})">
+              <div class="case-card-header">
+                <div class="case-card-badges">
+                  <span class="case-cat-badge">🚨 ${escapeHtml(c.category_label || c.incident_type)}</span>
+                  <span class="case-sev-badge ${sevClass}">${sevLabel}</span>
+                </div>
+                <span class="case-status-badge ${statClass}">${statLabel}</span>
+              </div>
+
+              <h2 class="case-card-title">${escapeHtml(c.title)}</h2>
+
+              <div class="case-meta-row">
+                <span class="case-meta-item">📍 <strong>${escapeHtml(c.location_city)}, ${escapeHtml(c.location_state)}</strong></span>
+                <span class="case-meta-item">${c.reporter_type === "Anonymous Report" ? "🕵️ Anonymous Report" : "👤 Community Member"}</span>
+                <span class="case-meta-item">📅 <strong>${escapeHtml(dateStr)}</strong></span>
+              </div>
+
+              <p class="case-card-desc">${escapeHtml(c.public_summary || c.description)}</p>
+
+              <!-- Generic Sanitized Entity Type (Real Organization Name Never Shown) -->
+              <div class="case-entity-badge">
+                <span>🏢 <strong>Institutional Type:</strong></span>
+                <span>${escapeHtml(c.entity_type || "Private Entity")}</span>
+              </div>
+
+              <!-- Matched Schemes and Verified NGOs -->
+              ${schemesHtml || ngosHtml ? `
+                <div class="case-chips-wrap">
+                  ${schemesHtml}
+                  ${ngosHtml}
+                </div>
+              ` : ""}
+
+              <!-- Case Triage Notes if available -->
+              ${c.case_notes ? `
+                <div class="case-notes-box">
+                  <strong>Case Triage Notes:</strong> ${escapeHtml(c.case_notes)}
+                </div>
+              ` : ""}
+
+              <!-- Interactive Dossier Button -->
+              <button type="button" class="btn-case-dossier" onclick="event.stopPropagation(); window.openCaseDossierModal(${c.id});" style="margin-top: 14px; width: 100%; padding: 10px 16px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.1); color: #38bdf8; font-weight: 700; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
+                <span>🔍</span> View Full Dossier &amp; Legal Redressal →
+              </button>
+
+              <div class="case-card-footer" style="margin-top: 14px;">
+                <span>Assigned Partner: <strong style="color: var(--bi-text-main);">${escapeHtml(c.assigned_ngo || "National Triage Cell / Pending")}</strong></span>
+                <span style="font-size: 12px; opacity: 0.85;">Ref Case #${c.id}</span>
+              </div>
+            </article>
+          `;
+        }).join("");
+      }
+
+      // Statutory Rights and Legal Section Mappings under Indian Law
+      const STATUTORY_RIGHTS = {
+        workplace: {
+          title: "Transgender Persons Act, 2019 — Sections 9 & 11; Equal Remuneration Act; POSH Act",
+          provisions: "Section 9 strictly prohibits discrimination against any transgender person in employment, recruitment, promotion and other workplace matters. Section 11 mandates every establishment to designate a Complaint Officer to redress grievances.",
+          remedy: "File formal complaint with the establishment's Complaint Officer / ICC. Submit petition to State Transgender Welfare Board and District Magistrate under Rule 13 of TG Rules 2020."
+        },
+        healthcare_denial: {
+          title: "Transgender Persons Act, 2019 — Section 15 & Ayushman Bharat PM-JAY TG Package",
+          provisions: "Section 15 mandates government and private medical institutions to provide non-discriminatory healthcare facilities, separate transgender wards, and gender affirmation surgery coverage under the National Health Mission and Ayushman Bharat PM-JAY TG package (₹5 Lakhs/year coverage).",
+          remedy: "Escalate to National Health Authority grievance cell (toll-free 14555), State Medical Council, and Ministry of Social Justice & Empowerment."
+        },
+        housing_eviction: {
+          title: "Transgender Persons Act, 2019 — Section 12 & SMILE / Garima Greh Scheme",
+          provisions: "Section 12 ensures no transgender person shall be separated from parents or immediate family, nor denied right to reside in the household or rented property on grounds of gender identity. Ministry of Social Justice operates Garima Greh shelter homes providing safe housing and food.",
+          remedy: "Immediate SOS relocation to Garima Greh shelter homes; file injunction under Section 12 before Civil Court / Magistrate."
+        },
+        education: {
+          title: "Transgender Persons Act, 2019 — Section 13 & Supreme Court NALSA (2014) Ruling",
+          provisions: "Section 13 directs all educational institutions funded or recognized by government to provide inclusive education, sports and recreation facilities without discrimination. NALSA (2014) guarantees affirmative action and anti-ragging protections.",
+          remedy: "Report to University Grants Commission (UGC) Anti-Discrimination Cell and State Education Department."
+        },
+        police_harassment: {
+          title: "Transgender Persons Act, 2019 — Section 18 & Supreme Court NALSA (2014) Ruling",
+          provisions: "Section 18 prescribes penal imprisonment up to two years for physical, sexual, verbal, or economic abuse against transgender persons. Transgender persons cannot be detained or subjected to strip searches by opposite gender officers.",
+          remedy: "Contact NALSA Free Legal Aid at toll-free 15100, submit grievance to State Human Rights Commission (SHRC), and alert partner NGO legal cell."
+        },
+        public_harassment: {
+          title: "Transgender Persons Act, 2019 — Section 3(c) & IPC/BNS Protections",
+          provisions: "Section 3(c) explicitly guarantees right of access to, use, or enjoyment of any goods, accommodation, service, facility, benefit, or privilege to which the public is entitled.",
+          remedy: "Lodge FIR under Section 18 TG Act 2019; seek NGO bystander intervention and community advocacy."
+        },
+        legal_documentation: {
+          title: "Transgender Persons Act, 2019 — Sections 5, 6 & 7 (National Portal for Transgender Persons)",
+          provisions: "Section 5 & 6 entitle any transgender person to apply to the District Magistrate for a Certificate of Identity without requiring surgical intervention (affidavit-based self-declaration under NALSA).",
+          remedy: "Re-submit application on national transgender portal (transgender.dosje.gov.in) with District Magistrate grievance escalation."
+        }
+      };
+
+      // Open Case Dossier Modal
+      window.openCaseDossierModal = function(caseId) {
+        const cases = window.currentLoadedCases || [];
+        const c = cases.find(x => x.id === caseId);
+        if (!c) return;
+
+        const body = document.getElementById("case-dossier-body");
+        if (!body) return;
+
+        const dateStr = c.display_date || (c.created_at ? c.created_at.slice(0, 10) : "Recent");
+        const legal = STATUTORY_RIGHTS[c.incident_type] || {
+          title: "Constitution of India Articles 14, 15, 19 & 21 (NALSA 2014)",
+          provisions: "Guarantees equal protection under the law, non-discrimination on grounds of gender identity, and right to live with dignity.",
+          remedy: "Petition District Legal Services Authority (DLSA) / State Transgender Welfare Board."
+        };
+
+        const sevClass = c.urgency_level === "high" || c.urgency_level === "immediate_sos" 
+          ? "high" : c.urgency_level === "medium" ? "medium" : "low";
+        const sevLabel = c.urgency_level === "immediate_sos" 
+          ? "🚨 IMMEDIATE SOS" : c.urgency_level === "high" ? "⚠️ HIGH SEVERITY" : c.urgency_level === "medium" ? "⚡ MEDIUM" : "🟢 LOW";
+        const statClass = c.status || "submitted";
+        const statLabel = (c.status || "SUBMITTED").replace(/_/g, " ").toUpperCase();
+
+        // Schemes list
+        let schemesHtml = "";
+        if (c.matched_schemes && c.matched_schemes.length > 0) {
+          schemesHtml = c.matched_schemes.map(s => `
+            <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px;">
+                <strong style="font-size: 14px; color: #38bdf8;">🏛️ ${escapeHtml(s.name)}</strong>
+                <span style="font-size: 11.5px; color: var(--bi-text-muted);">${escapeHtml(s.ministry_or_dept || "")}</span>
+              </div>
+              <p style="font-size: 13px; color: var(--bi-text-secondary); margin: 6px 0 8px;">${escapeHtml(s.description)}</p>
+              ${s.benefits ? `<div style="font-size: 12px; color: #34d399; margin-bottom: 6px;"><strong>Benefits:</strong> ${escapeHtml(s.benefits)}</div>` : ""}
+              ${s.application_link ? `
+                <a href="${escapeHtml(s.application_link)}" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: #2dd4bf; text-decoration: underline; font-weight: 600;">
+                  Apply / Official Portal Link ↗
+                </a>
+              ` : ""}
+            </div>
+          `).join("");
+        } else {
+          schemesHtml = `<p style="font-size: 13px; color: var(--bi-text-muted);">No specific welfare scheme automatically matched.</p>`;
+        }
+
+        // NGOs list
+        let ngosHtml = "";
+        if (c.matched_ngos && c.matched_ngos.length > 0) {
+          ngosHtml = c.matched_ngos.map(n => {
+            const phone = (n.contact_phone || "").trim();
+            const email = (n.contact_email || "").trim();
+            return `
+              <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px;">
+                  <strong style="font-size: 14px; color: #c084fc;">🤝 ${escapeHtml(n.name)}</strong>
+                  <span style="font-size: 11.5px; color: var(--bi-text-muted);">${escapeHtml(n.location || "")}</span>
+                </div>
+                ${n.focus_area ? `<div style="font-size: 12px; color: var(--bi-text-secondary); margin: 4px 0 8px;"><strong>Focus Area:</strong> ${escapeHtml(n.focus_area)}</div>` : ""}
+                <div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; margin-top: 6px;">
+                  ${phone ? `<a href="tel:${escapeHtml(phone)}" style="color: #38bdf8; text-decoration: none; font-weight: 600;">📞 ${escapeHtml(phone)}</a>` : ""}
+                  ${email ? `<a href="mailto:${escapeHtml(email)}" style="color: #a78bfa; text-decoration: none; font-weight: 600;">✉️ ${escapeHtml(email)}</a>` : ""}
+                </div>
+              </div>
+            `;
+          }).join("");
+        } else {
+          ngosHtml = `<p style="font-size: 13px; color: var(--bi-text-muted);">National Community Triage Cell assigned.</p>`;
+        }
+
+        body.innerHTML = `
+          <!-- Header Bar -->
+          <div style="margin-bottom: 18px; padding-right: 30px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+              <span class="case-cat-badge">🚨 ${escapeHtml(c.category_label || c.incident_type)}</span>
+              <span class="case-sev-badge ${sevClass}">${sevLabel}</span>
+              <span class="case-status-badge ${statClass}">${statLabel}</span>
+              <span style="font-size: 12px; color: var(--bi-text-muted); font-weight: 600;">Dossier Case #${c.id}</span>
+            </div>
+            <h2 id="dossier-modal-title" style="margin: 0 0 8px; font-size: 21px; color: #f8fafc; line-height: 1.35;">${escapeHtml(c.title)}</h2>
+            <div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--bi-text-secondary);">
+              <span>📍 <strong>${escapeHtml(c.location_city)}, ${escapeHtml(c.location_state)}</strong></span>
+              <span>📅 ${escapeHtml(dateStr)}</span>
+              <span>${c.reporter_type === "Anonymous Report" ? "🕵️ Anonymous Report" : "👤 Community Member"}</span>
+              <span>🏢 <strong>Institutional Type:</strong> ${escapeHtml(c.entity_type || "Private Entity")}</span>
+            </div>
+          </div>
+
+          <!-- Section: Incident Record -->
+          <div class="dossier-section">
+            <div class="dossier-sec-title">📜 Factual Grievance Record</div>
+            <p style="font-size: 14px; line-height: 1.65; color: var(--bi-text-main); margin: 0; white-space: pre-line;">
+              ${escapeHtml(c.description || c.public_summary)}
+            </p>
+          </div>
+
+          <!-- Section: Legal Protections & Statutory Redressal -->
+          <div class="dossier-section">
+            <div class="dossier-sec-title">⚖️ Applicable Statutory Rights &amp; Legal Framework</div>
+            <div style="background: rgba(99, 102, 241, 0.08); border-left: 3px solid #6366f1; border-radius: 0 10px 10px 0; padding: 12px 14px; margin-bottom: 10px;">
+              <strong style="color: #818cf8; font-size: 13.5px;">${escapeHtml(legal.title)}</strong>
+              <p style="font-size: 13px; color: var(--bi-text-secondary); margin: 6px 0 0; line-height: 1.5;">${escapeHtml(legal.provisions)}</p>
+            </div>
+            <div style="font-size: 13px; color: #cbd5e1; background: rgba(0,0,0,0.25); padding: 10px 12px; border-radius: 8px;">
+              <strong style="color: #38bdf8;">Recommended Legal Action / Redressal:</strong> ${escapeHtml(legal.remedy)}
+            </div>
+          </div>
+
+          <!-- Section: Matched Welfare Schemes -->
+          <div class="dossier-section">
+            <div class="dossier-sec-title">🏛️ Matched Indian Welfare Schemes</div>
+            ${schemesHtml}
+          </div>
+
+          <!-- Section: Matched NGO & Rapid Response Desk -->
+          <div class="dossier-section">
+            <div class="dossier-sec-title">🤝 Partner NGO &amp; Legal Aid Desk</div>
+            <div style="font-size: 13px; color: var(--bi-text-secondary); margin-bottom: 8px;">
+              Assigned Partner Organization: <strong style="color: #f8fafc;">${escapeHtml(c.assigned_ngo || "National Triage Cell / Pending")}</strong>
+            </div>
+            ${ngosHtml}
+          </div>
+
+          <!-- Section: Case Triage Notes if available -->
+          ${c.case_notes ? `
+            <div class="dossier-section">
+              <div class="dossier-sec-title">📝 Case Triage &amp; Action Notes</div>
+              <p style="font-size: 13.5px; color: #fde047; margin: 0; background: rgba(234, 179, 8, 0.1); border-left: 3px solid #eab308; padding: 10px 12px; border-radius: 0 8px 8px 0;">
+                ${escapeHtml(c.case_notes)}
+              </p>
+            </div>
+          ` : ""}
+
+          <!-- Footer Actions -->
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08);">
+            <button type="button" class="btn btn-secondary" onclick="window.copyCaseDossierRef(${c.id})" style="padding: 9px 16px; font-size: 13px; border-radius: 8px;">
+              📋 Copy Reference Link
+            </button>
+            <a href="tel:868989330" class="btn btn-primary" style="padding: 9px 16px; font-size: 13px; text-decoration: none; border-radius: 8px; font-weight: 700;">
+              📞 Call Crisis Line (868989330)
+            </a>
+            <button type="button" class="btn btn-secondary" onclick="window.closeCaseDossierModal()" style="padding: 9px 16px; font-size: 13px; border-radius: 8px;">
+              Close
+            </button>
+          </div>
+        `;
+
+        document.getElementById("case-dossier-modal").classList.add("active");
+        document.body.style.overflow = "hidden";
+      };
+
+      // Close Case Dossier Modal
+      window.closeCaseDossierModal = function() {
+        const modal = document.getElementById("case-dossier-modal");
+        if (modal) modal.classList.remove("active");
+        document.body.style.overflow = "";
+      };
+
+      // Open Incident Report Modal
+      window.openReportCaseModal = function() {
+        const modal = document.getElementById("report-case-modal");
+        const statusDiv = document.getElementById("modal-report-status");
+        if (statusDiv) statusDiv.style.display = "none";
+        if (modal) modal.classList.add("active");
+        document.body.style.overflow = "hidden";
+      };
+
+      // Close Incident Report Modal
+      window.closeReportCaseModal = function() {
+        const modal = document.getElementById("report-case-modal");
+        if (modal) modal.classList.remove("active");
+        document.body.style.overflow = "";
+      };
+
+      // Copy Dossier Reference Link helper
+      window.copyCaseDossierRef = function(caseId) {
+        const shareUrl = `${window.location.origin}/cases?case_id=${caseId}`;
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            alert(`Dossier reference link copied to clipboard:\n${shareUrl}`);
+          }).catch(() => {
+            prompt("Case Dossier Reference Link:", shareUrl);
+          });
+        } else {
+          prompt("Case Dossier Reference Link:", shareUrl);
+        }
+      };
+
+      // Render Pagination Bar
+      function renderPagination() {
+        const bar = document.getElementById("cases-pagination-bar");
+        const info = document.getElementById("pagination-info-text");
+        const prevBtn = document.getElementById("btn-prev-page");
+        const nextBtn = document.getElementById("btn-next-page");
+
+        if (totalItems <= pageSize) {
+          bar.style.display = "none";
+          return;
+        }
+
+        bar.style.display = "flex";
+        const start = (currentPage - 1) * pageSize + 1;
+        const end = Math.min(currentPage * pageSize, totalItems);
+        info.innerText = `Showing ${start}–${end} of ${totalItems} cases (Page ${currentPage} of ${totalPages})`;
+
+        prevBtn.disabled = currentPage <= 1;
+        nextBtn.disabled = currentPage >= totalPages;
+      }
+
+      // Render Error State
+      function renderErrorState(msg) {
+        const container = document.getElementById("cases-cards-container");
+        container.innerHTML = `
+          <div class="cases-state-box" style="border-color: rgba(244, 63, 94, 0.3);">
+            <span class="cases-state-icon">⚠️</span>
+            <h3 class="cases-state-title" style="color: #fb7185;">Could Not Load Cases</h3>
+            <p class="cases-state-desc">${escapeHtml(msg)}. Please check your internet connection and try again.</p>
+            <button type="button" class="btn btn-primary" onclick="window.loadCasesWrapper()" style="margin-top: 8px;">
+              🔄 Retry Loading
+            </button>
+          </div>
+        `;
+        document.getElementById("cases-pagination-bar").style.display = "none";
+      }
+
+      // Real-time polling check every 30 seconds
+      function startAutoRefreshPolling() {
+        setInterval(async () => {
+          try {
+            const res = await fetch(`${API_BASE}/api/public/cases/stats`);
+            if (res.ok) {
+              const stats = await res.json();
+              if (lastKnownTotalCases !== null && stats.total_cases > lastKnownTotalCases) {
+                // Show notification banner
+                const banner = document.getElementById("new-cases-alert-banner");
+                if (banner) banner.classList.add("visible");
+              }
+            }
+          } catch (e) {
+            // Silently ignore polling failures
+          }
+        }, 30000); // 30 seconds
+      }
+
+      // Global helper for buttons
+      window.loadCasesWrapper = loadCases;
+      window.resetCasesFilters = function() {
+        document.getElementById("cases-search-input").value = "";
+        document.getElementById("filter-status-select").value = "";
+        document.getElementById("filter-severity-select").value = "";
+        document.getElementById("filter-state-select").value = "";
+        document.getElementById("filter-sort-select").value = "newest";
+
+        activeCategory = "";
+        document.querySelectorAll(".filter-chip-btn").forEach(btn => {
+          if (btn.getAttribute("data-cat") === "") {
+            btn.classList.add("active");
+            btn.setAttribute("aria-selected", "true");
+          } else {
+            btn.classList.remove("active");
+            btn.setAttribute("aria-selected", "false");
+          }
+        });
+
+        currentPage = 1;
+        loadCases();
+      };
+
+      // Setup Event Listeners
+      function setupListeners() {
+        // Category Chips
+        document.querySelectorAll(".filter-chip-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            document.querySelectorAll(".filter-chip-btn").forEach(b => {
+              b.classList.remove("active");
+              b.setAttribute("aria-selected", "false");
+            });
+            btn.classList.add("active");
+            btn.setAttribute("aria-selected", "true");
+
+            activeCategory = btn.getAttribute("data-cat") || "";
+            currentPage = 1;
+            loadCases();
+          });
+        });
+
+        // Search Input (Debounced)
+        const searchInput = document.getElementById("cases-search-input");
+        searchInput.addEventListener("input", () => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            currentPage = 1;
+            loadCases();
+          }, 350);
+        });
+
+        // Dropdowns
+        document.getElementById("filter-status-select").addEventListener("change", () => {
+          currentPage = 1;
+          loadCases();
+        });
+        document.getElementById("filter-severity-select").addEventListener("change", () => {
+          currentPage = 1;
+          loadCases();
+        });
+        document.getElementById("filter-state-select").addEventListener("change", () => {
+          currentPage = 1;
+          loadCases();
+        });
+        document.getElementById("filter-sort-select").addEventListener("change", () => {
+          currentPage = 1;
+          loadCases();
+        });
+
+        // Clear Filters Button
+        document.getElementById("btn-clear-filters").addEventListener("click", window.resetCasesFilters);
+
+        // Pagination Buttons
+        document.getElementById("btn-prev-page").addEventListener("click", () => {
+          if (currentPage > 1) {
+            currentPage--;
+            loadCases();
+            window.scrollTo({ top: 380, behavior: "smooth" });
+          }
+        });
+        document.getElementById("btn-next-page").addEventListener("click", () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            loadCases();
+            window.scrollTo({ top: 380, behavior: "smooth" });
+          }
+        });
+
+        // "Update Board" banner button
+        const updateBtn = document.getElementById("btn-load-new-cases");
+        if (updateBtn) {
+          updateBtn.addEventListener("click", () => {
+            document.getElementById("new-cases-alert-banner").classList.remove("visible");
+            currentPage = 1;
+            loadStats();
+            loadCases();
+          });
+        }
+
+        // Modal triggers & close handlers
+        const heroReportBtn = document.getElementById("btn-hero-report-case");
+        if (heroReportBtn) {
+          heroReportBtn.addEventListener("click", window.openReportCaseModal);
+        }
+
+        const navReportLink = document.querySelector("#auth-actions-container a[href*='report']");
+        if (navReportLink) {
+          navReportLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.openReportCaseModal();
+          });
+        }
+
+        const closeDossierBtn = document.getElementById("close-dossier-modal");
+        if (closeDossierBtn) {
+          closeDossierBtn.addEventListener("click", window.closeCaseDossierModal);
+        }
+
+        const closeReportBtn = document.getElementById("close-report-modal");
+        if (closeReportBtn) {
+          closeReportBtn.addEventListener("click", window.closeReportCaseModal);
+        }
+
+        // Close on backdrop click
+        document.querySelectorAll(".modal-overlay").forEach(overlay => {
+          overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
+              window.closeCaseDossierModal();
+              window.closeReportCaseModal();
+            }
+          });
+        });
+
+        // Close on Escape key
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            window.closeCaseDossierModal();
+            window.closeReportCaseModal();
+          }
+        });
+
+        // Quick Incident Report Form Submission
+        const reportForm = document.getElementById("quick-case-report-form");
+        if (reportForm) {
+          reportForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const statusDiv = document.getElementById("modal-report-status");
+            const submitBtn = document.getElementById("btn-submit-quick-report");
+
+            const incType = document.getElementById("modal-inc-type").value;
+            const urgency = document.getElementById("modal-inc-urgency").value;
+            const title = document.getElementById("modal-inc-title").value.trim();
+            const desc = document.getElementById("modal-inc-desc").value.trim();
+            const city = document.getElementById("modal-inc-city").value.trim();
+            const state = document.getElementById("modal-inc-state").value.trim();
+            const entity = document.getElementById("modal-inc-entity").value.trim();
+            const consent = document.getElementById("modal-inc-consent").checked;
+
+            if (!title || !desc || !city || !state) {
+              if (statusDiv) {
+                statusDiv.style.display = "block";
+                statusDiv.innerHTML = `<span style="color:#fb7185; font-size:13px;">Please complete all required fields.</span>`;
+              }
+              return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Submitting & Matching Welfare Schemes...";
+
+            const payload = {
+              incident_type: incType,
+              urgency_level: urgency,
+              title: title,
+              description: desc,
+              location_city: city,
+              location_state: state,
+              perpetrator_details: entity || null,
+              entity_type: entity ? "Institutional / Private Entity" : "Generic Entity",
+              reporter_consent_public: consent,
+              is_anonymous: true
+            };
+
+            const token = localStorage.getItem("token");
+            const headers = { "Content-Type": "application/json" };
+            if (token) headers["Authorization"] = `Bearer ${token}`;
+
+            try {
+              const res = await fetch(`${API_BASE}/incidents/`, {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify(payload)
+              });
+
+              if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.detail || `Server error (${res.status})`);
+              }
+
+              const created = await res.json();
+              if (statusDiv) {
+                statusDiv.style.display = "block";
+                statusDiv.innerHTML = `
+                  <div style="background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); border-radius: 8px; padding: 12px; color: #34d399; font-size: 13.5px;">
+                    ✅ <strong>Case Successfully Submitted (Ref #${created.id})!</strong>
+                    ${consent ? "<br>Your report has been added to the public community case registry." : "<br>Stored securely for NGO crisis and triage review."}
+                  </div>
+                `;
+              }
+
+              reportForm.reset();
+              submitBtn.disabled = false;
+              submitBtn.innerText = "Submit Incident Report & Match Indian Welfare Schemes";
+
+              // Refresh metrics and case list
+              await loadStats();
+              await loadCases();
+
+              setTimeout(() => {
+                window.closeReportCaseModal();
+              }, 2200);
+
+            } catch (err) {
+              submitBtn.disabled = false;
+              submitBtn.innerText = "Submit Incident Report & Match Indian Welfare Schemes";
+              if (statusDiv) {
+                statusDiv.style.display = "block";
+                statusDiv.innerHTML = `
+                  <div style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 8px; padding: 10px; color: #fb7185; font-size: 13px;">
+                    ✕ Failed to submit case: ${escapeHtml(err.message)}
+                  </div>
+                `;
+              }
+            }
+          });
+        }
+      }
+
+      // Check URL parameters for direct deep-link to a case dossier
+      function checkDeepLinkCase() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const caseId = urlParams.get("case_id");
+        if (caseId) {
+          const parsedId = parseInt(caseId, 10);
+          if (!isNaN(parsedId)) {
+            // Wait slightly for cases to load
+            setTimeout(() => {
+              window.openCaseDossierModal(parsedId);
+            }, 600);
+          }
+        }
+      }
+
+      // DOM Content Loaded Execution
+      document.addEventListener("DOMContentLoaded", () => {
+        initTheme();
+        initMobileNav();
+        setupListeners();
+        loadStats();
+        loadCases().then(() => {
+          checkDeepLinkCase();
+        });
+        startAutoRefreshPolling();
+      });
+
+    })();
+  </script>
+</body>
+</html>

@@ -767,8 +767,105 @@
         font-size: 24px;
       }
       .stat-metric-value {
-        font-size: 24px;
-      }
+    /* Dossier & Report Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.84);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-content {
+      background: var(--bi-surface-card, #111827);
+      border: 1px solid var(--bi-border-subtle, rgba(255, 255, 255, 0.15));
+      border-radius: 20px;
+      max-width: 740px;
+      width: 100%;
+      padding: 30px;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px -15px rgba(0,0,0,0.7);
+    }
+    .close-modal {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--bi-text-muted, #94a3b8);
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+    .close-modal:hover { color: #f8fafc; }
+    .btn-case-dossier:hover {
+      background: rgba(56, 189, 248, 0.22) !important;
+      border-color: #38bdf8 !important;
+      transform: translateY(-1px);
+    }
+    .dossier-section {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .dossier-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .dossier-sec-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #38bdf8;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .form-group-modal {
+      margin-bottom: 16px;
+    }
+    .form-group-modal label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--bi-text-secondary, #cbd5e1);
+      margin-bottom: 6px;
+    }
+    .form-group-modal input,
+    .form-group-modal select,
+    .form-group-modal textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--bi-text-main, #f8fafc);
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+    .form-group-modal textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+    .form-group-modal input:focus,
+    .form-group-modal select:focus,
+    .form-group-modal textarea:focus {
+      border-color: #38bdf8;
+      background: rgba(255, 255, 255, 0.09);
     }
   </style>
 </head>
@@ -892,19 +989,34 @@
       <div class="hero-top-badges">
         <span class="cases-live-pill">
           <span class="cases-pulse-dot" aria-hidden="true"></span>
-          <span>Live Community Registry</span>
+          <span>Live Community Registry Across India</span>
         </span>
         <span class="cases-privacy-pill">
-          <span>🔒 Strict Privacy Whitelist Enforced</span>
+          <span>🔒 Strict Privacy Whitelist Enforced (Section 18 TG Act)</span>
+        </span>
+        <span style="font-size: 12px; font-weight: 600; color: #34d399; background: rgba(52, 211, 153, 0.12); padding: 5px 12px; border-radius: 9999px; border: 1px solid rgba(52, 211, 153, 0.3);">
+          ⚡ Real Citizen Cases
         </span>
       </div>
-      <h1 class="cases-hero-title" id="cases-board-heading">
-        <span>Community Case Board</span>
-      </h1>
-      <p class="cases-hero-subtitle">
-        An anonymous, transparent view of discrimination cases reported on Beyond Identity across India.
-        Answers: <em>"What kind of cases come to Beyond Identity?"</em> Explore statutory scheme linkages, NGO triage interventions, and case resolutions.
-      </p>
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 18px; margin-top: 6px;">
+        <div style="flex: 1; min-width: 300px;">
+          <h1 class="cases-hero-title" id="cases-board-heading" style="margin: 0 0 10px;">
+            <span>Community Cases &amp; Discrimination Registry</span>
+          </h1>
+          <p class="cases-hero-subtitle">
+            An independent, transparent public record of discrimination incidents reported by citizens across India.
+            Explore authentic grievances submitted by community members, matched Indian welfare schemes (SMILE, Garima Greh, AB-PMJAY), legal aid tracking, and verified partner NGO interventions.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+          <button type="button" class="btn btn-primary" id="btn-hero-report-case" style="padding: 11px 22px; font-size: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(20, 184, 166, 0.35);">
+            <span>🚨</span> Report a Discrimination Case
+          </button>
+          <a href="/" class="btn btn-secondary" style="padding: 11px 18px; font-size: 13.5px; text-decoration: none; font-weight: 600; border-radius: 12px; display: inline-flex; align-items: center; gap: 6px;">
+            <span>🏠</span> Main Portal
+          </a>
+        </div>
+      </div>
     </section>
 
     <!-- Top Stats Row (5 Metrics) -->
@@ -1144,6 +1256,94 @@
     </section>
 
   </main>
+
+  <!-- Modal 1: Full Case Dossier Modal -->
+  <div class="modal-overlay" id="case-dossier-modal" role="dialog" aria-modal="true" aria-labelledby="dossier-modal-title">
+    <div class="modal-content" style="max-width: 760px;">
+      <button type="button" class="close-modal" id="close-dossier-modal" aria-label="Close Dossier">✕</button>
+      <div id="case-dossier-body">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Quick Community Incident Report Modal -->
+  <div class="modal-overlay" id="report-case-modal" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
+    <div class="modal-content" style="max-width: 680px;">
+      <button type="button" class="close-modal" id="close-report-modal" aria-label="Close Report Form">✕</button>
+      <div style="margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #2dd4bf; letter-spacing: 0.05em;">Confidential Citizen Filing</span>
+        <h2 id="report-modal-title" style="margin: 4px 0 6px; font-size: 22px; color: #f8fafc;">Report a Discrimination Case</h2>
+        <p style="font-size: 13.5px; color: var(--bi-text-secondary); margin: 0;">Submit an incident report. It will be matched automatically with statutory Indian welfare schemes and verified partner NGO triage desks.</p>
+      </div>
+
+      <form id="quick-case-report-form">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group-modal">
+            <label for="modal-inc-type">Discrimination Category *</label>
+            <select id="modal-inc-type" required>
+              <option value="workplace">Workplace (Wrongful Termination, Harassment)</option>
+              <option value="healthcare_denial">Healthcare Denial (Refusal of Care, Lack of Trans Ward)</option>
+              <option value="housing_eviction">Housing &amp; Eviction (Arbitrary Eviction, Refusal to Rent)</option>
+              <option value="education">Education (Ragging, Denied Admission, Hostel Denial)</option>
+              <option value="police_harassment">Police Harassment (Extortion, Abuse, Detention)</option>
+              <option value="public_harassment">Public Harassment (Refused Public Space, Mall, Transport)</option>
+              <option value="legal_documentation">Legal Documentation (Name/Gender Certificate Rejection)</option>
+            </select>
+          </div>
+          <div class="form-group-modal">
+            <label for="modal-inc-urgency">Urgency Level *</label>
+            <select id="modal-inc-urgency" required>
+              <option value="low">Low — General inquiry / Record keeping</option>
+              <option value="medium" selected>Medium — Requires NGO review &amp; guidance</option>
+              <option value="high">High — Imminent threat to livelihood / housing</option>
+              <option value="immediate_sos">Immediate SOS — Safety danger / Police post</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group-modal">
+          <label for="modal-inc-title">Case Title *</label>
+          <input type="text" id="modal-inc-title" placeholder="e.g., Unlawful termination after gender transition disclosure" required />
+        </div>
+
+        <div class="form-group-modal">
+          <label for="modal-inc-desc">Grievance Narrative / Description *</label>
+          <textarea id="modal-inc-desc" placeholder="Describe what transpired, dates, and what assistance is needed..." required></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group-modal">
+            <label for="modal-inc-city">City *</label>
+            <input type="text" id="modal-inc-city" placeholder="e.g., Mumbai, Bengaluru, Delhi" required />
+          </div>
+          <div class="form-group-modal">
+            <label for="modal-inc-state">State / UT *</label>
+            <input type="text" id="modal-inc-state" placeholder="e.g., Maharashtra, Karnataka, Delhi" required />
+          </div>
+        </div>
+
+        <div class="form-group-modal">
+          <label for="modal-inc-entity">Alleged Entity / Institution (Optional)</label>
+          <input type="text" id="modal-inc-entity" placeholder="e.g., ABC Tech Pvt Ltd, Landlord Mr. Sharma" />
+          <span style="font-size: 11px; color: var(--bi-text-muted);">Real names are never published on the public board — only generic categories (e.g., 'Private Employer').</span>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin: 16px 0; align-items: flex-start;">
+          <input type="checkbox" id="modal-inc-consent" checked style="width: 18px; height: 18px; margin-top: 3px;" />
+          <label for="modal-inc-consent" style="font-size: 13px; color: var(--bi-text-secondary); cursor: pointer; line-height: 1.4;">
+            <strong>Display on Public Community Cases Board</strong> (Strictly anonymized; personal names and contacts are never published).
+          </label>
+        </div>
+
+        <div id="modal-report-status" style="margin-bottom: 12px; display: none;"></div>
+
+        <button type="submit" class="btn btn-primary" id="btn-submit-quick-report" style="width: 100%; padding: 13px; font-size: 15px; font-weight: 700; border-radius: 10px;">
+          Submit Incident Report &amp; Match Indian Welfare Schemes
+        </button>
+      </form>
+    </div>
+  </div>
 
   <!-- JavaScript Logic for Community Case Board -->
   <script>
@@ -1403,6 +1603,7 @@
 
       // Render Cards List
       function renderCards(items) {
+        window.currentLoadedCases = items || [];
         const container = document.getElementById("cases-cards-container");
         if (!items || items.length === 0) {
           container.innerHTML = `
@@ -1451,7 +1652,7 @@
           const dateStr = c.display_date || (c.created_at ? c.created_at.slice(0, 10) : "Recent");
 
           return `
-            <article class="case-card" aria-label="Incident #${c.id}: ${escapeHtml(c.title)}">
+            <article class="case-card" aria-label="Incident #${c.id}: ${escapeHtml(c.title)}" style="cursor: pointer;" onclick="window.openCaseDossierModal(${c.id})">
               <div class="case-card-header">
                 <div class="case-card-badges">
                   <span class="case-cat-badge">🚨 ${escapeHtml(c.category_label || c.incident_type)}</span>
@@ -1491,7 +1692,12 @@
                 </div>
               ` : ""}
 
-              <div class="case-card-footer">
+              <!-- Interactive Dossier Button -->
+              <button type="button" class="btn-case-dossier" onclick="event.stopPropagation(); window.openCaseDossierModal(${c.id});" style="margin-top: 14px; width: 100%; padding: 10px 16px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.1); color: #38bdf8; font-weight: 700; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
+                <span>🔍</span> View Full Dossier &amp; Legal Redressal →
+              </button>
+
+              <div class="case-card-footer" style="margin-top: 14px;">
                 <span>Assigned Partner: <strong style="color: var(--bi-text-main);">${escapeHtml(c.assigned_ngo || "National Triage Cell / Pending")}</strong></span>
                 <span style="font-size: 12px; opacity: 0.85;">Ref Case #${c.id}</span>
               </div>
@@ -1499,6 +1705,232 @@
           `;
         }).join("");
       }
+
+      // Statutory Rights and Legal Section Mappings under Indian Law
+      const STATUTORY_RIGHTS = {
+        workplace: {
+          title: "Transgender Persons Act, 2019 — Sections 9 & 11; Equal Remuneration Act; POSH Act",
+          provisions: "Section 9 strictly prohibits discrimination against any transgender person in employment, recruitment, promotion and other workplace matters. Section 11 mandates every establishment to designate a Complaint Officer to redress grievances.",
+          remedy: "File formal complaint with the establishment's Complaint Officer / ICC. Submit petition to State Transgender Welfare Board and District Magistrate under Rule 13 of TG Rules 2020."
+        },
+        healthcare_denial: {
+          title: "Transgender Persons Act, 2019 — Section 15 & Ayushman Bharat PM-JAY TG Package",
+          provisions: "Section 15 mandates government and private medical institutions to provide non-discriminatory healthcare facilities, separate transgender wards, and gender affirmation surgery coverage under the National Health Mission and Ayushman Bharat PM-JAY TG package (₹5 Lakhs/year coverage).",
+          remedy: "Escalate to National Health Authority grievance cell (toll-free 14555), State Medical Council, and Ministry of Social Justice & Empowerment."
+        },
+        housing_eviction: {
+          title: "Transgender Persons Act, 2019 — Section 12 & SMILE / Garima Greh Scheme",
+          provisions: "Section 12 ensures no transgender person shall be separated from parents or immediate family, nor denied right to reside in the household or rented property on grounds of gender identity. Ministry of Social Justice operates Garima Greh shelter homes providing safe housing and food.",
+          remedy: "Immediate SOS relocation to Garima Greh shelter homes; file injunction under Section 12 before Civil Court / Magistrate."
+        },
+        education: {
+          title: "Transgender Persons Act, 2019 — Section 13 & Supreme Court NALSA (2014) Ruling",
+          provisions: "Section 13 directs all educational institutions funded or recognized by government to provide inclusive education, sports and recreation facilities without discrimination. NALSA (2014) guarantees affirmative action and anti-ragging protections.",
+          remedy: "Report to University Grants Commission (UGC) Anti-Discrimination Cell and State Education Department."
+        },
+        police_harassment: {
+          title: "Transgender Persons Act, 2019 — Section 18 & Supreme Court NALSA (2014) Ruling",
+          provisions: "Section 18 prescribes penal imprisonment up to two years for physical, sexual, verbal, or economic abuse against transgender persons. Transgender persons cannot be detained or subjected to strip searches by opposite gender officers.",
+          remedy: "Contact NALSA Free Legal Aid at toll-free 15100, submit grievance to State Human Rights Commission (SHRC), and alert partner NGO legal cell."
+        },
+        public_harassment: {
+          title: "Transgender Persons Act, 2019 — Section 3(c) & IPC/BNS Protections",
+          provisions: "Section 3(c) explicitly guarantees right of access to, use, or enjoyment of any goods, accommodation, service, facility, benefit, or privilege to which the public is entitled.",
+          remedy: "Lodge FIR under Section 18 TG Act 2019; seek NGO bystander intervention and community advocacy."
+        },
+        legal_documentation: {
+          title: "Transgender Persons Act, 2019 — Sections 5, 6 & 7 (National Portal for Transgender Persons)",
+          provisions: "Section 5 & 6 entitle any transgender person to apply to the District Magistrate for a Certificate of Identity without requiring surgical intervention (affidavit-based self-declaration under NALSA).",
+          remedy: "Re-submit application on national transgender portal (transgender.dosje.gov.in) with District Magistrate grievance escalation."
+        }
+      };
+
+      // Open Case Dossier Modal
+      window.openCaseDossierModal = function(caseId) {
+        const cases = window.currentLoadedCases || [];
+        const c = cases.find(x => x.id === caseId);
+        if (!c) return;
+
+        const body = document.getElementById("case-dossier-body");
+        if (!body) return;
+
+        const dateStr = c.display_date || (c.created_at ? c.created_at.slice(0, 10) : "Recent");
+        const legal = STATUTORY_RIGHTS[c.incident_type] || {
+          title: "Constitution of India Articles 14, 15, 19 & 21 (NALSA 2014)",
+          provisions: "Guarantees equal protection under the law, non-discrimination on grounds of gender identity, and right to live with dignity.",
+          remedy: "Petition District Legal Services Authority (DLSA) / State Transgender Welfare Board."
+        };
+
+        const sevClass = c.urgency_level === "high" || c.urgency_level === "immediate_sos" 
+          ? "high" : c.urgency_level === "medium" ? "medium" : "low";
+        const sevLabel = c.urgency_level === "immediate_sos" 
+          ? "🚨 IMMEDIATE SOS" : c.urgency_level === "high" ? "⚠️ HIGH SEVERITY" : c.urgency_level === "medium" ? "⚡ MEDIUM" : "🟢 LOW";
+        const statClass = c.status || "submitted";
+        const statLabel = (c.status || "SUBMITTED").replace(/_/g, " ").toUpperCase();
+
+        // Schemes list
+        let schemesHtml = "";
+        if (c.matched_schemes && c.matched_schemes.length > 0) {
+          schemesHtml = c.matched_schemes.map(s => `
+            <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px;">
+                <strong style="font-size: 14px; color: #38bdf8;">🏛️ ${escapeHtml(s.name)}</strong>
+                <span style="font-size: 11.5px; color: var(--bi-text-muted);">${escapeHtml(s.ministry_or_dept || "")}</span>
+              </div>
+              <p style="font-size: 13px; color: var(--bi-text-secondary); margin: 6px 0 8px;">${escapeHtml(s.description)}</p>
+              ${s.benefits ? `<div style="font-size: 12px; color: #34d399; margin-bottom: 6px;"><strong>Benefits:</strong> ${escapeHtml(s.benefits)}</div>` : ""}
+              ${s.application_link ? `
+                <a href="${escapeHtml(s.application_link)}" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: #2dd4bf; text-decoration: underline; font-weight: 600;">
+                  Apply / Official Portal Link ↗
+                </a>
+              ` : ""}
+            </div>
+          `).join("");
+        } else {
+          schemesHtml = `<p style="font-size: 13px; color: var(--bi-text-muted);">No specific welfare scheme automatically matched.</p>`;
+        }
+
+        // NGOs list
+        let ngosHtml = "";
+        if (c.matched_ngos && c.matched_ngos.length > 0) {
+          ngosHtml = c.matched_ngos.map(n => {
+            const phone = (n.contact_phone || "").trim();
+            const email = (n.contact_email || "").trim();
+            return `
+              <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px;">
+                  <strong style="font-size: 14px; color: #c084fc;">🤝 ${escapeHtml(n.name)}</strong>
+                  <span style="font-size: 11.5px; color: var(--bi-text-muted);">${escapeHtml(n.location || "")}</span>
+                </div>
+                ${n.focus_area ? `<div style="font-size: 12px; color: var(--bi-text-secondary); margin: 4px 0 8px;"><strong>Focus Area:</strong> ${escapeHtml(n.focus_area)}</div>` : ""}
+                <div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; margin-top: 6px;">
+                  ${phone ? `<a href="tel:${escapeHtml(phone)}" style="color: #38bdf8; text-decoration: none; font-weight: 600;">📞 ${escapeHtml(phone)}</a>` : ""}
+                  ${email ? `<a href="mailto:${escapeHtml(email)}" style="color: #a78bfa; text-decoration: none; font-weight: 600;">✉️ ${escapeHtml(email)}</a>` : ""}
+                </div>
+              </div>
+            `;
+          }).join("");
+        } else {
+          ngosHtml = `<p style="font-size: 13px; color: var(--bi-text-muted);">National Community Triage Cell assigned.</p>`;
+        }
+
+        body.innerHTML = `
+          <!-- Header Bar -->
+          <div style="margin-bottom: 18px; padding-right: 30px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+              <span class="case-cat-badge">🚨 ${escapeHtml(c.category_label || c.incident_type)}</span>
+              <span class="case-sev-badge ${sevClass}">${sevLabel}</span>
+              <span class="case-status-badge ${statClass}">${statLabel}</span>
+              <span style="font-size: 12px; color: var(--bi-text-muted); font-weight: 600;">Dossier Case #${c.id}</span>
+            </div>
+            <h2 id="dossier-modal-title" style="margin: 0 0 8px; font-size: 21px; color: #f8fafc; line-height: 1.35;">${escapeHtml(c.title)}</h2>
+            <div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--bi-text-secondary);">
+              <span>📍 <strong>${escapeHtml(c.location_city)}, ${escapeHtml(c.location_state)}</strong></span>
+              <span>📅 ${escapeHtml(dateStr)}</span>
+              <span>${c.reporter_type === "Anonymous Report" ? "🕵️ Anonymous Report" : "👤 Community Member"}</span>
+              <span>🏢 <strong>Institutional Type:</strong> ${escapeHtml(c.entity_type || "Private Entity")}</span>
+            </div>
+          </div>
+
+          <!-- Section: Incident Record -->
+          <div class="dossier-section">
+            <div class="dossier-sec-title">📜 Factual Grievance Record</div>
+            <p style="font-size: 14px; line-height: 1.65; color: var(--bi-text-main); margin: 0; white-space: pre-line;">
+              ${escapeHtml(c.description || c.public_summary)}
+            </p>
+          </div>
+
+          <!-- Section: Legal Protections & Statutory Redressal -->
+          <div class="dossier-section">
+            <div class="dossier-sec-title">⚖️ Applicable Statutory Rights &amp; Legal Framework</div>
+            <div style="background: rgba(99, 102, 241, 0.08); border-left: 3px solid #6366f1; border-radius: 0 10px 10px 0; padding: 12px 14px; margin-bottom: 10px;">
+              <strong style="color: #818cf8; font-size: 13.5px;">${escapeHtml(legal.title)}</strong>
+              <p style="font-size: 13px; color: var(--bi-text-secondary); margin: 6px 0 0; line-height: 1.5;">${escapeHtml(legal.provisions)}</p>
+            </div>
+            <div style="font-size: 13px; color: #cbd5e1; background: rgba(0,0,0,0.25); padding: 10px 12px; border-radius: 8px;">
+              <strong style="color: #38bdf8;">Recommended Legal Action / Redressal:</strong> ${escapeHtml(legal.remedy)}
+            </div>
+          </div>
+
+          <!-- Section: Matched Welfare Schemes -->
+          <div class="dossier-section">
+            <div class="dossier-sec-title">🏛️ Matched Indian Welfare Schemes</div>
+            ${schemesHtml}
+          </div>
+
+          <!-- Section: Matched NGO & Rapid Response Desk -->
+          <div class="dossier-section">
+            <div class="dossier-sec-title">🤝 Partner NGO &amp; Legal Aid Desk</div>
+            <div style="font-size: 13px; color: var(--bi-text-secondary); margin-bottom: 8px;">
+              Assigned Partner Organization: <strong style="color: #f8fafc;">${escapeHtml(c.assigned_ngo || "National Triage Cell / Pending")}</strong>
+            </div>
+            ${ngosHtml}
+          </div>
+
+          <!-- Section: Case Triage Notes if available -->
+          ${c.case_notes ? `
+            <div class="dossier-section">
+              <div class="dossier-sec-title">📝 Case Triage &amp; Action Notes</div>
+              <p style="font-size: 13.5px; color: #fde047; margin: 0; background: rgba(234, 179, 8, 0.1); border-left: 3px solid #eab308; padding: 10px 12px; border-radius: 0 8px 8px 0;">
+                ${escapeHtml(c.case_notes)}
+              </p>
+            </div>
+          ` : ""}
+
+          <!-- Footer Actions -->
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08);">
+            <button type="button" class="btn btn-secondary" onclick="window.copyCaseDossierRef(${c.id})" style="padding: 9px 16px; font-size: 13px; border-radius: 8px;">
+              📋 Copy Reference Link
+            </button>
+            <a href="tel:868989330" class="btn btn-primary" style="padding: 9px 16px; font-size: 13px; text-decoration: none; border-radius: 8px; font-weight: 700;">
+              📞 Call Crisis Line (868989330)
+            </a>
+            <button type="button" class="btn btn-secondary" onclick="window.closeCaseDossierModal()" style="padding: 9px 16px; font-size: 13px; border-radius: 8px;">
+              Close
+            </button>
+          </div>
+        `;
+
+        document.getElementById("case-dossier-modal").classList.add("active");
+        document.body.style.overflow = "hidden";
+      };
+
+      // Close Case Dossier Modal
+      window.closeCaseDossierModal = function() {
+        const modal = document.getElementById("case-dossier-modal");
+        if (modal) modal.classList.remove("active");
+        document.body.style.overflow = "";
+      };
+
+      // Open Incident Report Modal
+      window.openReportCaseModal = function() {
+        const modal = document.getElementById("report-case-modal");
+        const statusDiv = document.getElementById("modal-report-status");
+        if (statusDiv) statusDiv.style.display = "none";
+        if (modal) modal.classList.add("active");
+        document.body.style.overflow = "hidden";
+      };
+
+      // Close Incident Report Modal
+      window.closeReportCaseModal = function() {
+        const modal = document.getElementById("report-case-modal");
+        if (modal) modal.classList.remove("active");
+        document.body.style.overflow = "";
+      };
+
+      // Copy Dossier Reference Link helper
+      window.copyCaseDossierRef = function(caseId) {
+        const shareUrl = `${window.location.origin}/cases?case_id=${caseId}`;
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            alert(`Dossier reference link copied to clipboard:\n${shareUrl}`);
+          }).catch(() => {
+            prompt("Case Dossier Reference Link:", shareUrl);
+          });
+        } else {
+          prompt("Case Dossier Reference Link:", shareUrl);
+        }
+      };
 
       // Render Pagination Bar
       function renderPagination() {
@@ -1655,6 +2087,158 @@
             loadCases();
           });
         }
+
+        // Modal triggers & close handlers
+        const heroReportBtn = document.getElementById("btn-hero-report-case");
+        if (heroReportBtn) {
+          heroReportBtn.addEventListener("click", window.openReportCaseModal);
+        }
+
+        const navReportLink = document.querySelector("#auth-actions-container a[href*='report']");
+        if (navReportLink) {
+          navReportLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.openReportCaseModal();
+          });
+        }
+
+        const closeDossierBtn = document.getElementById("close-dossier-modal");
+        if (closeDossierBtn) {
+          closeDossierBtn.addEventListener("click", window.closeCaseDossierModal);
+        }
+
+        const closeReportBtn = document.getElementById("close-report-modal");
+        if (closeReportBtn) {
+          closeReportBtn.addEventListener("click", window.closeReportCaseModal);
+        }
+
+        // Close on backdrop click
+        document.querySelectorAll(".modal-overlay").forEach(overlay => {
+          overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
+              window.closeCaseDossierModal();
+              window.closeReportCaseModal();
+            }
+          });
+        });
+
+        // Close on Escape key
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            window.closeCaseDossierModal();
+            window.closeReportCaseModal();
+          }
+        });
+
+        // Quick Incident Report Form Submission
+        const reportForm = document.getElementById("quick-case-report-form");
+        if (reportForm) {
+          reportForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const statusDiv = document.getElementById("modal-report-status");
+            const submitBtn = document.getElementById("btn-submit-quick-report");
+
+            const incType = document.getElementById("modal-inc-type").value;
+            const urgency = document.getElementById("modal-inc-urgency").value;
+            const title = document.getElementById("modal-inc-title").value.trim();
+            const desc = document.getElementById("modal-inc-desc").value.trim();
+            const city = document.getElementById("modal-inc-city").value.trim();
+            const state = document.getElementById("modal-inc-state").value.trim();
+            const entity = document.getElementById("modal-inc-entity").value.trim();
+            const consent = document.getElementById("modal-inc-consent").checked;
+
+            if (!title || !desc || !city || !state) {
+              if (statusDiv) {
+                statusDiv.style.display = "block";
+                statusDiv.innerHTML = `<span style="color:#fb7185; font-size:13px;">Please complete all required fields.</span>`;
+              }
+              return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Submitting & Matching Welfare Schemes...";
+
+            const payload = {
+              incident_type: incType,
+              urgency_level: urgency,
+              title: title,
+              description: desc,
+              location_city: city,
+              location_state: state,
+              perpetrator_details: entity || null,
+              entity_type: entity ? "Institutional / Private Entity" : "Generic Entity",
+              reporter_consent_public: consent,
+              is_anonymous: true
+            };
+
+            const token = localStorage.getItem("token");
+            const headers = { "Content-Type": "application/json" };
+            if (token) headers["Authorization"] = `Bearer ${token}`;
+
+            try {
+              const res = await fetch(`${API_BASE}/incidents/`, {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify(payload)
+              });
+
+              if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.detail || `Server error (${res.status})`);
+              }
+
+              const created = await res.json();
+              if (statusDiv) {
+                statusDiv.style.display = "block";
+                statusDiv.innerHTML = `
+                  <div style="background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); border-radius: 8px; padding: 12px; color: #34d399; font-size: 13.5px;">
+                    ✅ <strong>Case Successfully Submitted (Ref #${created.id})!</strong>
+                    ${consent ? "<br>Your report has been added to the public community case registry." : "<br>Stored securely for NGO crisis and triage review."}
+                  </div>
+                `;
+              }
+
+              reportForm.reset();
+              submitBtn.disabled = false;
+              submitBtn.innerText = "Submit Incident Report & Match Indian Welfare Schemes";
+
+              // Refresh metrics and case list
+              await loadStats();
+              await loadCases();
+
+              setTimeout(() => {
+                window.closeReportCaseModal();
+              }, 2200);
+
+            } catch (err) {
+              submitBtn.disabled = false;
+              submitBtn.innerText = "Submit Incident Report & Match Indian Welfare Schemes";
+              if (statusDiv) {
+                statusDiv.style.display = "block";
+                statusDiv.innerHTML = `
+                  <div style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 8px; padding: 10px; color: #fb7185; font-size: 13px;">
+                    ✕ Failed to submit case: ${escapeHtml(err.message)}
+                  </div>
+                `;
+              }
+            }
+          });
+        }
+      }
+
+      // Check URL parameters for direct deep-link to a case dossier
+      function checkDeepLinkCase() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const caseId = urlParams.get("case_id");
+        if (caseId) {
+          const parsedId = parseInt(caseId, 10);
+          if (!isNaN(parsedId)) {
+            // Wait slightly for cases to load
+            setTimeout(() => {
+              window.openCaseDossierModal(parsedId);
+            }, 600);
+          }
+        }
       }
 
       // DOM Content Loaded Execution
@@ -1663,7 +2247,9 @@
         initMobileNav();
         setupListeners();
         loadStats();
-        loadCases();
+        loadCases().then(() => {
+          checkDeepLinkCase();
+        });
         startAutoRefreshPolling();
       });
 

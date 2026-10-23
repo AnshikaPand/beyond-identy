@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beyond Identity — India Transgender Rights, Welfare & Clinical Health Triage</title>
+  <meta name="description" content="Empowering transgender and gender-diverse individuals across India with verified listings, discrimination incident reporting, legal rights awareness, and clinically guided health triage." />
+
+  <!-- Google Fonts: Inter, Outfit, and Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Application Styles -->
+  <link rel="stylesheet" href="/static/css/styles.css?v=6.0" />
+  <link rel="stylesheet" href="/static/css/redesign.css?v=2.0" />
+
+  <!-- Immediate Zero-Flicker Theme & Auth Layout Initializer -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem("bi_theme") || "system";
+      let active = savedTheme;
+      if (savedTheme === "system") {
+        active = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.setAttribute("data-theme", active);
+
+      // Pre-check authentication to prevent layout flicker
+      const hasAuth = !!(localStorage.getItem("bi_token") && localStorage.getItem("bi_user"));
+      if (hasAuth) {
+        document.documentElement.classList.add("user-logged-in");
+        document.addEventListener("DOMContentLoaded", function() {
+          document.body.classList.add("user-logged-in");
+          const portal = document.getElementById("authenticated-portal-view");
+          const tabsNav = document.getElementById("authenticated-tabs-nav");
+          if (portal) portal.style.display = "block";
+          if (tabsNav) tabsNav.style.display = "flex";
+        });
+      } else {
+        document.documentElement.classList.remove("user-logged-in");
+        document.addEventListener("DOMContentLoaded", function() {
+          document.body.classList.remove("user-logged-in");
+          const portal = document.getElementById("authenticated-portal-view");
+          const tabsNav = document.getElementById("authenticated-tabs-nav");
+          if (portal) portal.style.display = "none";
+          if (tabsNav) tabsNav.style.display = "none";
+        });
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Emergency Crisis Helpline Top Banner (Helpline Shown Once) -->
+  <aside class="emergency-helpline-bar" aria-label="Emergency Crisis Support">
+    <span>🚨 <strong>24/7 Crisis &amp; Support:</strong></span>
+    <a href="tel:868989330" title="Call 24/7 Helpline">
+      📞 868989330
+    </a>
+    <span style="opacity: 0.9; font-size: 11.5px;">| Tele-MANAS: 14416 | Free Legal Aid (NALSA): 15100</span>
+  </aside>
+
+  <!-- Subtle Pride Flag Accent Line -->
+  <div class="pride-accent-strip" aria-hidden="true"></div>
+
+  <!-- Single-Row Navigation Bar (Never Wrapping) -->
+  <header class="navbar" id="main-site-navbar">
+    <div class="container nav-content">
+      <!-- Left: Logo Mark & Brand Identity -->
+      <a href="#landing-hero-section" class="nav-brand-mark" aria-label="Beyond Identity Home">
+        <img src="/assets/beyond_identity_1_circles.svg" alt="Beyond Identity Logo" style="width: 32px; height: 32px; border-radius: 8px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" />
+        <div class="nav-brand-text">
+          <span class="nav-brand-name"><strong class="brand-bold">Beyond Identity</strong></span>
+          <span class="nav-brand-tagline">Beyond Labels, Everyone Equal</span>
+        </div>
+      </a>
+
+      <!-- Center: Main Navigation Links + More Dropdown -->
+      <nav class="nav-links-menu" id="nav-links-menu" aria-label="Main Navigation">
+        <a href="#landing-hero-section" class="nav-link active">Home</a>
+        <a href="/cases" class="nav-link" id="nav-case-board-link">
+          <span>📋</span> <strong>Case Board</strong>
+        </a>
+        <a href="#tab-chat" class="nav-link nav-chat-link auth-only-nav" id="nav-open-chat-btn">
+          <span class="nav-chat-icon">🤖</span> <strong>Chatbot</strong>
+        </a>
+
+        <!-- More Dropdown (Opportunity, Rights, Health, Report, About) -->
+        <div class="nav-dropdown auth-only-nav" id="nav-more-dropdown">
+          <button type="button" class="nav-link nav-dropdown-btn" id="nav-more-toggle" aria-expanded="false" aria-haspopup="true">
+            <span>More</span>
+            <svg class="dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="nav-dropdown-menu" id="nav-more-menu" role="menu">
+            <a href="#tab-listings" class="dropdown-item" role="menuitem" id="nav-link-opportunities">
+              <span class="dropdown-item-icon">💼</span>
+              <span>Opportunity</span>
+            </a>
+            <a href="#tab-awareness" class="dropdown-item" role="menuitem" id="nav-link-legal">
+              <span class="dropdown-item-icon">⚖️</span>
+              <span>Rights Awareness</span>
+            </a>
+            <a href="#tab-health" class="dropdown-item" role="menuitem" id="nav-link-health">
+              <span class="dropdown-item-icon">🩺</span>
+              <span>Health Assistant</span>
+            </a>
+            <a href="#tab-report" class="dropdown-item" role="menuitem" id="nav-link-report">
+              <span class="dropdown-item-icon">🚨</span>
+              <span>Report Incident</span>
+            </a>
+            <a href="/cases" class="dropdown-item" role="menuitem" id="nav-link-caseboard">
+              <span class="dropdown-item-icon">📋</span>
+              <span>Community Case Board</span>
+            </a>
+            <a href="/about" class="dropdown-item" role="menuitem" id="nav-link-about">
+              <span class="dropdown-item-icon">ℹ️</span>
+              <span>About</span>
+            </a>
+            <a href="#tab-cases" class="dropdown-item" role="menuitem" id="nav-link-cases">
+              <span class="dropdown-item-icon">🛡️</span>
+              <span>Case Triage Desk</span>
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Right: Upper Controls: Day / Night / Auto + Sign In -->
+      <div class="nav-actions-group">
+        <!-- Theme Switcher Segmented Control (Day, Night, Auto) -->
+        <div class="theme-switch-group" id="theme-switch-container" title="Select Theme: Day, Night, or Auto">
+          <button type="button" class="theme-switch-btn" data-theme-val="light" title="Day Theme" aria-label="Day Theme">☀️ Day</button>
+          <button type="button" class="theme-switch-btn" data-theme-val="dark" title="Night Theme" aria-label="Night Theme">🌙 Night</button>
+          <button type="button" class="theme-switch-btn active" data-theme-val="system" title="Auto Theme" aria-label="Auto Theme">💻 Auto</button>
+        </div>
+
+        <!-- User Auth Action Profile / Sign In -->
+        <div class="nav-actions" id="auth-actions-container">
+          <a href="/login" class="btn btn-primary" id="open-login-btn" style="text-decoration: none; padding: 8px 18px; font-size: 13.5px;">Sign In</a>
+        </div>
+
+        <!-- Mobile Hamburger Toggle Button -->
+        <button type="button" class="nav-mobile-toggle" id="nav-mobile-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Navigation Drawer -->
+    <div class="nav-mobile-drawer" id="nav-mobile-drawer">
+      <div class="nav-mobile-drawer-inner">
+        <a href="#landing-hero-section" class="nav-mobile-link active">Home</a>
+        <a href="/cases" class="nav-mobile-link" id="nav-mobile-caseboard-link">📋 Community Case Board</a>
+        <a href="/login" class="nav-mobile-link guest-only-nav" style="font-weight: 700; color: #14B8A6;">🔐 Sign In</a>
+        <a href="#tab-chat" class="nav-mobile-link nav-chat-mobile-link auth-only-nav" id="nav-mobile-chat-link">🤖 Chatbot (Voice)</a>
+        <a href="#tab-listings" class="nav-mobile-link auth-only-nav" id="nav-mobile-listings-link">💼 Opportunity</a>
+        <a href="#tab-awareness" class="nav-mobile-link auth-only-nav" id="nav-mobile-awareness-link">⚖️ Rights</a>
+        <a href="#tab-health" class="nav-mobile-link auth-only-nav" id="nav-mobile-health-link">🩺 Health Assistant</a>
+        <a href="#tab-report" class="nav-mobile-link auth-only-nav" id="nav-mobile-report-link">🚨 Report Incident</a>
+        <a href="#tab-cases" class="nav-mobile-link" id="nav-mobile-cases-link">📋 Case Triage Desk</a>
+        <a href="/about" class="nav-mobile-link auth-only-nav" id="nav-mobile-about-link">ℹ️ About</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================== -->
+  <!-- PRE-LOGIN HERO VIEW (Center, Responsive)       -->
+  <!-- ============================================== -->
+  <section class="prelogin-hero-section" id="landing-hero-section">
+    <div class="prelogin-container">
+      <div class="prelogin-hero-card" style="max-width: 480px; margin: 0 auto; background: rgba(24, 21, 63, 0.85); border: 1px solid rgba(165, 180, 252, 0.2); backdrop-filter: blur(12px); border-radius: 24px; padding: 18px 20px 24px;">
+        <div class="prelogin-image-frame" style="background: transparent; box-shadow: none; max-width: 420px; margin: 0 auto;">
+          <img 
+            src="/assets/beyond_identity_1_circles.svg" 
+            alt="Beyond Identity — Beyond Labels, Everyone Equal" 
+            class="prelogin-hero-image" 
+            id="prelogin-hero-img"
+            style="width: 100%; height: auto; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.45); display: block;"
+          />
+        </div>
+        <div class="prelogin-action-wrapper" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 20px;">
+          <a href="/login?role=community" class="btn btn-primary" style="padding: 12px 22px; font-size: 14px; text-decoration: none; font-weight: 700; border-radius: 10px; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);">
+            <span>🌈</span> Community Login
+          </a>
+          <a href="/login?role=ngo" class="btn btn-secondary" style="padding: 12px 20px; font-size: 14px; text-decoration: none; font-weight: 600; border-radius: 10px;">
+            <span>🏢</span> NGO Partner Login
+          </a>
+          <a href="/report/anonymous" class="btn btn-secondary" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(244, 63, 94, 0.35); color: #FB7185; border-radius: 10px;">
+            <span>🚨</span> Anonymous Report
+          </a>
+          <a href="/cases" class="btn btn-secondary" id="hero-btn-caseboard" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; border-radius: 10px;">
+            <span>📋</span> Case Board
+          </a>
+          <a href="#tab-cases" class="btn btn-secondary" id="hero-btn-triage" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(45, 212, 191, 0.4); color: #2DD4BF; border-radius: 10px;">
+            <span>🛡️</span> Case Triage Desk
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Container -->
+  <main class="container" style="padding-bottom: 80px;">
+
+    <!-- Hidden guest landing placeholder for DOM compatibility -->
+    <div id="guest-landing-view" class="guest-landing" style="display: none;"></div>
+
+    <!-- ============================================== -->
+    <!-- 2. PORTAL MODULES VIEW (Interactive Portal)    -->
+    <!-- ============================================== -->
+    <div id="authenticated-portal-view" style="display: none;">
+
+      <!-- Compact Welcome Bar (Single Clean Row) -->
+      <div class="auth-welcome-strip" id="auth-member-banner">
+        <div class="welcome-strip-left">
+          <div class="user-avatar-sm" id="member-banner-avatar">👤</div>
+          <span class="welcome-user-greeting" id="member-banner-greeting">Welcome to <strong class="brand-bold">Beyond Identity</strong></span>
+          <span class="user-role-badge" id="member-banner-role-badge">COMMUNITY USER</span>
+        </div>
+        <div class="welcome-strip-right">
+          <span class="portal-status-pill">🟢 24/7 Voice Ready</span>
+        </div>
+      </div>
+
+      <!-- Post-Login Community Network Welcome Banner (All Connected, All Equal) -->
+      <div id="post-login-network-banner" style="display: none; margin-bottom: 20px; background: linear-gradient(135deg, #092E2B 0%, #0F3836 100%); border: 1px solid rgba(45, 212, 191, 0.3); border-radius: 16px; padding: 14px 20px; color: #FFFFFF; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <img src="/assets/beyond_identity_4_network.svg" alt="Beyond Identity Network - All Connected, All Equal" style="width: 58px; height: 58px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 4px 12px rgba(0,0,0,0.3);" />
+          <div>
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #2DD4BF; margin-bottom: 2px;">
+              🌐 Community Network Connected
+            </div>
+            <div style="font-size: 15px; font-weight: 700; color: #FFFFFF;">
+              Welcome to the Circle • <span style="color: #99F6E4; font-weight: 500;">All Connected, All Equal</span>
+            </div>
+            <div style="font-size: 12px; color: rgba(255,255,255,0.8);">
+              Empowering LGBTQ+ individuals with verified listings, rights awareness, and safe incident triage.
+            </div>
+          </div>
+        </div>
+        <button type="button" onclick="document.getElementById('post-login-network-banner').style.display='none'" style="background: rgba(255,255,255,0.14); border: 0; color: #FFFFFF; padding: 7px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; transition: background 0.15s;">
+          ✕ Dismiss
+        </button>
+      </div>
+
+      <!-- Main Tabs: Clean Single Segmented Pill Bar -->
+      <nav class="tabs-nav" id="authenticated-tabs-nav" aria-label="Portal Modules" style="display: none;">
+        <button class="tab-btn active" data-tab="tab-chat" id="tab-btn-chat">
+          <span>🤖</span> 24/7 Voice Assistant
+        </button>
+        <button class="tab-btn" data-tab="tab-listings">
+          <span>💼</span> Opportunities Directory
+        </button>
+        <button class="tab-btn" data-tab="tab-report">
+          <span>🚨</span> Report Incident
+        </button>
+        <button class="tab-btn" data-tab="tab-awareness">
+          <span>⚖️</span> Rights Awareness
+        </button>
+        <button class="tab-btn" data-tab="tab-health">
+          <span>🩺</span> Health Assistant
+        </button>
+        <button class="tab-btn" id="tab-btn-cases" data-tab="tab-cases">
+          <span>📋</span> Case Triage Desk
+        </button>
+      </nav>
+
+      <!-- TAB: Chat Assistant (Embedded Full-Width Chat Box - Primary Tab) -->
+      <section class="tab-panel active" id="tab-chat">
+        <div class="tab-chat-container" id="tab-chat-main-container">
+          <!-- Top Rainbow Pride Ribbon -->
+          <div class="tab-chat-rainbow-ribbon" aria-hidden="true"></div>
+
+          <!-- Ambient Decorative Glowing Rainbow Orbs -->
+          <div class="tab-chat-ambient-aura" aria-hidden="true">
+            <span class="chat-orb orb-rainbow-1"></span>
+            <span class="chat-orb orb-rainbow-2"></span>
+            <span class="chat-orb orb-rainbow-3"></span>
+            <span class="chat-orb orb-rainbow-4"></span>
+          </div>
+
+          <!-- Ethereal Light Background Watermark Inside Chatbot -->
+          <div class="tab-chat-bg-watermark" aria-hidden="true">
+            <img src="/static/assets/chatbot-watermark.jpg" alt="Beyond Identity Sacred Light Watermark" class="tab-chat-watermark-img" />
+          </div>
+
+          <!-- Chat Header (Creative Holographic Avatar, Spark Title, Voice & Full Page actions) -->
+          <div class="tab-chat-header">
+            <div class="tab-chat-header-main">
+              <div class="tab-chat-avatar-glow" id="tab-chat-avatar-box">
+                <span class="tab-chat-avatar-holo-ring"></span>
+                <span class="tab-chat-avatar-icon">🤖</span>
+                <span class="tab-chat-status-pulse" id="tab-chat-status-dot" title="Assistant Online &amp; Ready"></span>
+              </div>
+              <div class="tab-chat-header-text">
+                <div class="tab-chat-title-row">
+                  <h3 class="tab-chat-title"><strong class="brand-bold">Beyond Identity</strong> 24/7 Assistant</h3>
+                  <span class="tab-chat-rainbow-pill">🌈 Rainbow Sanctuary</span>
+                  <span class="tab-chat-companion-pill">✨ AI Companion</span>
+                  <span class="tab-chat-live-badge" id="tab-chat-live-badge">🟢 Online</span>
+                  <div class="tab-chat-speaking-badge" id="tab-chat-speaking-badge" style="display: none;">
+                    <div class="voice-waves animating">
+                      <span class="voice-wave-bar"></span>
+                      <span class="voice-wave-bar"></span>
+                      <span class="voice-wave-bar"></span>
+                      <span class="voice-wave-bar"></span>
+                      <span class="voice-wave-bar"></span>
+                    </div>
+                    <span>Speaking Aloud...</span>
+                    <button type="button" class="tab-chat-stop-speech-btn" id="tab-chat-badge-stop-btn" title="Stop Voice Speech">⏹️ Stop</button>
+                  </div>
+                </div>
+                <p class="tab-chat-subtitle">Verified guidance on Indian statutory rights, inclusive jobs, safe housing &amp; clinical health triage.</p>
+              </div>
+            </div>
+            <div class="tab-chat-header-controls">
+              <button type="button" class="tab-chat-control-btn" id="tab-chat-fullscreen-btn" title="Toggle Full Page Chatbot View">
+                <span>⛶</span> <span class="tab-chat-btn-text" id="tab-chat-fullscreen-label">Full Page</span>
+              </button>
+              <button type="button" class="tab-chat-control-btn active tab-chat-audio-btn" id="tab-chat-voice-toggle" title="Turn Audio Voice Output ON / OFF">
+                <span id="tab-chat-voice-icon">🔊</span> <span class="tab-chat-btn-text" id="tab-chat-voice-label">Audio: ON</span>
+              </button>
+              <button type="button" class="tab-chat-control-btn tab-chat-stop-btn" id="tab-chat-stop-speaking-btn" title="Stop Audio Speech Immediately">
+                <span>⏹️</span> <span class="tab-chat-btn-text">Stop Audio</span>
+              </button>
+              <button type="button" class="tab-chat-control-btn" id="tab-chat-clear-btn" title="Clear Conversation Thread">
+                <span>🗑️</span> <span class="tab-chat-btn-text">Clear</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Topic Filter Bar (Clean Primary Categories) -->
+          <div class="tab-chat-categories" id="tab-chat-category-bar">
+            <button type="button" class="tab-chat-cat-btn active" data-cat="">✨ All Topics</button>
+            <button type="button" class="tab-chat-cat-btn" data-cat="legal">⚖️ Rights &amp; ID</button>
+            <button type="button" class="tab-chat-cat-btn" data-cat="housing">🏠 Housing &amp; Jobs</button>
+            <button type="button" class="tab-chat-cat-btn" data-cat="healthcare">🩺 Health &amp; Schemes</button>
+          </div>
+
+          <!-- Suggested Starter Cards (Creative Spark Launchpad Cards) -->
+          <div class="tab-chat-quick-prompts-container" id="tab-chat-quick-prompts-container">
+            <div class="tab-chat-starter-grid" id="tab-chat-starter-prompts">
+              <button type="button" class="tab-chat-starter-chip" data-prompt="Hello">
+                <span class="chip-kicker">⚡ Quick Start</span>
+                <div class="chip-main-row">
+                  <span class="chip-icon">👋</span>
+                  <div class="chip-content">
+                    <span class="chip-title">Hello / Welcome</span>
+                    <span class="chip-sub">Learn what Beyond Identity offers</span>
+                  </div>
+                  <span class="chip-arrow">→</span>
+                </div>
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="What rights do transgender persons have in India?">
+                <span class="chip-kicker">⚖️ Statutory Law</span>
+                <div class="chip-main-row">
+                  <span class="chip-icon">⚖️</span>
+                  <div class="chip-content">
+                    <span class="chip-title">Legal Rights &amp; TG ID Card</span>
+                    <span class="chip-sub">TG Act 2019 &amp; National Portal</span>
+                  </div>
+                  <span class="chip-arrow">→</span>
+                </div>
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="Is there shelter or housing support?">
+                <span class="chip-kicker">🏠 Safe Transit</span>
+                <div class="chip-main-row">
+                  <span class="chip-icon">🏠</span>
+                  <div class="chip-content">
+                    <span class="chip-title">Garima Greh Shelters &amp; Housing</span>
+                    <span class="chip-sub">Safe transit housing &amp; nutrition</span>
+                  </div>
+                  <span class="chip-arrow">→</span>
+                </div>
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="Is there health insurance for transgender persons?">
+                <span class="chip-kicker">🩺 Health &amp; HRT</span>
+                <div class="chip-main-row">
+                  <span class="chip-icon">🩺</span>
+                  <div class="chip-content">
+                    <span class="chip-title">Ayushman Bharat &amp; HRT</span>
+                    <span class="chip-sub">₹5L health coverage &amp; hormone care</span>
+                  </div>
+                  <span class="chip-arrow">→</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Messages Thread Container -->
+          <div class="tab-chat-messages-area" id="tab-chat-messages-container">
+            <div class="tab-chat-row assistant">
+              <div class="tab-chat-msg-avatar">🤖</div>
+              <div class="tab-chat-bubble-wrap">
+                <div class="tab-chat-bubble">
+                  <div class="chat-bot-brand-tag">
+                    <span>🤖</span> <strong>Beyond Identity Intel</strong> <span class="tag-verified">✓ Verified Law &amp; Healthcare</span>
+                  </div>
+
+                  <!-- Welcoming Light Art Card Inside Chatbot Bubble -->
+                  <div class="tab-chat-art-welcome-card">
+                    <div class="tab-chat-art-thumb-wrap">
+                      <img src="/static/assets/chatbot-watermark.jpg" alt="Beyond Identity Sacred Light" class="tab-chat-art-thumb" />
+                    </div>
+                    <div class="tab-chat-art-details">
+                      <span class="tab-chat-art-badge">🌈 Safe, Verified &amp; Welcoming</span>
+                      <h4 class="tab-chat-art-title">Welcome to Beyond Identity 24/7 Sanctuary</h4>
+                      <p class="tab-chat-art-text">Your safe, affirming portal for statutory Indian transgender rights, Garima Greh housing shelters, verified inclusive jobs, and PM-JAY Ayushman Bharat healthcare.</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 style="margin: 4px 0 8px; color: var(--bi-primary); font-size: 15px;" id="tab-chat-initial-heading">🙏 Namaste &amp; Welcome to Beyond Identity!</h4>
+                    <p style="margin: 6px 0; font-size: 13.5px; line-height: 1.55;">
+                      I am your 24/7 Rights and Empowerment Assistant. Ask me anything about Indian transgender laws, verified inclusive jobs, safe housing, healthcare, or government schemes.
+                    </p>
+                    <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.45; color: var(--bi-text-muted);">What would you like to know today?</p>
+                  </div>
+                </div>
+                <div class="tab-chat-actions-row">
+                  <button type="button" class="tab-chat-action-btn tab-chat-static-listen-btn" title="Play greeting message aloud"><span>🔊</span> Play Audio</button>
+                  <button type="button" class="tab-chat-action-btn tab-chat-static-stop-btn tab-chat-stop-btn" title="Stop voice speech"><span>⏹️</span> Stop Audio</button>
+                  <button type="button" class="tab-chat-action-btn tab-chat-static-copy-btn"><span>📋</span> Copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat Input Bar & Quick Prompt Pills -->
+          <div class="tab-chat-input-container">
+            <div class="tab-chat-quick-query-pills" id="tab-chat-quick-query-pills">
+              <button type="button" class="tab-chat-quick-query-pill" data-prompt="How do I apply for a Transgender Certificate of Identity in India?">🪪 TG Certificate Portal</button>
+              <button type="button" class="tab-chat-quick-query-pill" data-prompt="Is gender-affirming surgery or HRT covered under Ayushman Bharat PM-JAY?">🩺 Ayushman PM-JAY ₹5L</button>
+              <button type="button" class="tab-chat-quick-query-pill" data-prompt="Where are Garima Greh shelter homes located and what support do they provide?">🏠 Garima Shelters</button>
+              <button type="button" class="tab-chat-quick-query-pill" data-prompt="What legal protections exist under the Transgender Persons Act 2019?">⚖️ TG Act 2019 Rights</button>
+              <button type="button" class="tab-chat-quick-query-pill" data-prompt="What is the 24/7 crisis helpline number for transgender persons?">🚨 24/7 Helpline (868989330)</button>
+            </div>
+            <div class="tab-chat-input-bar">
+              <button type="button" class="tab-chat-mic-button" id="tab-chat-mic-btn" title="Speak question into microphone (Speech-to-Text)">
+                🎙️
+              </button>
+              <input
+                type="text"
+                id="tab-chat-text-input"
+                class="tab-chat-input-field"
+                placeholder="Ask anything about legal rights, inclusive jobs, Garima Greh shelters, HRT protocols..."
+                autocomplete="off"
+              />
+              <button type="button" class="tab-chat-send-button" id="tab-chat-send-btn" title="Send message to Assistant">
+                <span>Send</span>
+                <span class="send-arrow">➤</span>
+              </button>
+            </div>
+            <div class="tab-chat-footer-disclaimer">
+              <span>🔒 <strong>Confidential &amp; Encrypted:</strong> Transgender Persons Act 2019 data protection • Direct crisis support is available 24/7 in the top bar.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 1: Verified Opportunities Directory -->
+      <section class="tab-panel" id="tab-listings">
+      <div style="margin-bottom: 24px;">
+        <h3 style="font-size: 22px; margin-bottom: 6px;">Verified Community Opportunities Directory</h3>
+        <p style="color: var(--text-muted); font-size: 14px;">Browse vetted NGOs, colleges &amp; universities with Equal Opportunity Cells, trans-inclusive workplaces, safe housing, and statutory government welfare schemes.</p>
+      </div>
+
+      <!-- Search & Filter Controls -->
+      <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
+        <div style="position: relative; flex: 1; min-width: 260px;">
+          <input
+            type="text"
+            id="listings-search-input"
+            placeholder="🔍 Search verified NGOs, colleges, workplaces, cities, phone..."
+            style="width: 100%; padding: 10px 16px 10px 38px; border-radius: 9999px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); color: var(--text-main); font-size: 14px; outline: none; transition: border-color 0.2s;"
+          />
+          <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: 0.7;">🔍</span>
+        </div>
+        <div id="listings-count-badge" style="font-size: 13px; color: var(--text-muted); padding: 6px 14px; background: rgba(255,255,255,0.04); border-radius: 9999px; border: 1px solid var(--border-subtle);">
+          Loading verified listings...
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="filter-bar" style="display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap;">
+        <button class="btn btn-secondary filter-pill active" data-cat="">All Categories</button>
+        <button class="btn btn-secondary filter-pill" data-cat="community">🤝 NGOs &amp; Trusts</button>
+        <button class="btn btn-secondary filter-pill" data-cat="education">🎓 Colleges &amp; Universities</button>
+        <button class="btn btn-secondary filter-pill" data-cat="employment">💼 Workplaces &amp; Jobs</button>
+        <button class="btn btn-secondary filter-pill" data-cat="housing">🏠 Housing &amp; Shelters</button>
+        <button class="btn btn-secondary filter-pill" data-cat="healthcare">🏥 Healthcare</button>
+        <button class="btn btn-secondary filter-pill" data-cat="scheme">🏛️ Govt Schemes</button>
+        <button class="btn btn-secondary filter-pill" data-cat="scholarship">📜 Scholarships</button>
+      </div>
+
+      <!-- Listings Grid Container (Populated by app.js) -->
+      <div class="cards-grid" id="listings-container">
+        <!-- Injected via app.js -->
+      </div>
+    </section>
+
+    <!-- TAB 2: Discrimination Incident Reporting -->
+    <section class="tab-panel" id="tab-report">
+      <div style="text-align: center; max-width: 700px; margin: 0 auto 32px;">
+        <h3 style="font-size: 24px; margin-bottom: 8px;">Confidential Discrimination Incident Reporting</h3>
+        <p style="color: var(--text-muted); font-size: 14px;">
+          Report discrimination in workplaces, hospitals, educational institutions, or housing.
+          Our automated matcher will instantly link your case with statutory Indian welfare schemes (SMILE, Garima Greh, NALSA Legal Aid) and verified partner NGO crisis desks.
+        </p>
+      </div>
+
+      <form class="glass-form" id="incident-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inc-type">Type of Discrimination *</label>
+            <select id="inc-type" required>
+              <option value="workplace">Workplace (Wrongful Termination, Harassment, Wage Disparity)</option>
+              <option value="healthcare_denial">Healthcare Denial (Refusal of Care, Lack of Trans Ward, Doctor Harassment)</option>
+              <option value="housing_eviction">Housing & Eviction (Arbitrary Eviction, Refusal to Rent)</option>
+              <option value="education">Education (Ragging, Denied Admission, Hostel Denial)</option>
+              <option value="public_harassment">Public Harassment (Street Harassment, Denied Public Spaces)</option>
+              <option value="police_harassment">Police Harassment (Extortion, Unlawful Detention, Abuse)</option>
+              <option value="legal_documentation">Legal Documentation (Name/Gender Certificate Rejection)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inc-urgency">Urgency Level *</label>
+            <select id="inc-urgency" required>
+              <option value="low">Low — General inquiry / Record keeping</option>
+              <option value="medium" selected>Medium — Requires NGO review & guidance</option>
+              <option value="high">High — Imminent threat of eviction or loss of livelihood</option>
+              <option value="immediate_sos">Immediate SOS — Physical safety danger / Police detention</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inc-title">Incident Title *</label>
+          <input type="text" id="inc-title" placeholder="e.g., Unlawful termination after gender transition disclosure" required />
+        </div>
+
+        <div class="form-group">
+          <label for="inc-desc">Detailed Description of Incident *</label>
+          <textarea id="inc-desc" placeholder="Please describe what transpired, dates, names of involved parties, and any actions already attempted..." required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inc-city">City *</label>
+            <input type="text" id="inc-city" placeholder="e.g., Mumbai, Bengaluru, Delhi" required />
+          </div>
+
+          <div class="form-group">
+            <label for="inc-state">State / UT *</label>
+            <input type="text" id="inc-state" placeholder="e.g., Maharashtra, Karnataka, Delhi" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inc-perpetrator">Perpetrator / Entity (Optional)</label>
+            <input type="text" id="inc-perpetrator" placeholder="e.g., ABC Tech Pvt Ltd, Landlord Mr. Sharma" />
+          </div>
+
+          <div class="form-group">
+            <label for="inc-date">Date of Incident (Optional)</label>
+            <input type="date" id="inc-date" />
+          </div>
+        </div>
+
+        <div class="form-row" style="align-items: center; margin-top: 10px;">
+          <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
+            <input type="checkbox" id="inc-anon" style="width: 20px; height: 20px;" />
+            <label for="inc-anon" style="margin-bottom: 0; cursor: pointer;">
+              <strong>Submit Anonymously</strong> (Do not attach my account identity)
+            </label>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="inc-email">Contact Email for Confidential Updates</label>
+            <input type="email" id="inc-email" placeholder="Optional contact email" />
+          </div>
+        </div>
+
+        <!-- Public Case Board Consent Checkbox -->
+        <div class="form-group" style="display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; margin-bottom: 0;">
+          <input type="checkbox" id="inc-consent-public" style="width: 20px; height: 20px; margin-top: 2px;" />
+          <label for="inc-consent-public" style="margin-bottom: 0; cursor: pointer; font-size: 13.5px; line-height: 1.4;">
+            <strong>Allow my case to appear anonymously on the public Case Board</strong><br />
+            <span style="color: var(--text-muted); font-size: 12.5px;">Your personal name, contact information, and alleged entity names are NEVER published. Only general category, city, state, and anonymous details are shared.</span>
+          </label>
+        </div>
+
+        <div style="margin-top: 28px;">
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 15px;">
+            Submit Incident Report & Auto-Match Indian Welfare Schemes
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- TAB 3: Legal Rights Awareness -->
+    <section class="tab-panel" id="tab-awareness">
+      <div class="assistant-box">
+        <div style="margin-bottom: 20px;">
+          <span class="decision-badge">⚖️ Statutory Knowledge Base</span>
+          <h3 style="font-size: 24px; margin: 8px 0 6px;">Legal Rights & Remedies Engine</h3>
+          <p style="color: var(--text-muted); font-size: 14.5px;">
+            Ask questions regarding your rights under the <strong>Transgender Persons (Protection of Rights) Act 2019</strong>, the landmark <strong>NALSA (2014)</strong> Supreme Court judgment, Section 12 NALSA Free Legal Aid, and workplace non-discrimination mandates.
+          </p>
+        </div>
+
+        <div class="awareness-modal-launchers" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 20px 0 24px;">
+          <!-- Chat Form Card -->
+          <div class="awareness-mode-card" id="open-awareness-chat-btn" style="cursor: pointer; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px; transition: transform 0.2s, border-color 0.2s;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+              <span style="font-size: 26px; background: rgba(56, 189, 248, 0.15); width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">💬</span>
+              <div>
+                <h4 style="margin: 0; font-size: 15.5px; color: var(--text-primary); font-weight: 700;">Chat Form Assistant</h4>
+                <span style="font-size: 11.5px; color: var(--accent-cyan); font-weight: 600;">Text Consultation</span>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 14px; line-height: 1.45;">
+              Interactive chat modal with multi-turn conversation, statutory citations, remedies, and copyable legal advice.
+            </p>
+            <button type="button" class="btn btn-secondary" style="width: 100%; font-size: 12.5px; pointer-events: none; justify-content: center;">
+              Launch Chat Modal →
+            </button>
+          </div>
+
+          <!-- Talking Form Card -->
+          <div class="awareness-mode-card" id="open-awareness-talk-btn" style="cursor: pointer; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px; transition: transform 0.2s, border-color 0.2s;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+              <span style="font-size: 26px; background: rgba(168, 85, 247, 0.15); width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">🎙️</span>
+              <div>
+                <h4 style="margin: 0; font-size: 15.5px; color: var(--text-primary); font-weight: 700;">Talking Form Assistant</h4>
+                <span style="font-size: 11.5px; color: var(--accent-violet); font-weight: 600;">Voice & Speech</span>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 14px; line-height: 1.45;">
+              Speak your question directly using your microphone and hear affirmative legal guidance spoken aloud.
+            </p>
+            <button type="button" class="btn btn-primary" style="width: 100%; font-size: 12.5px; pointer-events: none; justify-content: center;">
+              Launch Talking Modal 🎙️
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="flex: 1; height: 1px; background: var(--border-subtle);"></div>
+          <span style="font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Or Instant Quick Query</span>
+          <div style="flex: 1; height: 1px; background: var(--border-subtle);"></div>
+        </div>
+
+        <div class="query-input-wrap">
+          <input type="text" id="awareness-query-input" placeholder="e.g., My landlord is forcing me out without notice because of my gender identity. What can I do?" />
+          <button class="btn btn-primary" id="awareness-query-btn">Consult Legal Rights</button>
+        </div>
+
+        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Try these common legal topics:</div>
+        <div class="prompt-chips">
+          <span class="chip">Workplace Equal Opportunity Policy</span>
+          <span class="chip">Arbitrary Housing Eviction & Garima Greh</span>
+          <span class="chip">Transgender Parents & Adoption Rights</span>
+          <span class="chip">Child Custody & Family Protections</span>
+          <span class="chip">Police Extortion & Illegal Custody</span>
+          <span class="chip">Healthcare Denial & Ayushman Bharat</span>
+          <span class="chip">Name and Gender Change on Aadhaar</span>
+          <span class="chip">Free Legal Aid Helpline 15100</span>
+        </div>
+
+        <!-- Result Card (Populated by app.js) -->
+        <div id="awareness-result-card" class="awareness-result-card" style="display: none;">
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Health Assistant Decision Tree -->
+    <section class="tab-panel" id="tab-health">
+      <div style="text-align: center; max-width: 700px; margin: 0 auto 32px;">
+        <span class="decision-badge">🩺 WPATH SOC v8 & PM-JAY Integrated</span>
+        <h3 style="font-size: 24px; margin: 8px 0;">Health Assistant & Clinical Roadmap</h3>
+        <p style="color: var(--text-muted); font-size: 14.5px;">
+          Interactive decision-tree guidance for safe gender-affirming care, baseline hormone therapy blood panels, crisis mental health helplines, and government surgery subsidies.
+        </p>
+      </div>
+
+      <!-- Health Wizard Dynamic Container -->
+      <div id="health-wizard-container">
+        <!-- Injected via app.js -->
+      </div>
+    </section>
+
+    <!-- TAB 5: Incident Case Management (Visible for All Users, Phones & Laptops) -->
+    <section class="tab-panel" id="tab-cases">
+      <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <span class="decision-badge">🛡️ Community Incident Triage & Transparency Desk</span>
+          <h3 style="font-size: 24px; margin: 6px 0;">Discrimination Case Triage Desk</h3>
+          <p style="color: var(--text-muted); font-size: 14px;">Open incident triage and case monitoring for all devices and community members across India. Track reported incidents, matched government schemes, and legal aid redressal.</p>
+        </div>
+        <div id="cases-header-action" style="display: flex; gap: 8px;"></div>
+      </div>
+
+      <!-- Standalone Community Cases Board Callout Banner -->
+      <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.16) 0%, rgba(56, 189, 248, 0.12) 100%); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 14px; padding: 18px 22px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; box-shadow: 0 4px 18px rgba(0,0,0,0.2);">
+        <div style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 280px;">
+          <span style="font-size: 32px; background: rgba(56, 189, 248, 0.15); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">📋</span>
+          <div>
+            <h4 style="margin: 0 0 4px; font-size: 16px; font-weight: 700; color: #f8fafc;">
+              Dedicated Standalone Community Cases Registry &amp; Dossiers
+            </h4>
+            <p style="margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.45;">
+              Explore all discrimination reports submitted by citizens across India on our standalone Case Board with real-time statutory legal sections (TG Act 2019 / NALSA 2014), matched Indian welfare schemes, partner NGO helplines, and interactive case dossiers.
+            </p>
+          </div>
+        </div>
+        <a href="/cases" class="btn btn-primary" style="padding: 10px 22px; font-size: 13.5px; font-weight: 700; border-radius: 10px; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;">
+          Open Dedicated Cases Page ↗
+        </a>
+      </div>
+
+      <!-- Quick Triage Category Filters -->
+      <div class="cases-filter-bar" id="cases-filter-bar" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+        <button type="button" class="btn btn-secondary cases-filter-btn active" data-case-filter="" style="padding: 6px 14px; font-size: 12.5px; border-radius: 20px;">All Cases</button>
+        <button type="button" class="btn btn-secondary cases-filter-btn" data-case-filter="workplace" style="padding: 6px 14px; font-size: 12.5px; border-radius: 20px;">💼 Workplace</button>
+        <button type="button" class="btn btn-secondary cases-filter-btn" data-case-filter="healthcare_denial" style="padding: 6px 14px; font-size: 12.5px; border-radius: 20px;">🩺 Healthcare</button>
+        <button type="button" class="btn btn-secondary cases-filter-btn" data-case-filter="housing_eviction" style="padding: 6px 14px; font-size: 12.5px; border-radius: 20px;">🏠 Housing</button>
+        <button type="button" class="btn btn-secondary cases-filter-btn" data-case-filter="police_harassment" style="padding: 6px 14px; font-size: 12.5px; border-radius: 20px;">👮 Police Harassment</button>
+        <button type="button" class="btn btn-secondary cases-filter-btn" data-case-filter="public_place" style="padding: 6px 14px; font-size: 12.5px; border-radius: 20px;">🏙️ Public Place</button>
+      </div>
+
+      <div id="cases-container">
+        <!-- Injected via app.js -->
+      </div>
+    </section>
+
+    </div><!-- End #authenticated-portal-view -->
+
+  </main>
+
+
+  <!-- Toast Notifications Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+
+
+  <!-- Incident Result Modal (Scheme & NGO Match Display) -->
+  <div class="modal-overlay" id="incident-result-modal">
+    <div class="modal-content" style="max-width: 720px;">
+      <button class="close-modal" id="close-inc-modal" aria-label="Close Modal">✕</button>
+      <div id="incident-result-content">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Awareness Assistant Modal (Chat Form & Talking Form) -->
+  <div class="modal-overlay" id="awareness-assistant-modal">
+    <div class="modal-content awareness-modal-container" style="max-width: 800px; width: 100%; padding: 0; overflow: hidden; display: flex; flex-direction: column; max-height: 88vh; height: 750px;">
+      <!-- Modal Header -->
+      <div class="awareness-modal-header" style="padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: var(--bg-tertiary);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet)); display: flex; align-items: center; justify-content: center; font-size: 20px;">⚖️</div>
+          <div>
+            <h3 style="margin: 0; font-size: 16.5px; font-weight: 700; color: var(--text-primary);">Legal Rights Awareness Assistant</h3>
+            <span style="font-size: 12px; color: var(--text-muted);">TG Act 2019 • NALSA 2014 • Free Legal Aid 15100</span>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <!-- Mode Switch Tabs -->
+          <div class="awareness-tab-switch" style="display: flex; background: var(--bg-primary); padding: 3px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+            <button type="button" class="awareness-switch-btn active" id="switch-to-chat-btn" style="padding: 6px 14px; border: none; background: var(--accent-cyan); color: #000; font-weight: 700; font-size: 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
+              💬 Chat Form
+            </button>
+            <button type="button" class="awareness-switch-btn" id="switch-to-talk-btn" style="padding: 6px 14px; border: none; background: transparent; color: var(--text-muted); font-weight: 600; font-size: 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
+              🎙️ Talking Form
+            </button>
+          </div>
+          <button class="close-modal" id="close-awareness-modal" style="position: static; font-size: 20px; padding: 4px 8px; color: var(--text-muted); cursor: pointer;" aria-label="Close Modal">✕</button>
+        </div>
+      </div>
+
+      <!-- VIEW 1: Chat Form Body -->
+      <div id="awareness-chat-view" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;">
+        <!-- Chat Messages Container -->
+        <div id="awareness-chat-messages" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+          <!-- Injected via app.js -->
+        </div>
+
+        <!-- Quick Prompts in Chat -->
+        <div style="padding: 8px 16px; border-top: 1px solid var(--border-subtle); background: var(--bg-tertiary); overflow-x: auto; white-space: nowrap; display: flex; gap: 8px;" id="awareness-modal-chips">
+          <span class="chat-prompt-chip" data-prompt="Can a transgender parent legally adopt a child under CARA in India?">👨‍👩‍👧 Trans Parents & Adoption</span>
+          <span class="chat-prompt-chip" data-prompt="What are my rights if my landlord forces me to leave?">🏠 Landlord Eviction</span>
+          <span class="chat-prompt-chip" data-prompt="How do I get my TG Certificate & ID card from District Magistrate?">🪪 ID Card & Certificate</span>
+          <span class="chat-prompt-chip" data-prompt="Can a company refuse to hire or fire a trans person?">💼 Workplace Rights</span>
+          <span class="chat-prompt-chip" data-prompt="How do I get free legal counsel under NALSA Section 12?">⚖️ Free Legal Aid</span>
+          <span class="chat-prompt-chip" data-prompt="What punishment does the law provide under Section 18 for abuse?">🛡️ Section 18 Penalties</span>
+        </div>
+
+        <!-- Chat Input Footer -->
+        <div style="padding: 12px 18px; border-top: 1px solid var(--border-subtle); display: flex; gap: 10px; align-items: center; background: var(--bg-secondary);">
+          <button type="button" id="chat-input-mic-btn" class="btn btn-secondary" title="Speak into microphone" style="padding: 10px 14px; border-radius: 8px; font-size: 16px;">
+            🎙️
+          </button>
+          <input type="text" id="awareness-chat-input" placeholder="Type your legal question or click 🎙️ to talk..." style="flex: 1; padding: 11px 14px; border-radius: 8px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 14px;" />
+          <button type="button" id="awareness-chat-send-btn" class="btn btn-primary" style="padding: 10px 20px; font-size: 13.5px;">
+            Send
+          </button>
+        </div>
+      </div>
+
+      <!-- VIEW 2: Talking Form Body -->
+      <div id="awareness-talk-view" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; text-align: center; overflow-y: auto; flex: 1;">
+        
+        <!-- Animated Voice Orb & Mic -->
+        <div class="talk-orb-container" style="position: relative; width: 140px; height: 140px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+          <div class="talk-orb-ring ring-1" id="talk-ring-1"></div>
+          <div class="talk-orb-ring ring-2" id="talk-ring-2"></div>
+          <button type="button" id="talk-main-mic-btn" class="talk-mic-core" style="width: 90px; height: 90px; border-radius: 50%; border: none; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet)); color: #fff; font-size: 34px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(56, 189, 248, 0.4); transition: transform 0.2s, box-shadow 0.2s; position: relative; z-index: 2;">
+            🎙️
+          </button>
+        </div>
+
+        <div id="talk-status-text" style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">
+          Click the Microphone to Talk
+        </div>
+        <p id="talk-substatus" style="font-size: 13.5px; color: var(--text-muted); max-width: 480px; margin: 0 auto 18px;">
+          Ask any question aloud about Indian laws, workplace rights, or free legal aid.
+        </p>
+
+        <!-- Live transcript box -->
+        <div id="talk-transcript-box" style="display: none; width: 100%; max-width: 580px; background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; text-align: left;">
+          <div style="font-size: 11px; text-transform: uppercase; color: var(--accent-cyan); font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px;">You Asked:</div>
+          <div id="talk-user-transcript" style="font-size: 14px; color: var(--text-primary); font-weight: 500;">...</div>
+        </div>
+
+        <!-- Voice Output Box -->
+        <div id="talk-response-box" style="display: none; width: 100%; max-width: 580px; background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 16px 18px; text-align: left;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="font-size: 11.5px; text-transform: uppercase; color: var(--accent-violet); font-weight: 700; letter-spacing: 0.05em;">⚖️ Spoken Guidance</div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" id="talk-replay-btn" class="btn btn-secondary" style="font-size: 11.5px; padding: 4px 10px;">🔊 Replay</button>
+              <button type="button" id="talk-stop-btn" class="btn btn-secondary" style="font-size: 11.5px; padding: 4px 10px; color: var(--accent-rose);">⏹️ Stop</button>
+            </div>
+          </div>
+          <div id="talk-assistant-text" style="font-size: 14px; color: var(--text-primary); line-height: 1.55; margin-bottom: 10px;"></div>
+          <div id="talk-assistant-meta" style="font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 8px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+            <span id="talk-law-cite" style="color: var(--accent-cyan); font-weight: 600;"></span>
+            <span>Helpline: <strong style="color: var(--accent-rose);"><a href="tel:868989330" style="color: var(--accent-rose); text-decoration: none;">868989330</a></strong> | NALSA: 15100</span>
+          </div>
+        </div>
+
+        <!-- Auto-speak toggle -->
+        <div style="margin-top: 18px; display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--text-muted);">
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="checkbox" id="talk-auto-speak-toggle" checked />
+            <span>Speak answer aloud automatically</span>
+          </label>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- FLOATING 24/7 CHATBOX WIDGET -->
+  <!-- ========================================================================= -->
+
+  <!-- Floating Launcher Button (Member-Only) -->
+  <button type="button" class="bi-chat-launcher" id="bi-chat-launcher" aria-label="Open Beyond Identity Assistant Chatbox" style="display: none;">
+    <div class="bi-chat-online-dot"></div>
+    <span class="bi-chat-launcher-icon">🤖</span>
+    <span>Assistant</span>
+  </button>
+
+  <!-- Floating Teaser Tooltip (Member-Only) -->
+  <div class="bi-chat-teaser" id="bi-chat-teaser" style="display: none;">
+    <span>👋 <strong>Need guidance?</strong> Ask about legal rights, verified jobs, or healthcare!</span>
+    <button type="button" class="bi-chat-teaser-close" id="bi-chat-teaser-close" aria-label="Dismiss Teaser">&times;</button>
+  </div>
+
+  <!-- Floating Chatbox Window (Member-Only) -->
+  <aside class="bi-chatbox-window" id="bi-chatbox-window" role="dialog" aria-label="Beyond Identity Assistant Chatbox" style="display: none;">
+    <!-- Header -->
+    <div class="bi-chatbox-header">
+      <div class="bi-chat-header-profile">
+        <div class="bi-chat-header-avatar">
+          🤖
+          <span class="online-badge"></span>
+        </div>
+        <div class="bi-chat-header-info">
+          <h3><strong class="brand-bold">Beyond Identity</strong> <span class="bi-chat-live-badge">24/7 Live</span></h3>
+          <p>Verified Database & Legal Assistant</p>
+        </div>
+      </div>
+      <div class="bi-chat-header-actions">
+        <button type="button" class="bi-chat-tool-btn bi-chat-audio-btn active" id="bi-chat-voice-toggle" title="Turn Audio Voice Output ON / OFF">
+          <span id="bi-chat-voice-icon">🔊</span> <span id="bi-chat-voice-label">Audio: ON</span>
+        </button>
+        <button type="button" class="bi-chat-tool-btn bi-chat-stop-btn" id="bi-chat-stop-btn" title="Stop Audio Speech">
+          <span>⏹️</span> <span>Stop</span>
+        </button>
+        <button type="button" class="bi-chat-tool-btn" id="bi-chat-clear-btn" title="Clear Chat History">🗑️</button>
+        <button type="button" class="bi-chat-tool-btn" id="bi-chat-close-btn" title="Minimize / Close Chatbox">✕</button>
+      </div>
+    </div>
+
+    <!-- Quick Category Filter Bar -->
+    <div class="bi-chat-category-bar" id="bi-chat-category-bar">
+      <button type="button" class="bi-chat-cat-chip active" data-cat="">✨ All</button>
+      <button type="button" class="bi-chat-cat-chip" data-cat="employment">💼 Jobs</button>
+      <button type="button" class="bi-chat-cat-chip" data-cat="housing">🏠 Housing</button>
+      <button type="button" class="bi-chat-cat-chip" data-cat="healthcare">🩺 Healthcare</button>
+      <button type="button" class="bi-chat-cat-chip" data-cat="legal">⚖️ Legal Rights</button>
+      <button type="button" class="bi-chat-cat-chip" data-cat="crisis">🚨 Emergency SOS</button>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="bi-chat-messages" id="bi-chat-messages">
+      <!-- Populated via JavaScript -->
+    </div>
+
+    <!-- Input Bar -->
+    <div class="bi-chatbox-input-wrap">
+      <button type="button" class="bi-chat-mic-btn" id="bi-chat-mic-btn" title="Speak into microphone (Speech-to-Text)">🎙️</button>
+      <input type="text" class="bi-chat-input" id="bi-chat-input" placeholder="Ask about rights, jobs, HRT, shelters..." autocomplete="off" />
+      <button type="button" class="bi-chat-send-btn" id="bi-chat-send-btn" title="Send Question" aria-label="Send Query">➤</button>
+    </div>
+
+    <!-- Emergency Crisis Banner Footer -->
+    <div class="bi-chat-disclaimer">
+      🚨 <strong>24x7 Helpline:</strong> <a href="tel:868989330">868989330</a> • Tele-MANAS <a href="tel:14416">14416</a> • Legal Aid <a href="tel:15100">15100</a>
+    </div>
+  </aside>
+
+  <!-- Application Logic -->
+  <script src="/static/js/app.js?v=6.0"></script>
+
+  <!-- Modern Navigation & Mobile Drawer Controller -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggleBtn = document.getElementById("nav-mobile-toggle");
+      const drawer = document.getElementById("nav-mobile-drawer");
+      if (toggleBtn && drawer) {
+        toggleBtn.addEventListener("click", function () {
+          const isOpen = drawer.classList.toggle("open");
+          toggleBtn.classList.toggle("open", isOpen);
+          toggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+
+        // Close drawer on link click
+        drawer.querySelectorAll(".nav-mobile-link").forEach(function (link) {
+          link.addEventListener("click", function () {
+            drawer.classList.remove("open");
+            toggleBtn.classList.remove("open");
+            toggleBtn.setAttribute("aria-expanded", "false");
+          });
+        });
+      }
+
+      // "More" Dropdown Click/Touch Handler
+      const moreToggle = document.getElementById("nav-more-toggle");
+      const moreMenu = document.getElementById("nav-more-menu");
+      if (moreToggle && moreMenu) {
+        moreToggle.addEventListener("click", function (e) {
+          e.stopPropagation();
+          const isOpen = moreMenu.classList.toggle("active");
+          moreToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+
+        document.addEventListener("click", function (e) {
+          if (!moreToggle.contains(e.target) && !moreMenu.contains(e.target)) {
+            moreMenu.classList.remove("active");
+            moreToggle.setAttribute("aria-expanded", "false");
+          }
+        });
+
+        moreMenu.querySelectorAll(".dropdown-item").forEach(function (item) {
+          item.addEventListener("click", function () {
+            moreMenu.classList.remove("active");
+            moreToggle.setAttribute("aria-expanded", "false");
+          });
+        });
+      }
+
+      // Smart Tab Navigation for Authenticated Portal Dropdown & Drawer
+      function bindAuthNavLink(selector, tabId) {
+        const el = document.querySelector(selector);
+        if (el) {
+          el.addEventListener("click", function (e) {
+            const authView = document.getElementById("authenticated-portal-view");
+            if (authView && authView.style.display !== "none") {
+              e.preventDefault();
+              if (typeof switchToTab === "function") {
+                switchToTab(tabId);
+              } else {
+                const tabBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
+                if (tabBtn) tabBtn.click();
+              }
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          });
+        }
+      }
+
+      bindAuthNavLink("#nav-link-opportunities", "tab-listings");
+      bindAuthNavLink("#nav-link-legal", "tab-awareness");
+      bindAuthNavLink("#nav-link-health", "tab-health");
+      bindAuthNavLink("#nav-link-report", "tab-report");
+      bindAuthNavLink("#nav-mobile-listings-link", "tab-listings");
+      bindAuthNavLink("#nav-mobile-awareness-link", "tab-awareness");
+      bindAuthNavLink("#nav-mobile-health-link", "tab-health");
+      bindAuthNavLink("#nav-mobile-report-link", "tab-report");
+
+      // 1-Click Share Portal Handler
+      const shareBtn = document.getElementById("btn-share-portal");
+      if (shareBtn) {
+        shareBtn.addEventListener("click", async function () {
+          const shareUrl = window.location.origin || window.location.href;
+          const shareData = {
+            title: "Beyond Identity",
+            text: "Beyond Identity — India's Empowerment & Rights Portal for the Transgender Community",
+            url: shareUrl,
+          };
+
+          if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
+            try {
+              await navigator.share(shareData);
+              return;
+            } catch (err) {}
+          }
+
+          try {
+            await navigator.clipboard.writeText(shareUrl);
+            if (typeof showToast === "function") {
+              showToast("🔗 Portal link copied to clipboard! Share it with friends and community.", "success");
+            } else {
+              alert("Portal link copied: " + shareUrl);
+            }
+          } catch (e) {
+            prompt("Copy this link to share Beyond Identity:", shareUrl);
+          }
+        });
+      }
+
+      // Active Section Scrollspy for Desktop Navigation Links
+      const navLinks = document.querySelectorAll(".nav-links-menu .nav-link");
+      if (navLinks.length > 0) {
+        const sections = Array.from(navLinks)
+          .map(link => {
+            const hash = link.getAttribute("href");
+            return hash && hash.startsWith("#") ? document.querySelector(hash) : null;
+          })
+          .filter(Boolean);
+
+        window.addEventListener("scroll", function () {
+          const scrollPos = window.scrollY + 120;
+          let currentActiveId = "";
+          sections.forEach(sec => {
+            if (sec && sec.offsetTop <= scrollPos) {
+              currentActiveId = sec.id;
+            }
+          });
+
+          if (currentActiveId) {
+            navLinks.forEach(link => {
+              const matches = link.getAttribute("href") === "#" + currentActiveId;
+              link.classList.toggle("active", matches);
+            });
+          }
+        }, { passive: true });
+      }
+    });
+  </script>
+</body>
+</html>
