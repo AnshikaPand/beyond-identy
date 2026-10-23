@@ -58,6 +58,17 @@ def get_chatbot_prompts():
     return {
         "categories": [
             {
+                "id": "lgbtq_identities",
+                "label": "🌈 LGBTQIA+ Orientations & Rights",
+                "prompts": [
+                    "I am gay — what are my legal rights in India?",
+                    "Is being gay or lesbian legal in India after Section 377?",
+                    "Can same-sex couples live together or marry in India?",
+                    "Is conversion therapy banned in India?",
+                    "Where can I find LGBTQ+ support groups and safe sex / PrEP resources?",
+                ],
+            },
+            {
                 "id": "basics",
                 "label": "🏳️‍⚧️ Basics & Terminology",
                 "prompts": [

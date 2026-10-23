@@ -471,6 +471,291 @@
         "transgender kya hai"
       ],
       "answer": "Transgender describes a person whose gender identity differs from the sex assigned to them at birth. In India, the Transgender Persons Act, 2019 and NALSA judgment (2014) protect the right to self-identify one's gender without discrimination."
+    },
+    {
+      "id": 25,
+      "category": "lgbtq_support",
+      "question": "I am gay / Gay identity & acceptance",
+      "triggers": [
+        "i am gay",
+        "i'm gay",
+        "am i gay",
+        "i think i am gay",
+        "i think i'm gay",
+        "how do i know if i am gay",
+        "what does gay mean",
+        "i like boys",
+        "i like men",
+        "gay identity",
+        "main gay hoon",
+        "main gay hu",
+        "kya main gay hoon",
+        "gay hu",
+        "gay hoon",
+        "gay"
+      ],
+      "answer": "Being gay is a natural, normal, and valid sexual orientation where a man experiences romantic or sexual attraction to other men. In India, consensual same-sex relationships were completely decriminalized by the Supreme Court in 2018 under Section 377. You are valid and not alone. Take time to explore your feelings safely, and know that supportive communities like The Humsafar Trust, Naz Foundation, and Tele-MANAS (14416) are here for you."
+    },
+    {
+      "id": 26,
+      "category": "lgbtq_support",
+      "question": "I am lesbian / Lesbian identity & rights",
+      "triggers": [
+        "i am lesbian",
+        "i'm lesbian",
+        "i am a lesbian",
+        "am i lesbian",
+        "i think i am lesbian",
+        "what does lesbian mean",
+        "i like girls",
+        "i like women",
+        "lesbian rights in india",
+        "main lesbian hoon",
+        "main lesbian hu",
+        "lesbian"
+      ],
+      "answer": "A lesbian is a woman who experiences romantic or sexual attraction to other women. It is a completely natural, healthy aspect of human diversity. In India, adult same-sex relationships are protected under Articles 14 and 21 of the Constitution. Organizations such as Sappho for Equality, Naz Foundation, and The Humsafar Trust offer dedicated, safe support networks and affirmative counseling for queer women."
+    },
+    {
+      "id": 27,
+      "category": "lgbtq_support",
+      "question": "I am bisexual / Bisexuality & attraction",
+      "triggers": [
+        "i am bisexual",
+        "i'm bisexual",
+        "am i bisexual",
+        "am i bi",
+        "i am bi",
+        "i think i am bi",
+        "what does bisexual mean",
+        "can i like both men and women",
+        "bisexuality",
+        "main bisexual hoon",
+        "main bi hoon",
+        "bisexual"
+      ],
+      "answer": "Bisexuality is romantic or sexual attraction to people of more than one gender. Attraction does not need to be equal or 50/50, and you do not need previous dating experience to identify as bisexual. Bisexuality is completely valid, normal, and recognized across India. If you feel confused or face biphobia, affirmative counseling via Tele-MANAS (14416) or community peer groups can offer a safe sounding board."
+    },
+    {
+      "id": 28,
+      "category": "lgbtq_support",
+      "question": "I am asexual / Aromantic (Ace / Aro)",
+      "triggers": [
+        "i am asexual",
+        "i'm asexual",
+        "what is asexual",
+        "what is ace",
+        "am i asexual",
+        "i don't feel sexual attraction",
+        "asexuality",
+        "what is aromantic",
+        "i am aro",
+        "i am ace",
+        "is being asexual normal",
+        "asexual"
+      ],
+      "answer": "Asexuality (Ace) is a sexual orientation where an individual experiences little or no sexual attraction to others. Aromanticism (Aro) refers to experiencing little or no romantic attraction. It is a valid, normal orientation on the spectrum — not a medical defect, hormone deficiency, or consequence of trauma. Ace and aro individuals can build profound, loving partnerships and live deeply fulfilling lives."
+    },
+    {
+      "id": 29,
+      "category": "lgbtq_support",
+      "question": "I am non-binary / Genderqueer & Pronouns",
+      "triggers": [
+        "i am non-binary",
+        "i'm non-binary",
+        "i am nonbinary",
+        "what is non-binary",
+        "what does nonbinary mean",
+        "what is queer",
+        "genderqueer",
+        "genderfluid",
+        "pronouns they them",
+        "they them pronouns",
+        "non binary",
+        "nonbinary"
+      ],
+      "answer": "Non-binary is an umbrella term for people whose gender identity does not fit strictly into 'male' or 'female' (they may identify as both, neither, or fluid). In India, the landmark NALSA judgment (2014) established that every person has the fundamental constitutional right to self-perceived gender identity. Using someone's requested pronouns (such as they/them, she/her, or he/him) is a simple and essential sign of respect."
+    },
+    {
+      "id": 30,
+      "category": "lgbtq_support",
+      "question": "I am intersex / Intersex bodily rights",
+      "triggers": [
+        "i am intersex",
+        "what is intersex",
+        "intersex meaning",
+        "intersex rights in india",
+        "am i intersex",
+        "difference between intersex and transgender",
+        "intersex"
+      ],
+      "answer": "Intersex describes people born with reproductive, chromosomal, or anatomical traits that differ from traditional male or female biological definitions. Intersex is a natural biological variation, while transgender relates to gender identity. In India, the Madras High Court (2019) outlawed non-consensual sex-affirmation surgeries on intersex infants in Tamil Nadu, establishing crucial precedents for bodily autonomy."
+    },
+    {
+      "id": 31,
+      "category": "lgbtq_rights",
+      "question": "Is being gay legal in India? / Section 377",
+      "triggers": [
+        "is being gay legal in india",
+        "is homosexuality legal in india",
+        "section 377",
+        "can police arrest me for being gay",
+        "is it a crime to be gay in india",
+        "navtej singh johar",
+        "gay rights in india",
+        "kya gay hona crime hai",
+        "kya india me gay hona legal hai",
+        "is gay legal"
+      ],
+      "answer": "Yes, being gay, lesbian, bisexual, or queer is 100% legal in India. On September 6, 2018, the Supreme Court of India unanimously decriminalized Section 377 (Navtej Singh Johar v. Union of India), affirming that consensual same-sex intimacy among adults is a constitutional right protected by equality (Article 14), non-discrimination (Article 15), and privacy/dignity (Article 21). The police cannot arrest or harass you for being LGBTQ+."
+    },
+    {
+      "id": 32,
+      "category": "lgbtq_rights",
+      "question": "Can same-sex couples marry in India? / Cohabitation rights",
+      "triggers": [
+        "can same sex couples marry in india",
+        "can two men marry in india",
+        "can two women marry in india",
+        "same sex marriage in india",
+        "gay marriage in india",
+        "supriyo judgment",
+        "can gay couples live together in india",
+        "same sex live in relationship",
+        "kya gay shadi kar sakte hain",
+        "same sex marriage",
+        "gay marriage"
+      ],
+      "answer": "In October 2023 (Supriyo v. Union of India), the Supreme Court ruled that legal marriage equality requires legislative action by Parliament. However, the Supreme Court confirmed that adult same-sex couples have the constitutional right to cohabit (live together) in peace without harassment. The Central Government has also formed a high-level committee to facilitate queer couples' access to joint bank accounts, insurance, and medical proxy rights."
+    },
+    {
+      "id": 33,
+      "category": "lgbtq_support",
+      "question": "How to come out / Coming out to parents and family",
+      "triggers": [
+        "how to come out",
+        "how do i come out as gay",
+        "how to tell parents i am gay",
+        "how to tell family i am gay",
+        "coming out advice",
+        "scared to come out to parents",
+        "family ko kaise bataye",
+        "parents ko kaise bataye ki main gay hoon",
+        "coming out"
+      ],
+      "answer": "Coming out is a personal journey, not an obligation — your safety and peace of mind must come first. Recommended guidelines: 1) Secure financial and physical independence before disclosing to unsupportive families; 2) Gauge reactions by discussing general LGBTQ+ news or media; 3) Keep a supportive friend informed; 4) Share clear educational resources; 5) Give loved ones time to adjust. If you need confidential guidance, contact Tele-MANAS at 14416."
+    },
+    {
+      "id": 34,
+      "category": "lgbtq_rights",
+      "question": "Family harassment & Forced marriage / Protection",
+      "triggers": [
+        "family forcing me to marry",
+        "forced marriage",
+        "parents forcing marriage",
+        "threats of forced marriage",
+        "family harassing me for being gay",
+        "parents beat me for being gay",
+        "protection from family harassment",
+        "can police protect me",
+        "protection petition"
+      ],
+      "answer": "Forcing any adult into marriage without voluntary consent is illegal under Indian law. If you face threats, physical violence, or unlawful confinement from family, you have immediate legal remedies: adult queer individuals and couples can file an Article 226 writ petition before their State High Court, which routinely directs police to provide security and safe shelter. For immediate help, dial Emergency 112, NALSA Legal Aid 15100, or Helpline 868989330."
+    },
+    {
+      "id": 35,
+      "category": "lgbtq_rights",
+      "question": "Conversion therapy ban in India",
+      "triggers": [
+        "conversion therapy",
+        "is conversion therapy legal in india",
+        "parents forcing conversion therapy",
+        "conversion therapy ban",
+        "cure homosexuality",
+        "can doctors change my sexual orientation",
+        "can doctors cure gay people",
+        "cure gay",
+        "can doctors cure homosexuality"
+      ],
+      "answer": "Conversion therapy (unscientific attempts by doctors, quacks, or families to 'cure' sexual orientation or gender identity) is strictly prohibited in India. In 2022, the National Medical Commission (NMC) designated conversion therapy as professional medical misconduct, meaning practitioners face revocation of their medical licenses. Both the Madras and Delhi High Courts have mandated strict police action against clinics promoting it."
+    },
+    {
+      "id": 36,
+      "category": "lgbtq_health",
+      "question": "Safe sex, HIV, PrEP & PEP for LGBTQ+",
+      "triggers": [
+        "safe sex",
+        "prep",
+        "pep",
+        "hiv testing in india",
+        "free hiv test",
+        "safe sex for gay men",
+        "sexual health lgbtq",
+        "naco centers",
+        "where can i get prep or pep in india for safe sex",
+        "prep and pep"
+      ],
+      "answer": "Practicing safe sex protects your sexual health. In India, free and confidential HIV testing, counseling, and treatment are provided through NACO Integrated Counseling & Testing Centers (ICTC) in all government hospitals. PrEP (taken prior to exposure to prevent HIV) and PEP (emergency regimen within 72 hours of exposure) are available through community clinics like The Humsafar Trust and queer-affirmative health centers."
+    },
+    {
+      "id": 37,
+      "category": "lgbtq_community",
+      "question": "Where to meet LGBTQ+ friends and community in India",
+      "triggers": [
+        "how to meet other gay people",
+        "where to find lgbtq friends",
+        "lgbtq community groups in india",
+        "gay support groups",
+        "queer ngos in india",
+        "humsafar trust",
+        "naz foundation",
+        "pride groups india",
+        "where can i find lgbtq support groups in mumbai or delhi",
+        "sappho for equality",
+        "sappho"
+      ],
+      "answer": "India is home to vibrant, supportive LGBTQ+ organizations and community circles: Mumbai: The Humsafar Trust and Yaariyan; Delhi/NCR: Naz Foundation and Harmless Hugs; Bengaluru: Sangama and Good As You; Kolkata: Sappho for Equality; Chennai: Sahodaran and Orinam; Hyderabad: Mobbera Foundation. You can also connect through verified community NGOs on the Beyond Identity directory."
+    },
+    {
+      "id": 38,
+      "category": "lgbtq_rights",
+      "question": "Workplace equality & LGBTQ+ corporate rights",
+      "triggers": [
+        "lgbtq workplace rights",
+        "discrimination at work for being gay",
+        "fired for being gay",
+        "posh act lgbtq",
+        "corporate diversity inclusion india"
+      ],
+      "answer": "Leading corporations across India maintain explicit Equal Opportunity policies, employee resource groups (ERGs), gender-neutral facilities, and health insurance inclusive of same-sex partners. If you face workplace harassment or bias, you can report to internal HR or DEI committees. For transgender employees, Section 9 of the Transgender Persons Act 2019 legally mandates non-discrimination and designated Complaints Officers."
+    },
+    {
+      "id": 39,
+      "category": "lgbtq_health",
+      "question": "Affirmative mental health and counseling",
+      "triggers": [
+        "queer affirmative therapist",
+        "gay friendly counselor",
+        "lgbtq mental health",
+        "counseling for gay people",
+        "therapist for queer youth",
+        "tele-manas"
+      ],
+      "answer": "Queer-affirmative therapists provide supportive, non-pathologizing care that validates your sexual orientation and gender identity. Key confidential resources in India: 1) Tele-MANAS (Toll-free 14416) for 24/7 psychological assistance; 2) The Humsafar Trust clinical counseling centers; 3) Mariwala Health Initiative (MHI) queer-affirmative practitioner directory; 4) iCall psychosocial helpline (9152987821)."
+    },
+    {
+      "id": 40,
+      "category": "lgbtq_support",
+      "question": "What does LGBTQIA+ mean?",
+      "triggers": [
+        "what does lgbtq mean",
+        "what is lgbtqia",
+        "lgbt meaning",
+        "lgbtq full form",
+        "what does the plus mean in lgbtq",
+        "lgbtqia meaning"
+      ],
+      "answer": "LGBTQIA+ stands for Lesbian, Gay, Bisexual, Transgender, Queer/Questioning, Intersex, and Asexual. The '+' embraces other diverse identities, such as pansexual, aromantic, two-spirit, non-binary, and genderfluid. It represents a global movement celebrating human diversity, bodily autonomy, equality, and dignity."
     }
   ],
   "intents": [
@@ -995,6 +1280,218 @@
         "I'm sorry, I didn't quite understand that. Could you say it in a different way?",
         "I want to make sure I help you properly. Can you tell me a little more?",
         "I may not have the right answer yet, but I'm listening. You can also ask about rights, schemes, healthcare or support services."
+      ]
+    },
+    {
+      "tag": "user_is_gay",
+      "patterns": [
+        "i am gay",
+        "i'm gay",
+        "am i gay",
+        "i think i am gay",
+        "i think i'm gay",
+        "how do i know if i am gay",
+        "i am a gay man",
+        "i like men",
+        "i like boys",
+        "main gay hoon",
+        "main gay hu",
+        "kya main gay hoon"
+      ],
+      "responses": [
+        "Being gay is a natural, normal, and valid sexual orientation where a man is attracted to other men. You are valid and not alone. In India, consensual same-sex love was decriminalized by the Supreme Court in 2018 under Section 377. Take your time understanding your feelings, and reach out to community groups like The Humsafar Trust or Tele-MANAS (14416) whenever you need support.",
+        "Welcome! Being gay is a completely natural part of human sexuality. There is a large, caring LGBTQ+ community across India ready to support you. You do not need to rush to label yourself or come out to anyone until you feel safe, confident, and ready."
+      ]
+    },
+    {
+      "tag": "user_is_lesbian",
+      "patterns": [
+        "i am lesbian",
+        "i'm lesbian",
+        "i am a lesbian",
+        "am i lesbian",
+        "i think i am lesbian",
+        "i like women",
+        "i like girls",
+        "main lesbian hoon",
+        "main lesbian hu"
+      ],
+      "responses": [
+        "Being a lesbian is a completely natural, healthy, and beautiful aspect of human diversity. In India, adult consensual same-sex relationships are fully legal under the Constitution. Safe community networks like Sappho for Equality, Naz Foundation, and The Humsafar Trust offer affirmative peer spaces and counseling for queer women.",
+        "You are valid and loved. Discovering and embracing being a lesbian is your personal journey. Connect with supportive peers and affirmative counselors who understand your experiences."
+      ]
+    },
+    {
+      "tag": "user_is_bisexual",
+      "patterns": [
+        "i am bisexual",
+        "i'm bisexual",
+        "am i bisexual",
+        "am i bi",
+        "i am bi",
+        "i think i am bi",
+        "can i like both men and women",
+        "bisexuality",
+        "main bi hoon"
+      ],
+      "responses": [
+        "Bisexuality is attraction to more than one gender. Your feelings do not need to be equally split 50/50, and you don't need previous dating experience to know you are bi. Bisexuality is completely valid, real, and normal.",
+        "You are 100% valid. Bisexual people are an integral part of the LGBTQ+ spectrum. Don't let biphobia or pressure make you doubt who you are."
+      ]
+    },
+    {
+      "tag": "user_is_asexual",
+      "patterns": [
+        "i am asexual",
+        "i'm asexual",
+        "what is asexual",
+        "what is ace",
+        "am i asexual",
+        "i don't feel sexual attraction",
+        "what is aromantic",
+        "i am aro",
+        "i am ace"
+      ],
+      "responses": [
+        "Asexuality (Ace) is a sexual orientation where someone experiences little to no sexual attraction. Aromanticism (Aro) refers to little to no romantic attraction. It is a completely normal variation, not a medical condition or hormonal flaw.",
+        "Being ace or aro is completely valid. You can experience close, loving, and deeply fulfilling friendships, partnerships, and chosen families on your own terms."
+      ]
+    },
+    {
+      "tag": "user_is_nonbinary_queer",
+      "patterns": [
+        "i am non-binary",
+        "i'm non-binary",
+        "i am nonbinary",
+        "what is non-binary",
+        "what does nonbinary mean",
+        "what is queer",
+        "genderqueer",
+        "genderfluid",
+        "they them pronouns"
+      ],
+      "responses": [
+        "Non-binary describes gender identities that do not fit exclusively into male or female (such as both, neither, or fluid). In India, the NALSA 2014 judgment recognizes the constitutional right to self-perceived gender identity.",
+        "Your identity and pronouns are valid and deserving of respect. Queer is an umbrella term celebrating diversity across gender and sexual orientation."
+      ]
+    },
+    {
+      "tag": "section_377_legal",
+      "patterns": [
+        "is being gay legal in india",
+        "is homosexuality legal in india",
+        "section 377",
+        "can police arrest me for being gay",
+        "is it a crime to be gay in india",
+        "navtej singh johar",
+        "kya gay hona crime hai"
+      ],
+      "responses": [
+        "Yes, being gay, lesbian, bisexual, or queer is 100% legal in India. On September 6, 2018, the Supreme Court of India unanimously struck down Section 377 (Navtej Singh Johar v. Union of India), ruling that consensual adult same-sex relationships are protected under Articles 14 and 21 of the Constitution.",
+        "Consensual same-sex relationships are completely decriminalized in India. The police have no legal power to harass, detain, or arrest consenting adults for their sexual orientation."
+      ]
+    },
+    {
+      "tag": "same_sex_marriage_relationships",
+      "patterns": [
+        "can same sex couples marry in india",
+        "can two men marry in india",
+        "can two women marry in india",
+        "same sex marriage in india",
+        "gay marriage in india",
+        "supriyo judgment",
+        "can gay couples live together in india",
+        "same sex live in relationship"
+      ],
+      "responses": [
+        "While legal marriage equality under the Special Marriage Act requires Parliamentary legislation (Supriyo v. Union of India, Oct 2023), adult same-sex couples have the full constitutional right to live together in peace. High courts routinely protect queer couples from family harassment.",
+        "Same-sex couples in India have the right to cohabit freely. A high-level government committee has been established to enable rights such as joint bank accounts, partner nominations, and healthcare decision-making for queer partners."
+      ]
+    },
+    {
+      "tag": "coming_out_advice",
+      "patterns": [
+        "how to come out",
+        "how do i come out as gay",
+        "how to tell parents i am gay",
+        "how to tell family i am gay",
+        "coming out advice",
+        "scared to come out to parents",
+        "family ko kaise bataye"
+      ],
+      "responses": [
+        "Coming out should always prioritize your safety. Ensure financial and physical stability, test family reactions first with general LGBTQ+ news, keep a supportive friend informed, and give family time to process. Tele-MANAS (14416) offers free confidential counseling.",
+        "You are under no obligation to come out until you feel completely safe and ready. Take small steps, build a supportive chosen family first, and lean on community resources."
+      ]
+    },
+    {
+      "tag": "conversion_therapy_ban",
+      "patterns": [
+        "conversion therapy",
+        "is conversion therapy legal in india",
+        "parents forcing conversion therapy",
+        "conversion therapy ban",
+        "cure homosexuality",
+        "can doctors change my sexual orientation",
+        "can doctors cure gay people",
+        "cure gay"
+      ],
+      "responses": [
+        "Conversion therapy is banned in India. In 2022, the National Medical Commission (NMC) designated it as professional medical misconduct, meaning doctors who attempt it face cancellation of their license. Madras and Delhi High Courts have mandated strict police action against clinics promoting it.",
+        "Homosexuality and diverse gender identities are natural human variations, not diseases. Any doctor or clinic claiming to 'cure' or change your orientation is violating Indian medical regulations."
+      ]
+    },
+    {
+      "tag": "forced_marriage_protection",
+      "patterns": [
+        "family forcing me to marry",
+        "forced marriage",
+        "parents forcing marriage",
+        "threats of forced marriage",
+        "family harassing me for being gay",
+        "protection from family harassment"
+      ],
+      "responses": [
+        "Forced marriage of an adult is illegal in India. If you face threats or coercion from family, you can file a protection writ petition under Article 226 before your State High Court for police security. For immediate help, call Emergency 112, NALSA Free Legal Aid 15100, or Helpline 868989330.",
+        "You have the constitutional right to choose your partner or remain unmarried. Free legal aid is available under NALSA (15100), and High Courts routinely issue orders restraining families from harassing queer adults."
+      ]
+    },
+    {
+      "tag": "lgbtq_safe_sex_prep",
+      "patterns": [
+        "safe sex",
+        "prep",
+        "pep",
+        "hiv testing in india",
+        "free hiv test",
+        "safe sex for gay men",
+        "sexual health lgbtq",
+        "where can i get prep or pep in india for safe sex",
+        "prep and pep"
+      ],
+      "responses": [
+        "In India, free and confidential HIV testing, counseling, and treatment are provided through NACO Integrated Counseling & Testing Centers (ICTC) in all government hospitals. PrEP and PEP (emergency post-exposure prophylaxis) are available through community clinics like The Humsafar Trust.",
+        "Taking care of your sexual health is essential. Use protection, get routine screenings at non-judgmental community clinics, and learn about PrEP and PEP options."
+      ]
+    },
+    {
+      "tag": "lgbtq_community_groups",
+      "patterns": [
+        "how to meet other gay people",
+        "where to find lgbtq friends",
+        "lgbtq community groups in india",
+        "gay support groups",
+        "queer ngos in india",
+        "humsafar trust",
+        "naz foundation",
+        "pride groups india",
+        "where can i find lgbtq support groups in mumbai or delhi",
+        "sappho for equality",
+        "sappho"
+      ],
+      "responses": [
+        "India has thriving, welcoming LGBTQ+ groups! In Mumbai: The Humsafar Trust and Yaariyan; Delhi: Naz Foundation and Harmless Hugs; Bengaluru: Sangama and Good As You; Kolkata: Sappho for Equality; Chennai: Sahodaran and Orinam; Hyderabad: Mobbera Foundation.",
+        "You can connect with peer support groups, local Pride organizing collectives, and verified community NGOs right through the Beyond Identity platform."
       ]
     }
   ]

@@ -334,5 +334,107 @@ def test_chatbot_pronouns_name_intent():
         assert any(phrase in data["reply"].lower() for phrase in ["pronouns", "name", "respect", "deadnaming"])
 
 
+def test_chatbot_prompts_contains_lgbtq():
+    response = client.get("/chatbot/prompts")
+    assert response.status_code == 200
+    data = response.json()
+    category_ids = [c["id"] for c in data["categories"]]
+    assert "lgbtq_identities" in category_ids
+    lgbtq_cat = next(c for c in data["categories"] if c["id"] == "lgbtq_identities")
+    assert len(lgbtq_cat["prompts"]) >= 3
+
+
+def test_chatbot_lgbtq_gay_identity():
+    for q in ["i am gay", "am i gay", "i think i am gay", "i am a gay man"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] in ("user_is_gay", "section_377_legal")
+        assert any(phrase in data["reply"].lower() for phrase in ["gay", "natural", "valid", "377", "respect", "dignity"])
+        assert len(data["suggested_prompts"]) > 0
+
+
+def test_chatbot_lgbtq_lesbian_identity():
+    for q in ["i am lesbian", "am i lesbian", "i think i am lesbian"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] in ("user_is_lesbian", "section_377_legal")
+        assert any(phrase in data["reply"].lower() for phrase in ["lesbian", "natural", "valid", "sappho", "respect"])
+
+
+def test_chatbot_lgbtq_bisexual_identity():
+    for q in ["i am bisexual", "am i bisexual", "i think i am bi"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "user_is_bisexual"
+        assert any(phrase in data["reply"].lower() for phrase in ["bisexual", "valid", "orientation", "attracted", "gender"])
+
+
+def test_chatbot_lgbtq_asexual_identity():
+    for q in ["i am asexual", "what is asexuality", "i am ace"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "user_is_asexual"
+        assert any(phrase in data["reply"].lower() for phrase in ["asexual", "attraction", "valid", "normal", "indian aces"])
+
+
+def test_chatbot_section_377_legality():
+    for q in ["is being gay legal in india?", "is homosexuality a crime under section 377?", "section 377"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "section_377_legal"
+        assert any(phrase in data["reply"].lower() for phrase in ["377", "decriminalized", "supreme court", "navtej"])
+
+
+def test_chatbot_same_sex_marriage_and_relationships():
+    for q in ["can same sex couples marry in india?", "can two men get married in india?", "same sex relationships"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "same_sex_marriage_relationships"
+        assert any(phrase in data["reply"].lower() for phrase in ["supriyo", "parliament", "cohabitation", "live together", "protection", "right"])
+
+
+def test_chatbot_conversion_therapy_ban():
+    for q in ["is conversion therapy legal in india?", "can doctors cure gay people?", "conversion therapy"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "conversion_therapy_ban"
+        assert any(phrase in data["reply"].lower() for phrase in ["banned", "illegal", "nmc", "misconduct", "madras high court"])
+
+
+def test_chatbot_forced_marriage_protection():
+    for q in ["my parents are forcing me to marry against my will", "forced marriage protection for lgbt"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "forced_marriage_protection"
+        assert any(phrase in data["reply"].lower() for phrase in ["illegal", "112", "15100", "protection", "rights", "partner"])
+
+
+def test_chatbot_lgbtq_safe_sex_prep():
+    for q in ["where can i get prep or pep in india for safe sex?", "safe sex for lgbtq", "prep and pep"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "lgbtq_safe_sex_prep"
+        assert any(phrase in data["reply"].lower() for phrase in ["prep", "pep", "naco", "hiv", "humsafar", "condoms"])
+
+
+def test_chatbot_lgbtq_community_groups():
+    for q in ["where can i find lgbtq support groups in mumbai or delhi?", "humsafar trust", "sappho for equality"]:
+        response = client.post("/chatbot/query", json={"query": q})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["intent"] == "lgbtq_community_groups"
+        assert any(phrase in data["reply"].lower() for phrase in ["humsafar", "sappho", "tweet", "community", "support"])
+
+
+
 
 

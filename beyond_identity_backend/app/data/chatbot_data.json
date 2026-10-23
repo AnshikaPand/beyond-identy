@@ -1,0 +1,1498 @@
+{
+  "safety_rule": {
+    "triggers": [
+      "suicide",
+      "kill myself",
+      "harm",
+      "self harm",
+      "abuse",
+      "danger",
+      "end my life",
+      "marna chahta hoon",
+      "marna chahti hoon",
+      "jaan de dunga",
+      "jaan lena",
+      "physical abuse",
+      "sexual abuse",
+      "in danger",
+      "unsafe",
+      "crisis",
+      "police violence",
+      "violence",
+      "emergency help"
+    ],
+    "answer": "You are not alone. Call Tele-MANAS 14416 (free, 24/7 mental health support). If you are in immediate danger, call 112. Transgender Community Helpline: 868989330, NALSA Free Legal Aid: 15100."
+  },
+  "fallback": {
+    "answer": "Sorry, I don't have a verified answer for that yet. You can try one of the topics above, or call the helpline for direct help."
+  },
+  "questions": [
+    {
+      "id": 1,
+      "category": "small_talk",
+      "question": "Hello / Greeting",
+      "triggers": [
+        "hi",
+        "hello",
+        "namaste",
+        "hey",
+        "hii",
+        "heyy",
+        "namaskar",
+        "pranam",
+        "hola",
+        "hey there",
+        "hello there",
+        "kem cho"
+      ],
+      "answer": "Hello! Welcome to Beyond Identity. I can help with legal rights, jobs, housing, healthcare, schemes and reporting discrimination. What would you like to know?"
+    },
+    {
+      "id": 2,
+      "category": "small_talk",
+      "question": "How are you?",
+      "triggers": [
+        "how are you",
+        "kaise ho",
+        "kya haal hai",
+        "how r u",
+        "aap kaise ho",
+        "kaise ho aap",
+        "kaisa chal raha hai",
+        "how are you doing",
+        "sab kaisa hai",
+        "how do you do",
+        "kya haal",
+        "how are you doing today"
+      ],
+      "answer": "I'm doing well, thank you for asking! How are you today? I'm here if you need any help."
+    },
+    {
+      "id": 3,
+      "category": "small_talk",
+      "question": "I am fine / good",
+      "triggers": [
+        "i am fine",
+        "i'm fine",
+        "i am good",
+        "i'm good",
+        "main theek hoon",
+        "main theek hu",
+        "sab badhiya",
+        "sab thik hai",
+        "all good",
+        "doing well",
+        "i am doing well",
+        "main badhiya hoon",
+        "thik hu",
+        "theek hu"
+      ],
+      "answer": "That's great to hear! Is there anything I can help you with today, like legal rights, jobs, housing or healthcare?"
+    },
+    {
+      "id": 4,
+      "category": "small_talk",
+      "question": "I am not fine / feeling sad",
+      "triggers": [
+        "i am not fine",
+        "i'm not fine",
+        "i am sad",
+        "i'm sad",
+        "mood kharab hai",
+        "main theek nahi hoon",
+        "main theek nahi hu",
+        "not feeling good",
+        "dil udaas hai",
+        "udaas hoon",
+        "feeling low",
+        "sad hoon",
+        "troubled",
+        "unhappy"
+      ],
+      "answer": "I'm sorry you're feeling this way. You're not alone, and I'm here to listen. If you want to talk to someone, Tele-MANAS (14416) is free and available 24/7. Would you like to tell me what's happening?"
+    },
+    {
+      "id": 5,
+      "category": "small_talk",
+      "question": "Who are you?",
+      "triggers": [
+        "who are you",
+        "what is your name",
+        "tum kaun ho",
+        "aap kaun ho",
+        "tera naam kya hai",
+        "what's your name",
+        "who r u",
+        "who made you",
+        "apna naam batao",
+        "what are you",
+        "who are you and what can you do"
+      ],
+      "answer": "I'm the Beyond Identity 24/7 Assistant. I help with legal rights, inclusive jobs, housing, healthcare, government schemes and reporting discrimination."
+    },
+    {
+      "id": 6,
+      "category": "small_talk",
+      "question": "What can you do / Help",
+      "triggers": [
+        "what can you do",
+        "tum kya kar sakte ho",
+        "aap kya kar sakte ho",
+        "kya madad kar sakte ho",
+        "what can you help with",
+        "what help can you provide"
+      ],
+      "answer": "I can guide you on legal rights and ID certificate, jobs and careers, housing and shelters, healthcare and HRT, schemes and grants, reporting discrimination and emergency help."
+    },
+    {
+      "id": 7,
+      "category": "small_talk",
+      "question": "Thank you / Thanks",
+      "triggers": [
+        "thanks",
+        "thank you",
+        "shukriya",
+        "dhanyavaad",
+        "dhanyawad",
+        "thank u",
+        "thx",
+        "thanks a lot",
+        "bohot shukriya",
+        "many thanks",
+        "thank you so much",
+        "thank you so much for your help"
+      ],
+      "answer": "You're most welcome! Feel free to ask anything else anytime."
+    },
+    {
+      "id": 8,
+      "category": "small_talk",
+      "question": "Good morning / day greetings",
+      "triggers": [
+        "good morning",
+        "good afternoon",
+        "good evening",
+        "shubh prabhat",
+        "morning",
+        "good day"
+      ],
+      "answer": "Good morning! Hope you have a great day. How can I help you?"
+    },
+    {
+      "id": 9,
+      "category": "small_talk",
+      "question": "Goodbye / Bye",
+      "triggers": [
+        "bye",
+        "see you",
+        "alvida",
+        "phir milenge",
+        "goodbye",
+        "bye bye",
+        "cya",
+        "tata",
+        "take care"
+      ],
+      "answer": "Take care! If you ever need help, I'm here 24/7. Stay safe!"
+    },
+    {
+      "id": 10,
+      "category": "small_talk",
+      "question": "Are you human / a bot?",
+      "triggers": [
+        "are you human",
+        "are you a bot",
+        "tum insaan ho",
+        "kya tum insaan ho",
+        "bot ho",
+        "are you ai",
+        "are you real",
+        "are u human",
+        "are u a bot",
+        "kya tum bot ho"
+      ],
+      "answer": "I'm an AI assistant, not a human. I can share verified information, but for legal or medical decisions please also consult a professional."
+    },
+    {
+      "id": 11,
+      "category": "small_talk",
+      "question": "OK / Alright",
+      "triggers": [
+        "ok",
+        "okay",
+        "hmm",
+        "accha",
+        "achha",
+        "thik hai",
+        "theek hai",
+        "thik h",
+        "theek h",
+        "alright",
+        "sahi hai",
+        "cool"
+      ],
+      "answer": "Alright! Let me know if you'd like help with anything else."
+    },
+    {
+      "id": 12,
+      "category": "rights_support",
+      "question": "What rights do transgender persons have in India?",
+      "triggers": [
+        "what rights do transgender persons have in india",
+        "transgender rights in india",
+        "transgender rights",
+        "rights of transgender persons",
+        "what rights do trans people have",
+        "nalsa rights",
+        "trans rights",
+        "tg act rights",
+        "kya rights hai",
+        "transgender adhikar",
+        "legal rights in india",
+        "rights in india"
+      ],
+      "answer": "The Transgender Persons (Protection of Rights) Act, 2019 bans discrimination in education, jobs, healthcare, housing and public services. The NALSA judgment (2014) also recognised the right to self-identify one's gender."
+    },
+    {
+      "id": 13,
+      "category": "rights_support",
+      "question": "How do I get a Transgender Certificate / ID?",
+      "triggers": [
+        "how do i get a transgender certificate",
+        "how do i get a transgender certificate id",
+        "transgender certificate",
+        "transgender id",
+        "how to get tg certificate",
+        "certificate of identity",
+        "national portal transgender certificate",
+        "dm certificate",
+        "apply for transgender certificate",
+        "tg card",
+        "transgender identity card",
+        "certificate kaise banaye",
+        "id card kaise banaye",
+        "how do i get a tg certificate"
+      ],
+      "answer": "Apply on the National Portal for Transgender Persons (transgender.dosje.gov.in). The District Magistrate issues a Certificate of Identity, which you can use to update documents like Aadhaar and PAN."
+    },
+    {
+      "id": 14,
+      "category": "rights_support",
+      "question": "What can I do if I face discrimination at work?",
+      "triggers": [
+        "what can i do if i face discrimination at work",
+        "discrimination at work",
+        "workplace discrimination",
+        "job discrimination",
+        "harassed at work",
+        "fired from job for being trans",
+        "complaint officer",
+        "workplace harassment",
+        "office me discrimination",
+        "naukri me bhedbhav",
+        "discrimination at job"
+      ],
+      "answer": "Every establishment must have a Complaint Officer, so report to them in writing first. If nothing happens, approach the police or the courts. Keep emails, messages and witness details as proof."
+    },
+    {
+      "id": 15,
+      "category": "rights_support",
+      "question": "How do I report discrimination or violence?",
+      "triggers": [
+        "how do i report discrimination or violence",
+        "how do i report discrimination",
+        "how to report discrimination",
+        "report discrimination",
+        "report violence",
+        "how to report violence",
+        "file an fir",
+        "police report trans",
+        "discrimination report",
+        "violence report",
+        "fir kaise kare",
+        "report kaise kare"
+      ],
+      "answer": "Use the Report Discrimination tab here, or file an FIR at the nearest police station. In an emergency, call 112."
+    },
+    {
+      "id": 16,
+      "category": "rights_support",
+      "question": "Where can I get free legal help?",
+      "triggers": [
+        "where can i get free legal help",
+        "free legal help",
+        "free legal aid",
+        "nalsa legal aid",
+        "15100",
+        "free lawyer",
+        "district legal services authority",
+        "dlsa",
+        "muft kanooni sahayata",
+        "free vakil",
+        "legal advice free",
+        "legal help"
+      ],
+      "answer": "Call NALSA's free legal aid helpline 15100, or contact your District Legal Services Authority (DLSA)."
+    },
+    {
+      "id": 17,
+      "category": "rights_support",
+      "question": "Is there shelter or housing support?",
+      "triggers": [
+        "is there shelter or housing support",
+        "shelter or housing support",
+        "shelter support",
+        "housing support",
+        "garima greh",
+        "garima greh shelters",
+        "shelter home",
+        "emergency shelter",
+        "kicked out of home",
+        "transgender shelter",
+        "rehne ki jagah",
+        "shelter for trans",
+        "safe housing"
+      ],
+      "answer": "Yes. Under Section 12 of the Transgender Persons Act 2019, arbitrary eviction is unlawful. Garima Greh shelters under the SMILE scheme offer food, shelter and support. Check the Housing & Shelters topic to find one near you."
+    },
+    {
+      "id": 18,
+      "category": "rights_support",
+      "question": "Is there health insurance for transgender persons?",
+      "triggers": [
+        "is there health insurance for transgender persons",
+        "health insurance for transgender persons",
+        "health insurance",
+        "ayushman bharat tg plus",
+        "ayushman bharat",
+        "pm-jay transgender",
+        "pm jay",
+        "transgender health insurance",
+        "surgery cover",
+        "5 lakh insurance",
+        "swasthya bima",
+        "medical insurance"
+      ],
+      "answer": "Yes. Ayushman Bharat TG Plus covers transgender persons, including gender-affirming care. PM-JAY gives up to Rs 5 lakh per family per year for eligible families."
+    },
+    {
+      "id": 19,
+      "category": "rights_support",
+      "question": "Tell me about HRT.",
+      "triggers": [
+        "tell me about hrt",
+        "what is hrt",
+        "hrt",
+        "hormone therapy",
+        "hormone replacement therapy",
+        "hrt guidance",
+        "estrogen",
+        "testosterone",
+        "hormone kaise le",
+        "hrt doctor",
+        "start hrt",
+        "endocrinologist"
+      ],
+      "answer": "HRT should only be started under a qualified doctor, such as an endocrinologist, after proper tests. Please do not self-medicate or follow dosages from the internet. Ayushman Bharat TG Plus also covers gender-affirming care."
+    },
+    {
+      "id": 20,
+      "category": "rights_support",
+      "question": "What government schemes are available?",
+      "triggers": [
+        "what government schemes are available",
+        "government schemes",
+        "smile scheme",
+        "transgender schemes",
+        "sarkari yojana",
+        "trans scholarships",
+        "government grants",
+        "schemes and grants",
+        "welfare schemes",
+        "govt schemes"
+      ],
+      "answer": "The SMILE scheme includes scholarships, skill training, livelihood support and Garima Greh shelters. Open the Schemes & Grants topic for the full list."
+    },
+    {
+      "id": 21,
+      "category": "rights_support",
+      "question": "I'm feeling very low or unsafe.",
+      "triggers": [
+        "i'm feeling very low or unsafe",
+        "i am feeling very low or unsafe",
+        "feeling very low",
+        "feeling unsafe",
+        "feel low",
+        "feel unsafe",
+        "darr lag raha hai",
+        "bahut low feel ho raha hai",
+        "feeling helpless",
+        "lonely and unsafe",
+        "i feel unsafe",
+        "feeling low or unsafe"
+      ],
+      "answer": "You are not alone. Call Tele-MANAS 14416 (free, 24/7 mental health support). If you are in immediate danger, call 112."
+    },
+    {
+      "id": 22,
+      "category": "small_talk",
+      "question": "What are you doing?",
+      "triggers": [
+        "what are you doing",
+        "what r u doing",
+        "what are u doing",
+        "wyd",
+        "hii what are you doing",
+        "kya kar rahe ho"
+      ],
+      "answer": "I'm right here on Beyond Identity and ready to help with any transgender-related questions you have."
+    },
+    {
+      "id": 23,
+      "category": "small_talk",
+      "question": "I'm confused / I need help",
+      "triggers": [
+        "i'm confused",
+        "im confused",
+        "i need help",
+        "need help",
+        "so confused"
+      ],
+      "answer": "It is completely normal to feel confused or overwhelmed, and you do not have to have everything figured out right away. Beyond Identity provides verified guidance on gender identity, Indian legal rights, healthcare, and community support. What specific question can I help you with?"
+    },
+    {
+      "id": 24,
+      "category": "rights_support",
+      "question": "What does transgender mean?",
+      "triggers": [
+        "what does transgender mean",
+        "what is transgender",
+        "transgender meaning",
+        "transgender kya hai"
+      ],
+      "answer": "Transgender describes a person whose gender identity differs from the sex assigned to them at birth. In India, the Transgender Persons Act, 2019 and NALSA judgment (2014) protect the right to self-identify one's gender without discrimination."
+    },
+    {
+      "id": 25,
+      "category": "lgbtq_support",
+      "question": "I am gay / Gay identity & acceptance",
+      "triggers": [
+        "i am gay",
+        "i'm gay",
+        "am i gay",
+        "i think i am gay",
+        "i think i'm gay",
+        "how do i know if i am gay",
+        "what does gay mean",
+        "i like boys",
+        "i like men",
+        "gay identity",
+        "main gay hoon",
+        "main gay hu",
+        "kya main gay hoon",
+        "gay hu",
+        "gay hoon",
+        "gay"
+      ],
+      "answer": "Being gay is a natural, normal, and valid sexual orientation where a man experiences romantic or sexual attraction to other men. In India, consensual same-sex relationships were completely decriminalized by the Supreme Court in 2018 under Section 377. You are valid and not alone. Take time to explore your feelings safely, and know that supportive communities like The Humsafar Trust, Naz Foundation, and Tele-MANAS (14416) are here for you."
+    },
+    {
+      "id": 26,
+      "category": "lgbtq_support",
+      "question": "I am lesbian / Lesbian identity & rights",
+      "triggers": [
+        "i am lesbian",
+        "i'm lesbian",
+        "i am a lesbian",
+        "am i lesbian",
+        "i think i am lesbian",
+        "what does lesbian mean",
+        "i like girls",
+        "i like women",
+        "lesbian rights in india",
+        "main lesbian hoon",
+        "main lesbian hu",
+        "lesbian"
+      ],
+      "answer": "A lesbian is a woman who experiences romantic or sexual attraction to other women. It is a completely natural, healthy aspect of human diversity. In India, adult same-sex relationships are protected under Articles 14 and 21 of the Constitution. Organizations such as Sappho for Equality, Naz Foundation, and The Humsafar Trust offer dedicated, safe support networks and affirmative counseling for queer women."
+    },
+    {
+      "id": 27,
+      "category": "lgbtq_support",
+      "question": "I am bisexual / Bisexuality & attraction",
+      "triggers": [
+        "i am bisexual",
+        "i'm bisexual",
+        "am i bisexual",
+        "am i bi",
+        "i am bi",
+        "i think i am bi",
+        "what does bisexual mean",
+        "can i like both men and women",
+        "bisexuality",
+        "main bisexual hoon",
+        "main bi hoon",
+        "bisexual"
+      ],
+      "answer": "Bisexuality is romantic or sexual attraction to people of more than one gender. Attraction does not need to be equal or 50/50, and you do not need previous dating experience to identify as bisexual. Bisexuality is completely valid, normal, and recognized across India. If you feel confused or face biphobia, affirmative counseling via Tele-MANAS (14416) or community peer groups can offer a safe sounding board."
+    },
+    {
+      "id": 28,
+      "category": "lgbtq_support",
+      "question": "I am asexual / Aromantic (Ace / Aro)",
+      "triggers": [
+        "i am asexual",
+        "i'm asexual",
+        "what is asexual",
+        "what is ace",
+        "am i asexual",
+        "i don't feel sexual attraction",
+        "asexuality",
+        "what is aromantic",
+        "i am aro",
+        "i am ace",
+        "is being asexual normal",
+        "asexual"
+      ],
+      "answer": "Asexuality (Ace) is a sexual orientation where an individual experiences little or no sexual attraction to others. Aromanticism (Aro) refers to experiencing little or no romantic attraction. It is a valid, normal orientation on the spectrum — not a medical defect, hormone deficiency, or consequence of trauma. Ace and aro individuals can build profound, loving partnerships and live deeply fulfilling lives."
+    },
+    {
+      "id": 29,
+      "category": "lgbtq_support",
+      "question": "I am non-binary / Genderqueer & Pronouns",
+      "triggers": [
+        "i am non-binary",
+        "i'm non-binary",
+        "i am nonbinary",
+        "what is non-binary",
+        "what does nonbinary mean",
+        "what is queer",
+        "genderqueer",
+        "genderfluid",
+        "pronouns they them",
+        "they them pronouns",
+        "non binary",
+        "nonbinary"
+      ],
+      "answer": "Non-binary is an umbrella term for people whose gender identity does not fit strictly into 'male' or 'female' (they may identify as both, neither, or fluid). In India, the landmark NALSA judgment (2014) established that every person has the fundamental constitutional right to self-perceived gender identity. Using someone's requested pronouns (such as they/them, she/her, or he/him) is a simple and essential sign of respect."
+    },
+    {
+      "id": 30,
+      "category": "lgbtq_support",
+      "question": "I am intersex / Intersex bodily rights",
+      "triggers": [
+        "i am intersex",
+        "what is intersex",
+        "intersex meaning",
+        "intersex rights in india",
+        "am i intersex",
+        "difference between intersex and transgender",
+        "intersex"
+      ],
+      "answer": "Intersex describes people born with reproductive, chromosomal, or anatomical traits that differ from traditional male or female biological definitions. Intersex is a natural biological variation, while transgender relates to gender identity. In India, the Madras High Court (2019) outlawed non-consensual sex-affirmation surgeries on intersex infants in Tamil Nadu, establishing crucial precedents for bodily autonomy."
+    },
+    {
+      "id": 31,
+      "category": "lgbtq_rights",
+      "question": "Is being gay legal in India? / Section 377",
+      "triggers": [
+        "is being gay legal in india",
+        "is homosexuality legal in india",
+        "section 377",
+        "can police arrest me for being gay",
+        "is it a crime to be gay in india",
+        "navtej singh johar",
+        "gay rights in india",
+        "kya gay hona crime hai",
+        "kya india me gay hona legal hai",
+        "is gay legal"
+      ],
+      "answer": "Yes, being gay, lesbian, bisexual, or queer is 100% legal in India. On September 6, 2018, the Supreme Court of India unanimously decriminalized Section 377 (Navtej Singh Johar v. Union of India), affirming that consensual same-sex intimacy among adults is a constitutional right protected by equality (Article 14), non-discrimination (Article 15), and privacy/dignity (Article 21). The police cannot arrest or harass you for being LGBTQ+."
+    },
+    {
+      "id": 32,
+      "category": "lgbtq_rights",
+      "question": "Can same-sex couples marry in India? / Cohabitation rights",
+      "triggers": [
+        "can same sex couples marry in india",
+        "can two men marry in india",
+        "can two women marry in india",
+        "same sex marriage in india",
+        "gay marriage in india",
+        "supriyo judgment",
+        "can gay couples live together in india",
+        "same sex live in relationship",
+        "kya gay shadi kar sakte hain",
+        "same sex marriage",
+        "gay marriage"
+      ],
+      "answer": "In October 2023 (Supriyo v. Union of India), the Supreme Court ruled that legal marriage equality requires legislative action by Parliament. However, the Supreme Court confirmed that adult same-sex couples have the constitutional right to cohabit (live together) in peace without harassment. The Central Government has also formed a high-level committee to facilitate queer couples' access to joint bank accounts, insurance, and medical proxy rights."
+    },
+    {
+      "id": 33,
+      "category": "lgbtq_support",
+      "question": "How to come out / Coming out to parents and family",
+      "triggers": [
+        "how to come out",
+        "how do i come out as gay",
+        "how to tell parents i am gay",
+        "how to tell family i am gay",
+        "coming out advice",
+        "scared to come out to parents",
+        "family ko kaise bataye",
+        "parents ko kaise bataye ki main gay hoon",
+        "coming out"
+      ],
+      "answer": "Coming out is a personal journey, not an obligation — your safety and peace of mind must come first. Recommended guidelines: 1) Secure financial and physical independence before disclosing to unsupportive families; 2) Gauge reactions by discussing general LGBTQ+ news or media; 3) Keep a supportive friend informed; 4) Share clear educational resources; 5) Give loved ones time to adjust. If you need confidential guidance, contact Tele-MANAS at 14416."
+    },
+    {
+      "id": 34,
+      "category": "lgbtq_rights",
+      "question": "Family harassment & Forced marriage / Protection",
+      "triggers": [
+        "family forcing me to marry",
+        "forced marriage",
+        "parents forcing marriage",
+        "threats of forced marriage",
+        "family harassing me for being gay",
+        "parents beat me for being gay",
+        "protection from family harassment",
+        "can police protect me",
+        "protection petition"
+      ],
+      "answer": "Forcing any adult into marriage without voluntary consent is illegal under Indian law. If you face threats, physical violence, or unlawful confinement from family, you have immediate legal remedies: adult queer individuals and couples can file an Article 226 writ petition before their State High Court, which routinely directs police to provide security and safe shelter. For immediate help, dial Emergency 112, NALSA Legal Aid 15100, or Helpline 868989330."
+    },
+    {
+      "id": 35,
+      "category": "lgbtq_rights",
+      "question": "Conversion therapy ban in India",
+      "triggers": [
+        "conversion therapy",
+        "is conversion therapy legal in india",
+        "parents forcing conversion therapy",
+        "conversion therapy ban",
+        "cure homosexuality",
+        "can doctors change my sexual orientation",
+        "can doctors cure gay people",
+        "cure gay",
+        "can doctors cure homosexuality"
+      ],
+      "answer": "Conversion therapy (unscientific attempts by doctors, quacks, or families to 'cure' sexual orientation or gender identity) is strictly prohibited in India. In 2022, the National Medical Commission (NMC) designated conversion therapy as professional medical misconduct, meaning practitioners face revocation of their medical licenses. Both the Madras and Delhi High Courts have mandated strict police action against clinics promoting it."
+    },
+    {
+      "id": 36,
+      "category": "lgbtq_health",
+      "question": "Safe sex, HIV, PrEP & PEP for LGBTQ+",
+      "triggers": [
+        "safe sex",
+        "prep",
+        "pep",
+        "hiv testing in india",
+        "free hiv test",
+        "safe sex for gay men",
+        "sexual health lgbtq",
+        "naco centers",
+        "where can i get prep or pep in india for safe sex",
+        "prep and pep"
+      ],
+      "answer": "Practicing safe sex protects your sexual health. In India, free and confidential HIV testing, counseling, and treatment are provided through NACO Integrated Counseling & Testing Centers (ICTC) in all government hospitals. PrEP (taken prior to exposure to prevent HIV) and PEP (emergency regimen within 72 hours of exposure) are available through community clinics like The Humsafar Trust and queer-affirmative health centers."
+    },
+    {
+      "id": 37,
+      "category": "lgbtq_community",
+      "question": "Where to meet LGBTQ+ friends and community in India",
+      "triggers": [
+        "how to meet other gay people",
+        "where to find lgbtq friends",
+        "lgbtq community groups in india",
+        "gay support groups",
+        "queer ngos in india",
+        "humsafar trust",
+        "naz foundation",
+        "pride groups india",
+        "where can i find lgbtq support groups in mumbai or delhi",
+        "sappho for equality",
+        "sappho"
+      ],
+      "answer": "India is home to vibrant, supportive LGBTQ+ organizations and community circles: Mumbai: The Humsafar Trust and Yaariyan; Delhi/NCR: Naz Foundation and Harmless Hugs; Bengaluru: Sangama and Good As You; Kolkata: Sappho for Equality; Chennai: Sahodaran and Orinam; Hyderabad: Mobbera Foundation. You can also connect through verified community NGOs on the Beyond Identity directory."
+    },
+    {
+      "id": 38,
+      "category": "lgbtq_rights",
+      "question": "Workplace equality & LGBTQ+ corporate rights",
+      "triggers": [
+        "lgbtq workplace rights",
+        "discrimination at work for being gay",
+        "fired for being gay",
+        "posh act lgbtq",
+        "corporate diversity inclusion india"
+      ],
+      "answer": "Leading corporations across India maintain explicit Equal Opportunity policies, employee resource groups (ERGs), gender-neutral facilities, and health insurance inclusive of same-sex partners. If you face workplace harassment or bias, you can report to internal HR or DEI committees. For transgender employees, Section 9 of the Transgender Persons Act 2019 legally mandates non-discrimination and designated Complaints Officers."
+    },
+    {
+      "id": 39,
+      "category": "lgbtq_health",
+      "question": "Affirmative mental health and counseling",
+      "triggers": [
+        "queer affirmative therapist",
+        "gay friendly counselor",
+        "lgbtq mental health",
+        "counseling for gay people",
+        "therapist for queer youth",
+        "tele-manas"
+      ],
+      "answer": "Queer-affirmative therapists provide supportive, non-pathologizing care that validates your sexual orientation and gender identity. Key confidential resources in India: 1) Tele-MANAS (Toll-free 14416) for 24/7 psychological assistance; 2) The Humsafar Trust clinical counseling centers; 3) Mariwala Health Initiative (MHI) queer-affirmative practitioner directory; 4) iCall psychosocial helpline (9152987821)."
+    },
+    {
+      "id": 40,
+      "category": "lgbtq_support",
+      "question": "What does LGBTQIA+ mean?",
+      "triggers": [
+        "what does lgbtq mean",
+        "what is lgbtqia",
+        "lgbt meaning",
+        "lgbtq full form",
+        "what does the plus mean in lgbtq",
+        "lgbtqia meaning"
+      ],
+      "answer": "LGBTQIA+ stands for Lesbian, Gay, Bisexual, Transgender, Queer/Questioning, Intersex, and Asexual. The '+' embraces other diverse identities, such as pansexual, aromantic, two-spirit, non-binary, and genderfluid. It represents a global movement celebrating human diversity, bodily autonomy, equality, and dignity."
+    }
+  ],
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "hi",
+        "hello",
+        "hey",
+        "hii",
+        "hey there",
+        "namaste",
+        "namaskar",
+        "hello bot",
+        "is anyone there",
+        "hi beyond identity"
+      ],
+      "responses": [
+        "Hello! Welcome to Beyond Identity. How can I help you today?",
+        "Hi there! I'm glad you're here. What would you like to talk about?",
+        "Namaste! You are welcome here exactly as you are. How can I help?"
+      ]
+    },
+    {
+      "tag": "good_morning",
+      "patterns": [
+        "good morning",
+        "gm",
+        "morning",
+        "very good morning",
+        "suprabhat",
+        "good morning bot"
+      ],
+      "responses": [
+        "Good morning! I hope your day starts gently. How can I help?",
+        "Good morning! Wishing you a calm and positive day. What's on your mind?"
+      ]
+    },
+    {
+      "tag": "good_afternoon",
+      "patterns": [
+        "good afternoon",
+        "good afternoon bot",
+        "afternoon",
+        "gud afternoon"
+      ],
+      "responses": [
+        "Good afternoon! How is your day going so far?",
+        "Good afternoon! I'm here if you'd like to talk or need information."
+      ]
+    },
+    {
+      "tag": "good_evening",
+      "patterns": [
+        "good evening",
+        "evening",
+        "good evening bot",
+        "gud evening"
+      ],
+      "responses": [
+        "Good evening! I hope your day went well. How can I help?",
+        "Good evening! Take a moment to rest. I'm here if you want to talk."
+      ]
+    },
+    {
+      "tag": "good_night",
+      "patterns": [
+        "good night",
+        "gn",
+        "night night",
+        "good night bot",
+        "i am going to sleep",
+        "i'm off to sleep now",
+        "time to sleep",
+        "sleeping now",
+        "shubh ratri",
+        "gud night",
+        "sweet dreams"
+      ],
+      "responses": [
+        "Good night! Rest well. I'm here whenever you want to talk again.",
+        "Good night, and sweet dreams. You did well today, whatever it looked like.",
+        "Sleep well! Tomorrow is a fresh start. Take care of yourself."
+      ]
+    },
+    {
+      "tag": "how_are_you",
+      "patterns": [
+        "how are you",
+        "how are you doing",
+        "how r u",
+        "how are you today",
+        "how is it going",
+        "what's up",
+        "sup",
+        "how do you feel",
+        "are you okay",
+        "kaise ho",
+        "kya haal hai",
+        "how have you been"
+      ],
+      "responses": [
+        "I'm doing well, thank you for asking! How are you feeling today?",
+        "I'm good, and I'm happy to chat with you. How about you?",
+        "I'm here and ready to listen. How are you doing?"
+      ]
+    },
+    {
+      "tag": "user_fine",
+      "patterns": [
+        "i am fine",
+        "i'm good",
+        "i am doing well",
+        "doing great",
+        "all good",
+        "i am okay",
+        "not bad",
+        "i'm happy",
+        "feeling great",
+        "mast hoon",
+        "main theek hoon"
+      ],
+      "responses": [
+        "That's lovely to hear! Is there anything I can help you with today?",
+        "I'm glad you're doing well. Let me know if you'd like to talk or need any information.",
+        "Great! Enjoy your day. I'm here if you need me."
+      ]
+    },
+    {
+      "tag": "user_sad",
+      "patterns": [
+        "i am sad",
+        "i feel low",
+        "i am not okay",
+        "i feel down",
+        "i am feeling bad",
+        "i feel lonely",
+        "i am depressed",
+        "i had a bad day",
+        "i feel empty",
+        "mujhe bura lag raha hai",
+        "i feel hopeless",
+        "nobody understands me"
+      ],
+      "responses": [
+        "I'm sorry you're feeling this way. I'm here, and I'm listening. Would you like to tell me what happened?",
+        "That sounds really hard, and your feelings matter. You don't have to go through this alone. Do you want to talk about it?",
+        "Thank you for telling me. It takes courage to say that out loud. Would you like to share more, or would some information on support services help?"
+      ]
+    },
+    {
+      "tag": "thanks",
+      "patterns": [
+        "thanks",
+        "thank you",
+        "thank u",
+        "thanks a lot",
+        "thanks bot",
+        "that helped",
+        "that was helpful",
+        "much appreciated",
+        "shukriya",
+        "dhanyavad"
+      ],
+      "responses": [
+        "You're most welcome! I'm glad I could help.",
+        "Happy to help! Come back anytime.",
+        "Anytime! Take care of yourself."
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you",
+        "see you later",
+        "talk to you later",
+        "i have to go",
+        "ttyl",
+        "alvida",
+        "chalo bye",
+        "catch you later"
+      ],
+      "responses": [
+        "Goodbye! Take care, and remember you are always welcome here.",
+        "See you soon! Be kind to yourself.",
+        "Bye for now! I'm here whenever you need me."
+      ]
+    },
+    {
+      "tag": "who_are_you",
+      "patterns": [
+        "who are you",
+        "what are you",
+        "are you a bot",
+        "are you human",
+        "are you a real person",
+        "what is your name",
+        "tell me about yourself",
+        "what can you do",
+        "who made you"
+      ],
+      "responses": [
+        "I'm the Beyond Identity chatbot, a virtual assistant (not a human). I can chat with you, share information on rights, schemes and support, and help you find the right resources.",
+        "I'm an AI assistant for the Beyond Identity platform. I'm here to listen, answer questions and point you to useful support."
+      ]
+    },
+    {
+      "tag": "user_is_transgender",
+      "patterns": [
+        "i am transgender",
+        "i'm transgender",
+        "i am trans",
+        "i am a trans woman",
+        "i am a trans man",
+        "i am a transgender woman",
+        "i am a transgender man",
+        "i think i am transgender",
+        "i am non binary",
+        "i identify as transgender",
+        "i am hijra",
+        "mai transgender hoon",
+        "main trans hoon"
+      ],
+      "responses": [
+        "Thank you for trusting me with that. You are valid, and you are welcome here exactly as you are.",
+        "Thank you for sharing this with me. Who you are is nothing to be ashamed of. How are you feeling about it today?",
+        "I'm glad you told me. You deserve respect, safety and support. Would you like to talk about how you feel, or would you like information about your rights and support options?"
+      ]
+    },
+    {
+      "tag": "just_realised_identity",
+      "patterns": [
+        "i just realised i am transgender",
+        "i am confused about my gender",
+        "i don't know if i am trans",
+        "i am questioning my gender",
+        "i feel i was born in the wrong body",
+        "i don't feel like my assigned gender",
+        "i feel like a girl but i am a boy",
+        "i feel like a boy but i am a girl",
+        "how do i know if i am transgender"
+      ],
+      "responses": [
+        "It's completely okay to feel unsure. Questioning your gender is a valid part of understanding yourself, and there is no deadline to figure it out.",
+        "You don't have to have all the answers right now. Take your time. Would you like to talk about what you've been feeling?",
+        "Many people take time to understand their identity. Whatever you find, you deserve respect. Talking to a trusted friend, a counsellor who is supportive of the LGBTQIA+ community, or community groups can also help."
+      ]
+    },
+    {
+      "tag": "afraid_to_come_out",
+      "patterns": [
+        "i am scared to tell my family",
+        "i am afraid to come out",
+        "how do i tell my parents i am transgender",
+        "coming out to parents",
+        "how do i tell my family",
+        "my parents will not accept me",
+        "i am scared of being rejected",
+        "what if my family kicks me out",
+        "i can't tell anyone",
+        "i am hiding who i am",
+        "should i come out"
+      ],
+      "responses": [
+        "Your fear is understandable. Coming out is a personal decision, and there is no pressure to do it before you feel ready or safe.",
+        "Your safety comes first. You may want to start with one person you trust, and choose a calm time and place. You decide when and whether to share.",
+        "Wanting to be accepted by your family is natural. If you'd like, I can share tips for talking to family, or information about community groups and counsellors who can support you."
+      ]
+    },
+    {
+      "tag": "family_rejected",
+      "patterns": [
+        "my family rejected me",
+        "my parents threw me out",
+        "i was kicked out of my house",
+        "my family does not accept me",
+        "my parents are angry with me",
+        "my family doesn't support me",
+        "i have nowhere to go",
+        "my family hates me because i am trans"
+      ],
+      "responses": [
+        "I'm so sorry you're going through this. Being rejected by the people closest to us hurts deeply, and it is not your fault.",
+        "You deserve a safe place to live and people who care about you. If you need shelter or immediate support, I can share information on NGOs and community organisations on this platform.",
+        "You are not alone. Many people have found a supportive chosen family and community. Would you like help finding shelter, support groups or a helpline?"
+      ]
+    },
+    {
+      "tag": "bullied_discriminated",
+      "patterns": [
+        "i am being bullied",
+        "people make fun of me",
+        "i faced discrimination",
+        "i was discriminated against",
+        "they called me names",
+        "i was harassed because i am transgender",
+        "my school is bullying me",
+        "my workplace is discriminating against me",
+        "i was denied a job",
+        "i was refused admission",
+        "they insulted me"
+      ],
+      "responses": [
+        "I'm really sorry that happened. No one should be treated this way, and it is not your fault.",
+        "Discrimination because of gender identity is wrong. You can report it using the discrimination reporting feature on Beyond Identity. Would you like me to guide you through it?",
+        "Your experience matters. If you are in danger right now, please contact local emergency services or someone you trust nearby. I can also share information about legal rights and NGOs that can help."
+      ]
+    },
+    {
+      "tag": "feeling_unsafe",
+      "patterns": [
+        "i feel unsafe",
+        "someone is threatening me",
+        "i am in danger",
+        "i am being stalked",
+        "i was attacked",
+        "i need help urgently",
+        "i am scared for my life",
+        "someone is hurting me"
+      ],
+      "responses": [
+        "I'm very sorry you're facing this. Your safety matters most. If you are in immediate danger, please call 112, the emergency number in India, or go to a safe place with people you trust.",
+        "Please reach out to someone you trust nearby right now. If it is safe, you can also contact the local police or one of the NGO partners on this platform. I'm here to help you find the right support."
+      ]
+    },
+    {
+      "tag": "self_harm_support",
+      "patterns": [
+        "i want to die",
+        "i want to end my life",
+        "i don't want to live anymore",
+        "i want to hurt myself",
+        "life is not worth living",
+        "i feel like giving up",
+        "i am thinking of suicide",
+        "i can't take it anymore"
+      ],
+      "responses": [
+        "I'm really sorry you're in so much pain, and I'm glad you told me. Your life matters. Please reach out to someone right now: a trusted person, or the Tele-MANAS mental health helpline at 14416 in India.",
+        "You don't have to carry this alone. If you are in immediate danger, please call 112 or go to the nearest hospital. I'm here to keep talking with you, and I'd encourage you to contact someone who can be with you right now."
+      ]
+    },
+    {
+      "tag": "mental_health_support",
+      "patterns": [
+        "i need a counsellor",
+        "i need someone to talk to",
+        "i need mental health support",
+        "where can i get therapy",
+        "i feel anxious all the time",
+        "i am stressed",
+        "can you suggest a therapist",
+        "i feel overwhelmed",
+        "i have anxiety"
+      ],
+      "responses": [
+        "Looking for support is a strong step. A counsellor who understands gender identity can make a real difference. I can share counsellors and NGOs listed on Beyond Identity.",
+        "You deserve someone safe to talk to. In India you can also call the Tele-MANAS helpline at 14416. Would you like me to look up support options on this platform?"
+      ]
+    },
+    {
+      "tag": "legal_rights",
+      "patterns": [
+        "what are my rights",
+        "transgender rights in india",
+        "is it legal to be transgender",
+        "what does the law say about transgender people",
+        "transgender persons act",
+        "nalsa judgment",
+        "do i have legal protection",
+        "legal help for transgender people"
+      ],
+      "responses": [
+        "In India, the Supreme Court's NALSA judgment (2014) recognised transgender people's right to self-identify, and the Transgender Persons (Protection of Rights) Act, 2019 prohibits discrimination in areas like education, employment and healthcare.",
+        "You have the right to be treated with dignity. I can explain the key points of the law, how to apply for a certificate of identity, or how to report discrimination. What would you like to know?"
+      ]
+    },
+    {
+      "tag": "id_certificate",
+      "patterns": [
+        "how to get transgender certificate",
+        "how do i change my name and gender",
+        "certificate of identity",
+        "transgender id card",
+        "how to apply for transgender id",
+        "how do i update my documents",
+        "change gender on aadhaar",
+        "transgender certificate online"
+      ],
+      "responses": [
+        "Under the 2019 Act, a transgender person can apply for a certificate of identity through the National Portal for Transgender Persons run by the Government of India. Would you like me to guide you step by step?",
+        "I can walk you through the process of applying for a transgender identity certificate and updating documents. Rules can change, so please also check the official government portal for the latest requirements."
+      ]
+    },
+    {
+      "tag": "government_schemes",
+      "patterns": [
+        "government schemes for transgender",
+        "financial help for transgender people",
+        "scholarship for transgender students",
+        "is there any scheme for me",
+        "welfare schemes",
+        "pension for transgender persons",
+        "skill training for transgender people",
+        "loan for transgender entrepreneurs",
+        "shelter scheme"
+      ],
+      "responses": [
+        "There are central and state government schemes for transgender persons, including support for education, skill development, shelter and health. I can show the schemes listed on Beyond Identity. Which state are you in?",
+        "I can help you find schemes that match your needs, such as scholarships, skills training or livelihood support. Tell me what you're looking for."
+      ]
+    },
+    {
+      "tag": "healthcare_support",
+      "patterns": [
+        "transgender healthcare",
+        "hormone therapy information",
+        "where can i get gender affirming care",
+        "doctor who understands transgender people",
+        "i need a doctor",
+        "gender affirming surgery information",
+        "health insurance for transgender people",
+        "i was refused treatment"
+      ],
+      "responses": [
+        "Everyone deserves respectful healthcare. I can share information on transgender-friendly clinics and NGOs listed on this platform. For medical decisions such as hormone therapy, please consult a qualified doctor.",
+        "I'm not a medical professional, so I can't give medical advice. I can help you find supportive healthcare providers, and tell you how to report if you were refused treatment."
+      ]
+    },
+    {
+      "tag": "job_support",
+      "patterns": [
+        "i need a job",
+        "jobs for transgender people",
+        "i face problems at work",
+        "how do i find employment",
+        "inclusive employers",
+        "can i start a business",
+        "i am looking for work",
+        "i need skills training"
+      ],
+      "responses": [
+        "I can help you explore employment and skill-training opportunities on Beyond Identity. Workplace discrimination based on gender identity is prohibited under the 2019 Act.",
+        "Let's find something that works for you. Tell me your skills or interests, and I'll point you to schemes, training programmes and NGO partners."
+      ]
+    },
+    {
+      "tag": "ally_how_to_support",
+      "patterns": [
+        "my friend told me he is transgender",
+        "my friend is transgender how can i support",
+        "my child is transgender",
+        "my sibling came out to me",
+        "how do i support a transgender person",
+        "how to console a transgender friend",
+        "what should i say when someone tells me they are trans",
+        "how to be a good ally"
+      ],
+      "responses": [
+        "Thank you for wanting to support them. Start by listening without judging, and thank them for trusting you. Use the name and pronouns they ask for, and keep what they told you private unless they say otherwise.",
+        "A simple, caring reply such as \"Thank you for telling me. I'm here for you and I care about you\" can mean a lot. You don't need all the answers. Being supportive and respectful matters most.",
+        "If you'd like, I can share tips for parents and friends, and resources for families on this platform."
+      ]
+    },
+    {
+      "tag": "pronouns_name",
+      "patterns": [
+        "what pronouns should i use",
+        "please call me by my new name",
+        "my pronouns are she her",
+        "my pronouns are he him",
+        "my pronouns are they them",
+        "i want to be called by a different name",
+        "how do i ask someone's pronouns",
+        "what is deadnaming"
+      ],
+      "responses": [
+        "Thank you for letting me know. I'll use the name and pronouns you share with me. What would you like me to call you?",
+        "Using someone's chosen name and pronouns is a basic way of showing respect. Deadnaming means calling a transgender person by the name they used before transition, which can be hurtful. If you're unsure, it's okay to politely ask."
+      ]
+    },
+    {
+      "tag": "community_support",
+      "patterns": [
+        "i want to meet other transgender people",
+        "is there a community",
+        "support groups",
+        "ngo for transgender people",
+        "i feel alone in this",
+        "where can i find people like me",
+        "community events",
+        "i want to volunteer"
+      ],
+      "responses": [
+        "You are not alone. There are community groups and NGOs across India supporting transgender people. I can share the NGO partners listed on Beyond Identity. Which city are you in?",
+        "Finding people who understand you can make a big difference. I can help you find support groups, events and volunteering options."
+      ]
+    },
+    {
+      "tag": "compliment_bot",
+      "patterns": [
+        "you are nice",
+        "you are kind",
+        "i like talking to you",
+        "you are helpful",
+        "good bot",
+        "you are sweet",
+        "you understand me",
+        "i feel better talking to you"
+      ],
+      "responses": [
+        "That's kind of you to say. I'm glad you feel better. Remember, you also deserve support from people around you.",
+        "Thank you! I'm happy to be here for you. I hope you also have trusted people and community to lean on."
+      ]
+    },
+    {
+      "tag": "fallback",
+      "patterns": [],
+      "responses": [
+        "I'm sorry, I didn't quite understand that. Could you say it in a different way?",
+        "I want to make sure I help you properly. Can you tell me a little more?",
+        "I may not have the right answer yet, but I'm listening. You can also ask about rights, schemes, healthcare or support services."
+      ]
+    },
+    {
+      "tag": "user_is_gay",
+      "patterns": [
+        "i am gay",
+        "i'm gay",
+        "am i gay",
+        "i think i am gay",
+        "i think i'm gay",
+        "how do i know if i am gay",
+        "i am a gay man",
+        "i like men",
+        "i like boys",
+        "main gay hoon",
+        "main gay hu",
+        "kya main gay hoon"
+      ],
+      "responses": [
+        "Being gay is a natural, normal, and valid sexual orientation where a man is attracted to other men. You are valid and not alone. In India, consensual same-sex love was decriminalized by the Supreme Court in 2018 under Section 377. Take your time understanding your feelings, and reach out to community groups like The Humsafar Trust or Tele-MANAS (14416) whenever you need support.",
+        "Welcome! Being gay is a completely natural part of human sexuality. There is a large, caring LGBTQ+ community across India ready to support you. You do not need to rush to label yourself or come out to anyone until you feel safe, confident, and ready."
+      ]
+    },
+    {
+      "tag": "user_is_lesbian",
+      "patterns": [
+        "i am lesbian",
+        "i'm lesbian",
+        "i am a lesbian",
+        "am i lesbian",
+        "i think i am lesbian",
+        "i like women",
+        "i like girls",
+        "main lesbian hoon",
+        "main lesbian hu"
+      ],
+      "responses": [
+        "Being a lesbian is a completely natural, healthy, and beautiful aspect of human diversity. In India, adult consensual same-sex relationships are fully legal under the Constitution. Safe community networks like Sappho for Equality, Naz Foundation, and The Humsafar Trust offer affirmative peer spaces and counseling for queer women.",
+        "You are valid and loved. Discovering and embracing being a lesbian is your personal journey. Connect with supportive peers and affirmative counselors who understand your experiences."
+      ]
+    },
+    {
+      "tag": "user_is_bisexual",
+      "patterns": [
+        "i am bisexual",
+        "i'm bisexual",
+        "am i bisexual",
+        "am i bi",
+        "i am bi",
+        "i think i am bi",
+        "can i like both men and women",
+        "bisexuality",
+        "main bi hoon"
+      ],
+      "responses": [
+        "Bisexuality is attraction to more than one gender. Your feelings do not need to be equally split 50/50, and you don't need previous dating experience to know you are bi. Bisexuality is completely valid, real, and normal.",
+        "You are 100% valid. Bisexual people are an integral part of the LGBTQ+ spectrum. Don't let biphobia or pressure make you doubt who you are."
+      ]
+    },
+    {
+      "tag": "user_is_asexual",
+      "patterns": [
+        "i am asexual",
+        "i'm asexual",
+        "what is asexual",
+        "what is ace",
+        "am i asexual",
+        "i don't feel sexual attraction",
+        "what is aromantic",
+        "i am aro",
+        "i am ace"
+      ],
+      "responses": [
+        "Asexuality (Ace) is a sexual orientation where someone experiences little to no sexual attraction. Aromanticism (Aro) refers to little to no romantic attraction. It is a completely normal variation, not a medical condition or hormonal flaw.",
+        "Being ace or aro is completely valid. You can experience close, loving, and deeply fulfilling friendships, partnerships, and chosen families on your own terms."
+      ]
+    },
+    {
+      "tag": "user_is_nonbinary_queer",
+      "patterns": [
+        "i am non-binary",
+        "i'm non-binary",
+        "i am nonbinary",
+        "what is non-binary",
+        "what does nonbinary mean",
+        "what is queer",
+        "genderqueer",
+        "genderfluid",
+        "they them pronouns"
+      ],
+      "responses": [
+        "Non-binary describes gender identities that do not fit exclusively into male or female (such as both, neither, or fluid). In India, the NALSA 2014 judgment recognizes the constitutional right to self-perceived gender identity.",
+        "Your identity and pronouns are valid and deserving of respect. Queer is an umbrella term celebrating diversity across gender and sexual orientation."
+      ]
+    },
+    {
+      "tag": "section_377_legal",
+      "patterns": [
+        "is being gay legal in india",
+        "is homosexuality legal in india",
+        "section 377",
+        "can police arrest me for being gay",
+        "is it a crime to be gay in india",
+        "navtej singh johar",
+        "kya gay hona crime hai"
+      ],
+      "responses": [
+        "Yes, being gay, lesbian, bisexual, or queer is 100% legal in India. On September 6, 2018, the Supreme Court of India unanimously struck down Section 377 (Navtej Singh Johar v. Union of India), ruling that consensual adult same-sex relationships are protected under Articles 14 and 21 of the Constitution.",
+        "Consensual same-sex relationships are completely decriminalized in India. The police have no legal power to harass, detain, or arrest consenting adults for their sexual orientation."
+      ]
+    },
+    {
+      "tag": "same_sex_marriage_relationships",
+      "patterns": [
+        "can same sex couples marry in india",
+        "can two men marry in india",
+        "can two women marry in india",
+        "same sex marriage in india",
+        "gay marriage in india",
+        "supriyo judgment",
+        "can gay couples live together in india",
+        "same sex live in relationship"
+      ],
+      "responses": [
+        "While legal marriage equality under the Special Marriage Act requires Parliamentary legislation (Supriyo v. Union of India, Oct 2023), adult same-sex couples have the full constitutional right to live together in peace. High courts routinely protect queer couples from family harassment.",
+        "Same-sex couples in India have the right to cohabit freely. A high-level government committee has been established to enable rights such as joint bank accounts, partner nominations, and healthcare decision-making for queer partners."
+      ]
+    },
+    {
+      "tag": "coming_out_advice",
+      "patterns": [
+        "how to come out",
+        "how do i come out as gay",
+        "how to tell parents i am gay",
+        "how to tell family i am gay",
+        "coming out advice",
+        "scared to come out to parents",
+        "family ko kaise bataye"
+      ],
+      "responses": [
+        "Coming out should always prioritize your safety. Ensure financial and physical stability, test family reactions first with general LGBTQ+ news, keep a supportive friend informed, and give family time to process. Tele-MANAS (14416) offers free confidential counseling.",
+        "You are under no obligation to come out until you feel completely safe and ready. Take small steps, build a supportive chosen family first, and lean on community resources."
+      ]
+    },
+    {
+      "tag": "conversion_therapy_ban",
+      "patterns": [
+        "conversion therapy",
+        "is conversion therapy legal in india",
+        "parents forcing conversion therapy",
+        "conversion therapy ban",
+        "cure homosexuality",
+        "can doctors change my sexual orientation",
+        "can doctors cure gay people",
+        "cure gay"
+      ],
+      "responses": [
+        "Conversion therapy is banned in India. In 2022, the National Medical Commission (NMC) designated it as professional medical misconduct, meaning doctors who attempt it face cancellation of their license. Madras and Delhi High Courts have mandated strict police action against clinics promoting it.",
+        "Homosexuality and diverse gender identities are natural human variations, not diseases. Any doctor or clinic claiming to 'cure' or change your orientation is violating Indian medical regulations."
+      ]
+    },
+    {
+      "tag": "forced_marriage_protection",
+      "patterns": [
+        "family forcing me to marry",
+        "forced marriage",
+        "parents forcing marriage",
+        "threats of forced marriage",
+        "family harassing me for being gay",
+        "protection from family harassment"
+      ],
+      "responses": [
+        "Forced marriage of an adult is illegal in India. If you face threats or coercion from family, you can file a protection writ petition under Article 226 before your State High Court for police security. For immediate help, call Emergency 112, NALSA Free Legal Aid 15100, or Helpline 868989330.",
+        "You have the constitutional right to choose your partner or remain unmarried. Free legal aid is available under NALSA (15100), and High Courts routinely issue orders restraining families from harassing queer adults."
+      ]
+    },
+    {
+      "tag": "lgbtq_safe_sex_prep",
+      "patterns": [
+        "safe sex",
+        "prep",
+        "pep",
+        "hiv testing in india",
+        "free hiv test",
+        "safe sex for gay men",
+        "sexual health lgbtq",
+        "where can i get prep or pep in india for safe sex",
+        "prep and pep"
+      ],
+      "responses": [
+        "In India, free and confidential HIV testing, counseling, and treatment are provided through NACO Integrated Counseling & Testing Centers (ICTC) in all government hospitals. PrEP and PEP (emergency post-exposure prophylaxis) are available through community clinics like The Humsafar Trust.",
+        "Taking care of your sexual health is essential. Use protection, get routine screenings at non-judgmental community clinics, and learn about PrEP and PEP options."
+      ]
+    },
+    {
+      "tag": "lgbtq_community_groups",
+      "patterns": [
+        "how to meet other gay people",
+        "where to find lgbtq friends",
+        "lgbtq community groups in india",
+        "gay support groups",
+        "queer ngos in india",
+        "humsafar trust",
+        "naz foundation",
+        "pride groups india",
+        "where can i find lgbtq support groups in mumbai or delhi",
+        "sappho for equality",
+        "sappho"
+      ],
+      "responses": [
+        "India has thriving, welcoming LGBTQ+ groups! In Mumbai: The Humsafar Trust and Yaariyan; Delhi: Naz Foundation and Harmless Hugs; Bengaluru: Sangama and Good As You; Kolkata: Sappho for Equality; Chennai: Sahodaran and Orinam; Hyderabad: Mobbera Foundation.",
+        "You can connect with peer support groups, local Pride organizing collectives, and verified community NGOs right through the Beyond Identity platform."
+      ]
+    }
+  ]
+}

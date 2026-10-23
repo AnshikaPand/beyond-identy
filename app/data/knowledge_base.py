@@ -150,7 +150,10 @@ def _calculate_trigger_score(norm_query: str, norm_trigger: str) -> float:
             "hrt", "garima", "greh", "nalsa", "ayushman", "15100", "14416", "112",
             "smile", "kaise", "haal", "theek", "udaas", "namaste", "alvida", "bot",
             "accha", "shukriya", "dhanyavaad", "badhiya", "certificate", "fir",
-            "shelter", "insurance", "discrimination", "rights"
+            "shelter", "insurance", "discrimination", "rights",
+            "gay", "lesbian", "bisexual", "asexual", "queer", "intersex", "nonbinary",
+            "lgbt", "lgbtq", "lgbtqia", "377", "prep", "pep", "conversion", "humsafar",
+            "sappho", "orientation", "pride", "partner", "marriage"
         }
         if any(tok in domain_terms for tok in t_tokens):
             return min(0.96, 0.82 + (0.15 * ratio))

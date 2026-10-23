@@ -1,0 +1,170 @@
+"""
+Chatbot Router:
+Provides endpoints for the interactive 24/7 Beyond Identity Assistant Chatbox.
+Supports multi-turn conversational querying, live database listing search,
+legal rights guidance, health triage, and crisis management.
+"""
+from typing import Optional, List
+from fastapi import APIRouter, Depends, HTTPException, Header
+from sqlalchemy.orm import Session
+from jose import JWTError, jwt
+
+from app import schemas, models
+from app.database import get_db
+from app.services import chatbot
+from app.auth import SECRET_KEY, ALGORITHM
+
+router = APIRouter(prefix="/chatbot", tags=["chatbot"])
+
+
+def get_optional_current_user(
+    authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db),
+) -> Optional[models.User]:
+    """Helper to optionally authenticate a user from the Authorization header without raising 401."""
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    token = authorization.split(" ")[1]
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if not email:
+            return None
+        return db.query(models.User).filter(models.User.email == email).first()
+    except (JWTError, Exception):
+        return None
+
+
+@router.post("/query", response_model=schemas.ChatbotQueryResponse)
+def handle_chatbot_query(
+    request: schemas.ChatbotQueryRequest,
+    db: Session = Depends(get_db),
+    current_user: Optional[models.User] = Depends(get_optional_current_user),
+):
+    """
+    Primary endpoint for the Chatbox widget.
+    Processes user queries across legal rights, verified database listings,
+    healthcare triage, and 24/7 crisis support.
+    """
+    if not request.query or not request.query.strip():
+        raise HTTPException(status_code=400, detail="Query cannot be empty")
+
+    return chatbot.answer_chatbot_query(db=db, request=request, current_user=current_user)
+
+
+@router.get("/prompts")
+def get_chatbot_prompts():
+    """Returns curated starter prompts for 1-click consultation in the Chatbox."""
+    return {
+        "categories": [
+            {
+                "id": "lgbtq_identities",
+                "label": "🌈 LGBTQIA+ Orientations & Rights",
+                "prompts": [
+                    "I am gay — what are my legal rights in India?",
+                    "Is being gay or lesbian legal in India after Section 377?",
+                    "Can same-sex couples live together or marry in India?",
+                    "Is conversion therapy banned in India?",
+                    "Where can I find LGBTQ+ support groups and safe sex / PrEP resources?",
+                ],
+            },
+            {
+                "id": "basics",
+                "label": "🏳️‍⚧️ Basics & Terminology",
+                "prompts": [
+                    "What is the difference between gender identity and sex assigned at birth?",
+                    "What does non-binary mean?",
+                    "Why are pronouns important?",
+                ],
+            },
+            {
+                "id": "legal",
+                "label": "⚖️ Rights & Laws (India)",
+                "prompts": [
+                    "How do I apply for a TG Certificate on the National Portal?",
+                    "What rights were established in the NALSA 2014 judgment?",
+                    "How can I get free legal counsel under NALSA Section 12?",
+                ],
+            },
+            {
+                "id": "healthcare",
+                "label": "🩺 Healthcare & Transition",
+                "prompts": [
+                    "What blood tests are required before starting HRT?",
+                    "How does Ayushman Bharat ₹5 Lakh transgender package work?",
+                    "What are the general guidelines for hormone replacement therapy?",
+                ],
+            },
+            {
+                "id": "mental_health",
+                "label": "🧠 Mental Health Support",
+                "prompts": [
+                    "How can I cope with gender dysphoria?",
+                    "Connect me to Tele-MANAS mental health support (14416)",
+                    "How to find a queer-affirmative therapist?",
+                ],
+            },
+            {
+                "id": "ally",
+                "label": "🤝 Family & Ally Support",
+                "prompts": [
+                    "How can I be a good ally to a transgender friend or coworker?",
+                    "How can parents support a trans child?",
+                    "What are workplace non-discrimination rights under TG Act 2019?",
+                ],
+            },
+            {
+                "id": "jobs",
+                "label": "💼 Jobs & Employment",
+                "prompts": [
+                    "Find verified inclusive jobs in Mumbai or Remote",
+                    "What are workplace non-discrimination rights under TG Act 2019?",
+                    "How to file a complaint with a company Complaints Officer?",
+                ],
+            },
+            {
+                "id": "housing",
+                "label": "🏠 Housing & Shelters",
+                "prompts": [
+                    "Can a landlord evict me without notice for being trans?",
+                    "Where can I find a Garima Greh emergency transit shelter?",
+                    "Find verified trans-friendly rental apartments",
+                ],
+            },
+            {
+                "id": "crisis",
+                "label": "🚨 Crisis & Helplines",
+                "prompts": [
+                    "What is the 24/7 Transgender Community Helpline number?",
+                    "I am facing physical threats and need immediate protection",
+                    "Connect me to Tele-MANAS mental health support (14416)",
+                ],
+            },
+        ]
+    }
+
+
+@router.get("/stats")
+def get_chatbot_stats(db: Session = Depends(get_db)):
+    """Returns statistics of resources available through the assistant."""
+    verified_listings = db.query(models.Listing).filter(
+        models.Listing.status == models.VerificationStatus.verified
+    ).count()
+
+    from app.data import ALL_QA
+    return {
+        "verified_listings": verified_listings,
+        "legal_qa_items": len(ALL_QA),
+        "emergency_helpline": "868989330",
+        "tele_manas": "14416",
+        "nalsa_legal_aid": "15100",
+        "national_portal": "https://transgender.dosje.gov.in",
+    }
+
+
+@router.get("/intents")
+def get_chatbot_intents():
+    """Returns all 29 conversational intents with tags, patterns, and responses."""
+    from app.data import knowledge_base
+    return {"intents": knowledge_base.get_all_intents()}
+
