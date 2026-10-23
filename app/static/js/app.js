@@ -991,7 +991,7 @@ let currentListingsSearch = "";
 
 function formatContactInfo(contactInfo) {
   if (!contactInfo) {
-    return `<span style="color: var(--text-muted); font-size: 11.5px;">📞 Relay via Beyond Identity</span>`;
+    return `<span class="contact-pill info-pill" style="color: var(--text-muted); font-size: 11.5px;">🛡️ Relay via Beyond Identity</span>`;
   }
 
   // Split by " / " or " /" or "/ " or "," while keeping parts clean
@@ -1031,7 +1031,7 @@ function formatContactInfo(contactInfo) {
 
   return pills.length > 0
     ? `<div class="card-contacts-wrap">${pills.join("")}</div>`
-    : `<span>📞 ${escapeHtml(contactInfo)}</span>`;
+    : `<span class="contact-pill info-pill">📌 ${escapeHtml(contactInfo)}</span>`;
 }
 
 function renderListings(listings) {

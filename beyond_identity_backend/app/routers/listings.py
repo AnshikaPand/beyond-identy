@@ -27,17 +27,196 @@ def create_listing(
 
 @router.get("/", response_model=List[schemas.ListingOut])
 def list_listings(
-    category: Optional[models.ListingCategory] = None,
-    status: Optional[models.VerificationStatus] = models.VerificationStatus.verified,
+    category: Optional[str] = None,
+    status: Optional[str] = "verified",
+    search: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
     """Public browsing endpoint. Defaults to showing only verified listings — that's the whole trust model."""
+    from sqlalchemy import or_, func
+
     query = db.query(models.Listing)
     if category:
-        query = query.filter(models.Listing.category == category)
+        cat_clean = category.strip().lower()
+        if cat_clean in ("government_scheme", "government_schemes", "schemes", "scheme"):
+            query = query.filter(models.Listing.category == models.ListingCategory.scheme)
+        elif cat_clean in ("scholarships", "scholarship"):
+            query = query.filter(models.Listing.category == models.ListingCategory.scholarship)
+        else:
+            try:
+                enum_cat = models.ListingCategory(cat_clean)
+                query = query.filter(models.Listing.category == enum_cat)
+            except Exception:
+                pass
     if status:
-        query = query.filter(models.Listing.status == status)
-    return query.order_by(models.Listing.created_at.desc()).all()
+        try:
+            enum_status = models.VerificationStatus(status.strip().lower())
+            query = query.filter(models.Listing.status == enum_status)
+        except Exception:
+            pass
+    if search and search.strip():
+        term = f"%{search.strip().lower()}%"
+        query = query.filter(
+            or_(
+                func.lower(models.Listing.title).like(term),
+                func.lower(models.Listing.organization_name).like(term),
+                func.lower(models.Listing.description).like(term),
+                func.lower(models.Listing.location).like(term),
+                func.lower(models.Listing.contact_info).like(term),
+            )
+        )
+    return query.order_by(models.Listing.id.asc()).all()
+
+
+@router.get("/ngo-directory")
+def get_ngo_directory(
+    query: Optional[str] = None,
+    city_or_state: Optional[str] = None,
+    service_type: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    """
+    Public directory of verified NGOs, community shelters (Garima Greh),
+    healthcare facilities, legal defense partners, and 24/7 crisis helplines.
+    Powers the public login/landing support chatbot.
+    """
+    from app.services.matcher import VERIFIED_NGOS
+
+    helplines = [
+        {
+            "name": "24/7 Transgender Crisis Helpline",
+            "number": "868989330",
+            "description": "Immediate 24/7 crisis de-escalation, suicide prevention, and emergency support.",
+            "available": "24/7 Active",
+            "category": "Emergency & Crisis",
+            "icon": "🚨",
+        },
+        {
+            "name": "Tele-MANAS Mental Health Helpline",
+            "number": "14416",
+            "description": "Government of India 24/7 affirmative mental health counseling and crisis support.",
+            "available": "24/7 Toll-Free",
+            "category": "Mental Health",
+            "icon": "🧠",
+        },
+        {
+            "name": "National Transgender Toll-Free Helpline (MoSJE)",
+            "number": "14566",
+            "description": "Central welfare schemes, certificate issues, and Garima Greh shelter connectivity.",
+            "available": "Toll-Free (MoSJE)",
+            "category": "Welfare & Shelters",
+            "icon": "🏛️",
+        },
+        {
+            "name": "NALSA Free Legal Aid Toll-Free Helpline",
+            "number": "15100",
+            "description": "Free advocate assignment, police harassment protection, Section 12 legal aid.",
+            "available": "24/7 Toll-Free",
+            "category": "Legal Defense",
+            "icon": "⚖️",
+        },
+        {
+            "name": "Ayushman Bharat PM-JAY Transgender Health Desk",
+            "number": "14555",
+            "description": "Inquiries for ₹5,00,000 cashless gender affirmation and medical package.",
+            "available": "Toll-Free (NHA)",
+            "category": "Healthcare",
+            "icon": "🩺",
+        },
+    ]
+
+    all_ngos = []
+    for ngo in VERIFIED_NGOS:
+        all_ngos.append({
+            "name": ngo["name"],
+            "focus_area": ngo.get("focus_area", "Community & Legal Rights"),
+            "location": ngo.get("location", "Pan-India"),
+            "contact_email": ngo.get("contact_email"),
+            "contact_phone": ngo.get("contact_phone"),
+            "services_offered": ngo.get("services_offered", []),
+            "states": ngo.get("states", ["all"]),
+            "verified": True,
+            "source": "verified_partner",
+        })
+
+    # Integrate verified community/housing listings from database
+    db_listings = (
+        db.query(models.Listing)
+        .filter(
+            models.Listing.status == models.VerificationStatus.verified,
+            models.Listing.category.in_([
+                models.ListingCategory.community,
+                models.ListingCategory.housing,
+                models.ListingCategory.healthcare,
+            ]),
+        )
+        .all()
+    )
+    for item in db_listings:
+        org_name = (item.organization_name or item.title).strip()
+        existing = [n["name"].lower() for n in all_ngos]
+        info_str = (item.contact_info or "").strip()
+        parsed_email = None
+        parsed_phone = None
+        if "/" in info_str:
+            for piece in info_str.split("/"):
+                piece = piece.strip()
+                if "@" in piece and not parsed_email:
+                    parsed_email = piece
+                elif any(c.isdigit() for c in piece) and not parsed_phone:
+                    parsed_phone = piece
+        elif "@" in info_str:
+            parsed_email = info_str
+        elif any(c.isdigit() for c in info_str):
+            parsed_phone = info_str
+
+        if org_name.lower() not in existing and not any(org_name.lower() in n for n in existing):
+            all_ngos.append({
+                "name": org_name,
+                "focus_area": item.title,
+                "location": item.location or "India",
+                "contact_email": parsed_email,
+                "contact_phone": parsed_phone,
+                "services_offered": [item.description] if item.description else [],
+                "states": ["all"],
+                "verified": True,
+                "source": "community_listing",
+            })
+
+    # Apply search and filter
+    filtered = all_ngos
+    if query:
+        q = query.strip().lower()
+        filtered = [
+            n for n in filtered
+            if q in n["name"].lower()
+            or q in n["focus_area"].lower()
+            or q in n["location"].lower()
+            or any(q in s.lower() for s in n["services_offered"])
+        ]
+
+    if city_or_state:
+        cs = city_or_state.strip().lower()
+        filtered = [
+            n for n in filtered
+            if cs in n["location"].lower()
+            or any(cs in s.lower() for s in n["states"])
+        ]
+
+    if service_type:
+        st = service_type.strip().lower()
+        filtered = [
+            n for n in filtered
+            if st in n["focus_area"].lower()
+            or any(st in s.lower() for s in n["services_offered"])
+        ]
+
+    return {
+        "status": "success",
+        "total": len(filtered),
+        "helplines": helplines,
+        "ngos": filtered,
+    }
 
 
 @router.get("/{listing_id}", response_model=schemas.ListingOut)

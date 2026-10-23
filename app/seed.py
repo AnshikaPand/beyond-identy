@@ -116,7 +116,7 @@ def seed():
             description="Covers tuition + ₹2,000/month stipend for undergraduate students.",
             organization_name="State Social Welfare Department",
             location="Maharashtra (statewide)",
-            contact_info="scholarships@maharashtra.gov.in",
+            contact_info="scholarships@maharashtra.gov.in / 022-22025251 / 1800-22-1926",
             status=models.VerificationStatus.verified,
         ),
         # =========================================================================
@@ -1056,7 +1056,21 @@ def seed():
             discrimination_reports=3,
             verification_notes="Auto-delisted after repeated discrimination reports.",
         ),
+        dict(
+            category=models.ListingCategory.employment,
+            title="Inclusive Full-Stack Developer",
+            description="Full-stack developer role with LGBTQ+ affirmative workplace culture, transition support, and comprehensive gender-affirmative health coverage.",
+            organization_name="InclusiTech Labs",
+            location="Bengaluru, Karnataka",
+            contact_info="careers@inclusitech.io / +91-80-41860000",
+            status=models.VerificationStatus.verified,
+            verification_notes="Affirmative hiring verified with comprehensive POSH and diversity policy.",
+        ),
     ]
+
+    # Clean up any leftover duplicate test rows
+    db.query(models.Listing).filter(models.Listing.organization_name == "InclusiTech Labs").delete()
+    db.commit()
 
     from sqlalchemy import func
 

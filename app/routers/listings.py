@@ -65,7 +65,7 @@ def list_listings(
                 func.lower(models.Listing.contact_info).like(term),
             )
         )
-    return query.order_by(models.Listing.created_at.desc()).all()
+    return query.order_by(models.Listing.id.asc()).all()
 
 
 @router.get("/ngo-directory")

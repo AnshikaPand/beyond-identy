@@ -201,7 +201,7 @@ def test_create_and_verify_listing():
         "description": "Full-stack developer role with LGBTQ+ affirmative workplace culture.",
         "organization_name": "InclusiTech Labs",
         "location": "Bengaluru, Karnataka",
-        "contact_info": "careers@inclusitech.io",
+        "contact_info": "careers@inclusitech.io / +91-80-41860000",
     }
     create_res = client.post(
         "/listings/",
@@ -226,6 +226,16 @@ def test_create_and_verify_listing():
     assert verify_res.status_code == 200
     assert verify_res.json()["status"] == "verified"
     assert verify_res.json()["verification_notes"] == verify_payload["verification_notes"]
+
+    # Teardown: clean up test listing so it doesn't pollute the directory database
+    from app.database import SessionLocal
+    from app import models
+    _clean_db = SessionLocal()
+    try:
+        _clean_db.query(models.Listing).filter(models.Listing.id == listing_id).delete()
+        _clean_db.commit()
+    finally:
+        _clean_db.close()
 
 
 # ==========================================
