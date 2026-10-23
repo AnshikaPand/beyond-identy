@@ -10,7 +10,7 @@ import uuid
 from pathlib import Path
 from typing import List, Optional
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, status
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, Header, status
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, desc
 
@@ -35,7 +35,7 @@ if ALT_UPLOADS_DIR.parent.parent.exists():
 
 
 def get_current_user_optional(
-    authorization: Optional[str] = None, db: Session = Depends(get_db)
+    authorization: Optional[str] = Header(None), db: Session = Depends(get_db)
 ) -> Optional[User]:
     """Extracts user from Authorization Bearer token if present."""
     if not authorization or not authorization.startswith("Bearer "):
@@ -85,80 +85,91 @@ def normalize_video_embed(url: str) -> tuple[str, str]:
 
 INITIAL_SEED_INTERVIEWS = [
     {
-        "title": "From Rejection to Inspiration: Clinical Transition & Transgender Representation",
-        "interviewee_name": "Dr. Trinetra Haldar Gummaraju",
-        "identity_tag": "Transgender Woman & Surgeon (she/her)",
-        "category": "Healthcare & Transition",
-        "video_url": "https://www.youtube.com/watch?v=jW2m3_Y8hU0",
-        "embed_url": "https://www.youtube.com/embed/jW2m3_Y8hU0?rel=0",
+        "title": "Claiming My Identity & Workplace Rights in Tech",
+        "interviewee_name": "Aarohi Sen",
+        "identity_tag": "Transgender Advocate & Software Engineer (she/her)",
+        "category": "Workplace Equality",
+        "video_url": "/static/uploads/videos/community_phone_interview_sample.mp4",
+        "embed_url": "/static/uploads/videos/community_phone_interview_sample.mp4",
         "thumbnail_url": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=640&q=80",
-        "key_quote": "Living authentically is the most revolutionary act of self-preservation.",
-        "duration": "18 mins",
+        "key_quote": "True transition isn't just medical or legal — it's claiming your rightful place in society without fear.",
+        "duration": "Phone Video",
         "location": "Bengaluru, Karnataka",
-        "description": "Doctor, activist, and creator Dr. Trinetra discusses clinical transition protocols, legal TG identity cards, and overcoming social discrimination in Indian medical institutions.",
-    },
-    {
-        "title": "Breaking Barriers in Bodybuilding: India's First Transgender Male Champion",
-        "interviewee_name": "Aryan Pasha",
-        "identity_tag": "Transgender Man & Advocate (he/him)",
-        "category": "Workplace & Sports",
-        "video_url": "https://www.youtube.com/watch?v=kYJzX9a9R6I",
-        "embed_url": "https://www.youtube.com/embed/kYJzX9a9R6I?rel=0",
-        "thumbnail_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=640&q=80",
-        "key_quote": "The weights never asked for my gender — only my dedication and resilience.",
-        "duration": "14 mins",
-        "location": "New Delhi, Delhi",
-        "description": "Aryan Pasha recounts his journey coming out, undergoing gender-affirming surgery, fighting for legal identity recognition, and winning silver at Musclemania India.",
+        "description": "Aarohi shares a direct mobile video interview discussing transition protocols, legal TG card procedures, and overcoming discrimination in Indian corporations.",
     },
     {
         "title": "Garima Greh: A Mother’s Mission for Shelter & Dignity in Maharashtra",
         "interviewee_name": "Gauri Sawant",
-        "identity_tag": "Transgender Rights Pioneer (she/her)",
+        "identity_tag": "Transgender Rights Pioneer & NALSA Petitioner (she/her)",
         "category": "Housing & Garima Greh",
-        "video_url": "https://www.youtube.com/watch?v=Vl3j-6S9u6c",
-        "embed_url": "https://www.youtube.com/embed/Vl3j-6S9u6c?rel=0",
-        "thumbnail_url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=640&q=80",
+        "video_url": "https://www.youtube.com/watch?v=8VKlWQgSYyA",
+        "embed_url": "https://www.youtube.com/embed/8VKlWQgSYyA?rel=0",
+        "thumbnail_url": "https://img.youtube.com/vi/8VKlWQgSYyA/hqdefault.jpg",
         "key_quote": "Motherhood is an emotion, not a gender assignment dictated by society.",
-        "duration": "22 mins",
+        "duration": "3 mins",
         "location": "Mumbai, Maharashtra",
         "description": "NALSA (2014) petitioner Gauri Sawant speaks on community shelter homes, adopting trans youth in crisis, and building permanent elder care facilities for trans women.",
     },
     {
-        "title": "Corporate Equality & Rainbow Leadership: Workplace Inclusion in Tech",
-        "interviewee_name": "Neel Ghosh",
-        "identity_tag": "Non-Binary / Queer HR Lead (they/them)",
-        "category": "Workplace Equality",
-        "video_url": "https://www.youtube.com/watch?v=8m9gR5p4Q9w",
-        "embed_url": "https://www.youtube.com/embed/8m9gR5p4Q9w?rel=0",
-        "thumbnail_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=640&q=80",
-        "key_quote": "True inclusion means equal health insurance, gender-neutral restrooms, and psychological safety.",
-        "duration": "15 mins",
-        "location": "Hyderabad, Telangana",
-        "description": "Leading tech diversity specialist explains how Indian IT companies and MNCs can implement Section 9 equal opportunity mandates under the Transgender Persons Act 2019.",
+        "title": "Indian, Trans, A Unique Stance: Clinical Transition & Representation",
+        "interviewee_name": "Dr. Trinetra Haldar Gummaraju",
+        "identity_tag": "Transgender Woman, Surgeon & Creator (she/her)",
+        "category": "Healthcare & Transition",
+        "video_url": "https://www.youtube.com/watch?v=VRKiCpcJ-ag",
+        "embed_url": "https://www.youtube.com/embed/VRKiCpcJ-ag?rel=0",
+        "thumbnail_url": "https://img.youtube.com/vi/VRKiCpcJ-ag/hqdefault.jpg",
+        "key_quote": "Living authentically is the most revolutionary act of self-preservation.",
+        "duration": "16 mins",
+        "location": "Bengaluru, Karnataka",
+        "description": "Doctor, activist, and creator Dr. Trinetra discusses clinical transition protocols, legal TG identity cards, and overcoming social discrimination in Indian medical institutions.",
+    },
+    {
+        "title": "Stories Can Change the Law: The Battle Overturning Section 377",
+        "interviewee_name": "Arundhati Katju & Dr. Menaka Guruswamy",
+        "identity_tag": "Supreme Court Advocates & Human Rights Defenders",
+        "category": "Legal Rights & TG ID",
+        "video_url": "https://www.youtube.com/watch?v=k5jGq5_w2g0",
+        "embed_url": "https://www.youtube.com/embed/k5jGq5_w2g0?rel=0",
+        "thumbnail_url": "https://img.youtube.com/vi/k5jGq5_w2g0/hqdefault.jpg",
+        "key_quote": "When personal stories enter the courtroom, the law is compelled to recognize our shared humanity.",
+        "duration": "13 mins",
+        "location": "New Delhi, Delhi",
+        "description": "Lead Supreme Court advocates recount the historic litigation that struck down Section 377, affirming the fundamental right to love, equality, and dignity across India.",
     },
 ]
 
 
 def ensure_seed_videos(db: Session):
-    """Seeds starter video interviews if table is empty."""
+    """Seeds or refreshes starter video interviews if table is empty or has obsolete seed entries."""
     count = db.query(VideoInterview).count()
-    if count == 0:
+    has_broken_seeds = db.query(VideoInterview).filter(VideoInterview.video_url.like("%jW2m3_Y8hU0%")).count() > 0
+
+    if count == 0 or has_broken_seeds:
+        if has_broken_seeds:
+            db.query(VideoInterview).filter(VideoInterview.video_url.like("%jW2m3_Y8hU0%")).delete(synchronize_session=False)
+            db.query(VideoInterview).filter(VideoInterview.video_url.like("%kYJzX9a9R6I%")).delete(synchronize_session=False)
+            db.query(VideoInterview).filter(VideoInterview.video_url.like("%Vl3j-6S9u6c%")).delete(synchronize_session=False)
+            db.query(VideoInterview).filter(VideoInterview.video_url.like("%8m9gR5p4Q9w%")).delete(synchronize_session=False)
+            db.commit()
+
+        existing_urls = {v.video_url for v in db.query(VideoInterview).all()}
         for seed in INITIAL_SEED_INTERVIEWS:
-            vid = VideoInterview(
-                title=seed["title"],
-                interviewee_name=seed["interviewee_name"],
-                identity_tag=seed["identity_tag"],
-                category=seed["category"],
-                video_url=seed["video_url"],
-                embed_url=seed["embed_url"],
-                thumbnail_url=seed["thumbnail_url"],
-                key_quote=seed["key_quote"],
-                duration=seed["duration"],
-                location=seed["location"],
-                description=seed["description"],
-                is_verified=True,
-            )
-            db.add(vid)
+            if seed["video_url"] not in existing_urls:
+                vid = VideoInterview(
+                    title=seed["title"],
+                    interviewee_name=seed["interviewee_name"],
+                    identity_tag=seed["identity_tag"],
+                    category=seed["category"],
+                    video_url=seed["video_url"],
+                    embed_url=seed["embed_url"],
+                    thumbnail_url=seed["thumbnail_url"],
+                    key_quote=seed["key_quote"],
+                    duration=seed["duration"],
+                    location=seed["location"],
+                    description=seed["description"],
+                    is_verified=True,
+                )
+                db.add(vid)
         db.commit()
 
 

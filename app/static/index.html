@@ -81,6 +81,9 @@
         <a href="/cases" class="nav-link" id="nav-case-board-link">
           <span>📋</span> <strong>Case Board</strong>
         </a>
+        <a href="#tab-videos" class="nav-link" id="nav-videos-link">
+          <span>🎥</span> <strong>Videos</strong>
+        </a>
         <a href="#tab-chat" class="nav-link nav-chat-link auth-only-nav" id="nav-open-chat-btn">
           <span class="nav-chat-icon">🤖</span> <strong>Chatbot</strong>
         </a>
@@ -157,8 +160,8 @@
         <a href="#landing-hero-section" class="nav-mobile-link active">Home</a>
         <a href="/cases" class="nav-mobile-link" id="nav-mobile-caseboard-link">📋 Community Case Board</a>
         <a href="/login" class="nav-mobile-link guest-only-nav" style="font-weight: 700; color: #14B8A6;">🔐 Sign In</a>
+        <a href="#tab-videos" class="nav-mobile-link" id="nav-mobile-videos-link">🎥 Video Interviews</a>
         <a href="#tab-chat" class="nav-mobile-link nav-chat-mobile-link auth-only-nav" id="nav-mobile-chat-link">🤖 Chatbot (Voice)</a>
-        <a href="#tab-videos" class="nav-mobile-link auth-only-nav" id="nav-mobile-videos-link">🎥 Video Interviews</a>
         <a href="#tab-listings" class="nav-mobile-link auth-only-nav" id="nav-mobile-listings-link">💼 Opportunity</a>
         <a href="#tab-awareness" class="nav-mobile-link auth-only-nav" id="nav-mobile-awareness-link">⚖️ Rights</a>
         <a href="#tab-health" class="nav-mobile-link auth-only-nav" id="nav-mobile-health-link">🩺 Health Assistant</a>
@@ -196,6 +199,9 @@
           </a>
           <a href="/cases" class="btn btn-secondary" id="hero-btn-caseboard" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; border-radius: 10px;">
             <span>📋</span> Case Board
+          </a>
+          <a href="#tab-videos" class="btn btn-secondary" id="hero-btn-videos" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(244, 63, 94, 0.45); color: #FB7185; border-radius: 10px; font-weight: 700; background: rgba(244, 63, 94, 0.08);">
+            <span>🎥</span> Video Interviews
           </a>
           <a href="#tab-cases" class="btn btn-secondary" id="hero-btn-triage" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(45, 212, 191, 0.4); color: #2DD4BF; border-radius: 10px;">
             <span>🛡️</span> Case Triage Desk
@@ -1109,22 +1115,19 @@
         });
       }
 
-      // Smart Tab Navigation for Authenticated Portal Dropdown & Drawer
+      // Smart Tab Navigation for Portal Dropdown & Drawer
       function bindAuthNavLink(selector, tabId) {
         const el = document.querySelector(selector);
         if (el) {
           el.addEventListener("click", function (e) {
-            const authView = document.getElementById("authenticated-portal-view");
-            if (authView && authView.style.display !== "none") {
-              e.preventDefault();
-              if (typeof switchToTab === "function") {
-                switchToTab(tabId);
-              } else {
-                const tabBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
-                if (tabBtn) tabBtn.click();
-              }
-              window.scrollTo({ top: 0, behavior: "smooth" });
+            e.preventDefault();
+            if (typeof switchToTab === "function") {
+              switchToTab(tabId);
+            } else {
+              const tabBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
+              if (tabBtn) tabBtn.click();
             }
+            window.scrollTo({ top: 0, behavior: "smooth" });
           });
         }
       }

@@ -70,7 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const isVideosRequested = (
     requestedTab === "tab-videos" ||
     requestedTab === "videos" ||
-    currentHash === "#tab-videos"
+    currentHash === "#tab-videos" ||
+    currentPath.includes("/videos")
   );
 
   // Authenticated users or direct case triage/video requests navigate straight to target
@@ -189,6 +190,8 @@ function switchToTab(targetId) {
   // Update top navbar active links
   const navChatLink = document.getElementById("nav-open-chat-btn");
   const navMobileChatLink = document.getElementById("nav-mobile-chat-link");
+  const navVideosLink = document.getElementById("nav-videos-link");
+  const navMobileVideosLink = document.getElementById("nav-mobile-videos-link");
   const navHomeLinks = document.querySelectorAll('a[href="#landing-hero-section"]');
 
   if (targetId === "tab-chat") {
@@ -198,6 +201,15 @@ function switchToTab(targetId) {
   } else {
     if (navChatLink) navChatLink.classList.remove("active");
     if (navMobileChatLink) navMobileChatLink.classList.remove("active");
+  }
+
+  if (targetId === "tab-videos") {
+    if (navVideosLink) navVideosLink.classList.add("active");
+    if (navMobileVideosLink) navMobileVideosLink.classList.add("active");
+    navHomeLinks.forEach((l) => l.classList.remove("active"));
+  } else {
+    if (navVideosLink) navVideosLink.classList.remove("active");
+    if (navMobileVideosLink) navMobileVideosLink.classList.remove("active");
   }
 
   const tabBtns = document.querySelectorAll(".tab-btn");
@@ -244,6 +256,14 @@ function setupTabs() {
     link.addEventListener("click", (e) => {
       e.preventDefault();
       switchToTab("tab-cases");
+    });
+  });
+
+  // Links pointing to #tab-videos (from Navbar, hero button, mobile drawer)
+  document.querySelectorAll('a[href="#tab-videos"]').forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      switchToTab("tab-videos");
     });
   });
 
@@ -3541,6 +3561,7 @@ function renderVideoCard(video) {
     ? `
       <div class="video-player-frame video-player-native-wrap">
         <video
+          src="${embedSrc || extUrl}"
           controls
           playsinline
           preload="metadata"

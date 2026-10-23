@@ -280,5 +280,22 @@ def serve_triage():
     return {"message": "Case triage frontend not found"}
 
 
+@app.get("/videos")
+@app.get("/videos.html")
+def serve_videos_page():
+    """Serves the Video Interviews portal module directly for all visitors."""
+    if INDEX_FILE.exists():
+        return FileResponse(
+            str(INDEX_FILE),
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
+    return {"message": "Video Interviews frontend not found"}
+
+
+
 
 
