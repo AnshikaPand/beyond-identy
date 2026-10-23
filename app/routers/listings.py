@@ -141,13 +141,28 @@ def get_ngo_directory(
     for item in db_listings:
         org_name = (item.organization_name or item.title).strip()
         existing = [n["name"].lower() for n in all_ngos]
+        info_str = (item.contact_info or "").strip()
+        parsed_email = None
+        parsed_phone = None
+        if "/" in info_str:
+            for piece in info_str.split("/"):
+                piece = piece.strip()
+                if "@" in piece and not parsed_email:
+                    parsed_email = piece
+                elif any(c.isdigit() for c in piece) and not parsed_phone:
+                    parsed_phone = piece
+        elif "@" in info_str:
+            parsed_email = info_str
+        elif any(c.isdigit() for c in info_str):
+            parsed_phone = info_str
+
         if org_name.lower() not in existing and not any(org_name.lower() in n for n in existing):
             all_ngos.append({
                 "name": org_name,
                 "focus_area": item.title,
                 "location": item.location or "India",
-                "contact_email": item.contact_info if "@" in (item.contact_info or "") else None,
-                "contact_phone": item.contact_info if "@" not in (item.contact_info or "") else None,
+                "contact_email": parsed_email,
+                "contact_phone": parsed_phone,
                 "services_offered": [item.description] if item.description else [],
                 "states": ["all"],
                 "verified": True,

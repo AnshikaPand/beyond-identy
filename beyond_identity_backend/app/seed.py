@@ -47,7 +47,7 @@ def seed():
                         "₹1,000 registration fee, free textbooks included.",
             organization_name="Shree Education Trust",
             location="Mumbai, Maharashtra",
-            contact_info="admissions@shreetrust.org",
+            contact_info="admissions@shreetrust.org / +91-22-26673800",
             status=models.VerificationStatus.verified,
             verification_notes="Verified via NGO partnership, on-site visit completed.",
         ),
@@ -58,7 +58,7 @@ def seed():
                         "Evening batches, gender-neutral facilities on campus.",
             organization_name="Nazariya Learning Center",
             location="Pune, Maharashtra",
-            contact_info="info@nazariya.edu.in",
+            contact_info="info@nazariya.edu.in / +91-9818151707",
             status=models.VerificationStatus.verified,
         ),
         # --- Employment ---
@@ -77,7 +77,7 @@ def seed():
             description="Full-time retail position. Employer completed community verification and sensitization training.",
             organization_name="Fabindia",
             location="Delhi",
-            contact_info="hr@fabindia-careers.com",
+            contact_info="hr@fabindia-careers.com / +91-129-4911100 / 1800-100-1212",
             status=models.VerificationStatus.pending,
         ),
         # --- Housing ---
@@ -96,7 +96,7 @@ def seed():
             description="Emergency shelter for individuals facing family rejection. Up to 30-day stay, meals included.",
             organization_name="Sakhi Char Chowghi Trust",
             location="Mumbai, Maharashtra",
-            contact_info="shelter@sakhichar.org",
+            contact_info="sakhicharchowghimdacs@gmail.com / +91-9833243117",
             status=models.VerificationStatus.verified,
         ),
         # --- Healthcare ---
@@ -106,7 +106,7 @@ def seed():
             description="Hormone therapy consultation, mental health support, staff trained in inclusive care.",
             organization_name="Humsafar Trust Clinic",
             location="Mumbai, Maharashtra",
-            contact_info="clinic@humsafar.org",
+            contact_info="clinic@humsafar.org / +91-22-26673800",
             status=models.VerificationStatus.verified,
         ),
         # --- Scholarship ---
