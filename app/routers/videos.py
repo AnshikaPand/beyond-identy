@@ -3,10 +3,14 @@ Video Interviews & LGBTQ+ Community Voices Router.
 Provides endpoints for retrieving, posting, and searching video interviews
 featuring LGBTQ+ individuals, advocates, and community leaders across India.
 """
+import os
 import re
+import shutil
+import uuid
+from pathlib import Path
 from typing import List, Optional
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, status
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, desc
 
@@ -17,6 +21,17 @@ from app.auth import SECRET_KEY, ALGORITHM
 from jose import jwt
 
 router = APIRouter(prefix="/api/videos", tags=["Video Interviews & Community Voices"])
+
+# Directory where uploaded phone and device video files are stored
+UPLOADS_DIR = Path(__file__).resolve().parent.parent / "static" / "uploads" / "videos"
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+
+ALT_UPLOADS_DIR = Path(__file__).resolve().parent.parent.parent / "beyond_identity_backend" / "app" / "static" / "uploads" / "videos"
+if ALT_UPLOADS_DIR.parent.parent.exists():
+    try:
+        ALT_UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
 
 
 def get_current_user_optional(
@@ -242,3 +257,112 @@ def delete_video_interview(
     db.delete(interview)
     db.commit()
     return {"message": "Video interview successfully deleted", "id": video_id}
+
+
+@router.post("/upload-file")
+async def upload_phone_video_file(file: UploadFile = File(...)):
+    """
+    Direct file upload endpoint for videos recorded on or picked from mobile phones & tablets.
+    Accepts video formats (mp4, mov, webm, m4v, 3gp) and saves to static uploads directory.
+    """
+    if not file or not file.filename:
+        raise HTTPException(status_code=400, detail="No video file provided")
+
+    ext = Path(file.filename).suffix.lower()
+    allowed_exts = {".mp4", ".mov", ".webm", ".m4v", ".3gp", ".avi", ".mkv"}
+    if ext not in allowed_exts:
+        # Default to mp4 if phone browser sent video blob without explicit extension
+        ext = ".mp4"
+
+    unique_filename = f"phone_video_{uuid.uuid4().hex[:12]}{ext}"
+    dest_path = UPLOADS_DIR / unique_filename
+
+    try:
+        with dest_path.open("wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        # Mirror file to secondary root if it exists
+        if ALT_UPLOADS_DIR.exists():
+            try:
+                shutil.copyfile(dest_path, ALT_UPLOADS_DIR / unique_filename)
+            except Exception:
+                pass
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save phone video: {str(e)}")
+
+    video_url = f"/static/uploads/videos/{unique_filename}"
+    return {
+        "video_url": video_url,
+        "filename": unique_filename,
+        "content_type": file.content_type,
+    }
+
+
+@router.post("/upload", response_model=VideoInterviewOut, status_code=status.HTTP_201_CREATED)
+async def post_video_interview_upload(
+    file: UploadFile = File(...),
+    title: str = Form(...),
+    interviewee_name: str = Form(...),
+    identity_tag: Optional[str] = Form("LGBTQ+ Community"),
+    category: Optional[str] = Form("Personal Story"),
+    key_quote: Optional[str] = Form(None),
+    location: Optional[str] = Form("India"),
+    duration: Optional[str] = Form(None),
+    description: Optional[str] = Form(None),
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user_optional),
+):
+    """
+    Combined mobile upload: Accepts video recorded on phone or selected from phone gallery
+    along with interview details, saves the file and publishes the interview.
+    """
+    if not title or not title.strip():
+        raise HTTPException(status_code=400, detail="Interview title is required")
+    if not interviewee_name or not interviewee_name.strip():
+        raise HTTPException(status_code=400, detail="Interviewee name is required")
+    if not file or not file.filename:
+        raise HTTPException(status_code=400, detail="Video file is required")
+
+    ext = Path(file.filename).suffix.lower()
+    allowed_exts = {".mp4", ".mov", ".webm", ".m4v", ".3gp", ".avi", ".mkv"}
+    if ext not in allowed_exts:
+        ext = ".mp4"
+
+    unique_filename = f"phone_video_{uuid.uuid4().hex[:12]}{ext}"
+    dest_path = UPLOADS_DIR / unique_filename
+
+    try:
+        with dest_path.open("wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        if ALT_UPLOADS_DIR.exists():
+            try:
+                shutil.copyfile(dest_path, ALT_UPLOADS_DIR / unique_filename)
+            except Exception:
+                pass
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save video file: {str(e)}")
+
+    video_url = f"/static/uploads/videos/{unique_filename}"
+    embed_url = video_url
+    thumb_url = "https://images.unsplash.com/photo-1579208575657-c595a05383b7?auto=format&fit=crop&w=640&q=80"
+
+    new_interview = VideoInterview(
+        title=title.strip(),
+        interviewee_name=interviewee_name.strip(),
+        identity_tag=(identity_tag or "LGBTQ+ Community").strip(),
+        category=(category or "Personal Story").strip(),
+        video_url=video_url,
+        embed_url=embed_url,
+        thumbnail_url=thumb_url,
+        description=(description or "").strip(),
+        key_quote=(key_quote or "").strip(),
+        duration=(duration or "Phone Video").strip(),
+        location=(location or "India").strip(),
+        submitted_by_id=current_user.id if current_user else None,
+        is_verified=True,
+    )
+
+    db.add(new_interview)
+    db.commit()
+    db.refresh(new_interview)
+    return new_interview

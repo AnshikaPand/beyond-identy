@@ -87,3 +87,82 @@ def test_post_video_interview_validation():
 
     res_no_url = client.post("/api/videos", json={"title": "Test Title", "interviewee_name": "Test", "video_url": ""})
     assert res_no_url.status_code == 400
+
+
+def test_upload_phone_video_file():
+    """Verify phone video direct file upload endpoint."""
+    import io
+    dummy_video_bytes = b"FAKE_MP4_HEADER_AND_VIDEO_BYTES_TEST"
+    files = {
+        "file": ("mobile_recording_sample.mp4", io.BytesIO(dummy_video_bytes), "video/mp4")
+    }
+    response = client.post("/api/videos/upload-file", files=files)
+    assert response.status_code == 200
+    data = response.json()
+    assert "video_url" in data
+    assert data["video_url"].startswith("/static/uploads/videos/phone_video_")
+    assert data["video_url"].endswith(".mp4")
+    assert "filename" in data
+
+
+def test_upload_phone_video_interview_multipart():
+    """Verify posting a complete phone video interview with video file and form data."""
+    import io
+    from pathlib import Path
+
+    dummy_video_bytes = b"PHONE_CAMERA_RECORDING_BYTES"
+    files = {
+        "file": ("phone_interview_chennai.mov", io.BytesIO(dummy_video_bytes), "video/quicktime")
+    }
+    data = {
+        "title": "Living Proud in Chennai: A Transgender IT Professional",
+        "interviewee_name": "Revathi Natarajan",
+        "identity_tag": "Transgender Woman & Tech Engineer (she/her)",
+        "category": "Workplace Equality",
+        "key_quote": "My skills speak louder than social prejudices.",
+        "location": "Chennai, Tamil Nadu",
+        "duration": "12 mins",
+        "description": "Revathi shares her experience transitioning in a software corporation in Chennai.",
+    }
+
+    response = client.post("/api/videos/upload", data=data, files=files)
+    assert response.status_code == 201
+    created = response.json()
+
+    assert created["title"] == data["title"]
+    assert created["interviewee_name"] == data["interviewee_name"]
+    assert created["video_url"].startswith("/static/uploads/videos/phone_video_")
+    assert created["video_url"].endswith(".mov")
+    assert created["embed_url"] == created["video_url"]
+
+    # Clean up DB record
+    del_res = client.delete(f"/api/videos/{created['id']}")
+    assert del_res.status_code == 200
+
+    # Clean up created file if exists
+    filename = Path(created["video_url"]).name
+    target_file = Path(__file__).parent.parent / "app" / "static" / "uploads" / "videos" / filename
+    if target_file.exists():
+        try:
+            target_file.unlink()
+        except Exception:
+            pass
+
+
+def test_upload_phone_video_validation():
+    """Verify error handling on multipart upload when required fields or file are missing."""
+    import io
+    # Missing title
+    files = {"file": ("test.mp4", io.BytesIO(b"data"), "video/mp4")}
+    res = client.post("/api/videos/upload", data={"title": "", "interviewee_name": "Test"}, files=files)
+    assert res.status_code in (400, 422)
+
+    # Missing interviewee name
+    files2 = {"file": ("test.mp4", io.BytesIO(b"data"), "video/mp4")}
+    res2 = client.post("/api/videos/upload", data={"title": "Test Title", "interviewee_name": ""}, files=files2)
+    assert res2.status_code in (400, 422)
+
+    # Missing file
+    res3 = client.post("/api/videos/upload", data={"title": "Test Title", "interviewee_name": "Test"})
+    assert res3.status_code in (400, 422)
+

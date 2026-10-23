@@ -2366,13 +2366,16 @@ body.user-logged-in #landing-hero-section {
   overflow: hidden !important;
 }
 
-.video-player-frame iframe {
+.video-player-frame iframe,
+.video-player-frame video {
   position: absolute !important;
   top: 0 !important;
   left: 0 !important;
   width: 100% !important;
   height: 100% !important;
+  object-fit: cover !important;
   border: none !important;
+  background: #000000 !important;
 }
 
 .video-card-body {
@@ -2501,4 +2504,96 @@ body.user-logged-in #landing-hero-section {
   text-decoration: underline !important;
   transform: translateX(2px) !important;
 }
+
+/* =========================================================================
+   12. Phone Video Upload & Mobile Video Modal Enhancements
+   ========================================================================= */
+.phone-video-dropzone {
+  border: 2px dashed rgba(99, 102, 241, 0.45) !important;
+  border-radius: 14px !important;
+  padding: 24px 20px !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  background: rgba(99, 102, 241, 0.05) !important;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.phone-video-dropzone:hover,
+.phone-video-dropzone.drag-over {
+  border-color: var(--bi-primary, #6366f1) !important;
+  background: rgba(99, 102, 241, 0.1) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15) !important;
+}
+
+.phone-video-dropzone:active {
+  transform: scale(0.985) !important;
+}
+
+.video-source-switcher button.video-mode-tab-btn {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.video-source-switcher button.video-mode-tab-btn.active {
+  background: var(--bi-primary, #6366f1) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35) !important;
+}
+
+.video-source-switcher button.video-mode-tab-btn:not(.active):hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--bi-text-main, #f8fafc) !important;
+}
+
+#phone-video-preview-card {
+  animation: fadeInPhoneVideo 0.25s ease forwards !important;
+}
+
+@keyframes fadeInPhoneVideo {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.phone-video-badge {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.18), rgba(139, 92, 246, 0.18)) !important;
+  color: #f43f5e !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(244, 63, 94, 0.3) !important;
+}
+
+@media (max-width: 640px) {
+  .video-post-modal-content {
+    max-height: 94vh !important;
+    overflow-y: auto !important;
+    border-radius: 16px !important;
+  }
+
+  .video-post-modal-content .form-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .video-post-modal-content .form-group {
+    width: 100% !important;
+  }
+
+  #phone-video-preview-card {
+    flex-direction: column !important;
+    text-align: center !important;
+  }
+
+  #phone-video-preview-player {
+    width: 100% !important;
+    height: 140px !important;
+  }
+}
+
 

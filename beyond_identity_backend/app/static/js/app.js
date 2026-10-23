@@ -3515,19 +3515,45 @@ async function loadVideoInterviews(category = "", search = "") {
 }
 
 function renderVideoCard(video) {
-  const embedSrc = escapeHtml(video.embed_url || video.video_url);
   const title = escapeHtml(video.title);
   const name = escapeHtml(video.interviewee_name);
   const tag = escapeHtml(video.identity_tag || "LGBTQ+ Community");
   const category = escapeHtml(video.category);
   const quote = video.key_quote ? escapeHtml(video.key_quote) : "";
   const desc = video.description ? escapeHtml(video.description) : "";
-  const duration = escapeHtml(video.duration || "10 min");
+  const duration = escapeHtml(video.duration || "Phone Video");
   const location = video.location ? escapeHtml(video.location) : "";
-  const extUrl = escapeHtml(video.video_url);
+  const extUrl = escapeHtml(video.video_url || "");
+  const embedSrc = escapeHtml(video.embed_url || video.video_url || "");
 
-  return `
-    <article class="video-interview-card" data-id="${video.id}">
+  // Detect whether this is a direct uploaded phone video file or an external embed (YouTube/Vimeo)
+  const rawUrl = (video.video_url || "").toLowerCase();
+  const rawEmbed = (video.embed_url || "").toLowerCase();
+  const isDirectPhoneVideo =
+    rawUrl.startsWith("/static/") ||
+    rawUrl.startsWith("blob:") ||
+    rawEmbed.startsWith("/static/") ||
+    /\.(mp4|mov|webm|m4v|3gp|avi|mkv)($|\?)/i.test(rawUrl) ||
+    /\.(mp4|mov|webm|m4v|3gp|avi|mkv)($|\?)/i.test(rawEmbed) ||
+    (!rawUrl.includes("youtube.com") && !rawUrl.includes("youtu.be") && !rawUrl.includes("vimeo.com") && rawUrl.includes("phone_video"));
+
+  const playerMarkup = isDirectPhoneVideo
+    ? `
+      <div class="video-player-frame video-player-native-wrap">
+        <video
+          controls
+          playsinline
+          preload="metadata"
+          poster="${video.thumbnail_url && !video.thumbnail_url.includes('unsplash') ? escapeHtml(video.thumbnail_url) : ''}"
+        >
+          <source src="${embedSrc || extUrl}" type="video/mp4" />
+          <source src="${embedSrc || extUrl}" type="video/webm" />
+          <source src="${embedSrc || extUrl}" type="video/quicktime" />
+          Your mobile browser does not support the video tag.
+        </video>
+      </div>
+    `
+    : `
       <div class="video-player-frame">
         <iframe
           src="${embedSrc}"
@@ -3538,9 +3564,15 @@ function renderVideoCard(video) {
           loading="lazy"
         ></iframe>
       </div>
+    `;
+
+  return `
+    <article class="video-interview-card" data-id="${video.id}">
+      ${playerMarkup}
       <div class="video-card-body">
         <div class="video-card-chips">
           <span class="video-chip-category">${category}</span>
+          ${isDirectPhoneVideo ? `<span class="video-chip-duration phone-video-badge">📱 Phone Video</span>` : ""}
           <span class="video-chip-duration">⏱️ ${duration}</span>
           ${location ? `<span class="video-chip-location">📍 ${location}</span>` : ""}
         </div>
@@ -3561,7 +3593,7 @@ function renderVideoCard(video) {
         <div class="video-card-footer">
           <span class="video-verified-badge">✓ Verified Voice</span>
           <a href="${extUrl}" target="_blank" rel="noopener noreferrer" class="video-open-external-btn" title="Open source video">
-            <span>Watch External ↗</span>
+            <span>${isDirectPhoneVideo ? "Play / Download ↗" : "Watch External ↗"}</span>
           </a>
         </div>
       </div>
@@ -3569,11 +3601,112 @@ function renderVideoCard(video) {
   `;
 }
 
+let currentVideoSourceMode = "phone"; // "phone" | "link"
+
+function resetPhoneVideoUploadState() {
+  const fileInput = document.getElementById("vid-phone-file-input");
+  const previewCard = document.getElementById("phone-video-preview-card");
+  const previewPlayer = document.getElementById("phone-video-preview-player");
+  const previewName = document.getElementById("phone-video-preview-name");
+  const previewSize = document.getElementById("phone-video-preview-size");
+  const dropzone = document.getElementById("phone-video-dropzone");
+
+  if (fileInput) fileInput.value = "";
+  if (previewPlayer) {
+    if (previewPlayer.src && previewPlayer.src.startsWith("blob:")) {
+      try { URL.revokeObjectURL(previewPlayer.src); } catch (e) {}
+    }
+    previewPlayer.src = "";
+  }
+  if (previewName) previewName.innerText = "video.mp4";
+  if (previewSize) previewSize.innerText = "0 MB";
+  if (previewCard) previewCard.style.display = "none";
+  if (dropzone) dropzone.style.display = "block";
+}
+
+function setVideoSourceMode(mode) {
+  currentVideoSourceMode = mode;
+  const btnPhone = document.getElementById("btn-mode-phone-upload");
+  const btnLink = document.getElementById("btn-mode-link-url");
+  const phoneSection = document.getElementById("video-phone-upload-section");
+  const linkSection = document.getElementById("video-link-section");
+
+  if (mode === "phone") {
+    if (btnPhone) {
+      btnPhone.classList.add("active");
+      btnPhone.style.background = "var(--bi-primary, #6366f1)";
+      btnPhone.style.color = "#ffffff";
+    }
+    if (btnLink) {
+      btnLink.classList.remove("active");
+      btnLink.style.background = "transparent";
+      btnLink.style.color = "var(--text-muted)";
+    }
+    if (phoneSection) phoneSection.style.display = "block";
+    if (linkSection) linkSection.style.display = "none";
+  } else {
+    if (btnLink) {
+      btnLink.classList.add("active");
+      btnLink.style.background = "var(--bi-primary, #6366f1)";
+      btnLink.style.color = "#ffffff";
+    }
+    if (btnPhone) {
+      btnPhone.classList.remove("active");
+      btnPhone.style.background = "transparent";
+      btnPhone.style.color = "var(--text-muted)";
+    }
+    if (phoneSection) phoneSection.style.display = "none";
+    if (linkSection) linkSection.style.display = "block";
+  }
+}
+
+function handleSelectedVideoFile(file) {
+  if (!file) return;
+
+  const validExts = [".mp4", ".mov", ".webm", ".m4v", ".3gp", ".avi", ".mkv"];
+  const fileName = (file.name || "").toLowerCase();
+  const hasValidExt = validExts.some(ext => fileName.endsWith(ext));
+  const isVideoMime = file.type && file.type.startsWith("video/");
+
+  if (!hasValidExt && !isVideoMime) {
+    showToast("Please choose a valid video format (MP4, MOV, WebM, 3GP)", "error");
+    return;
+  }
+
+  const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+  const previewCard = document.getElementById("phone-video-preview-card");
+  const previewPlayer = document.getElementById("phone-video-preview-player");
+  const previewName = document.getElementById("phone-video-preview-name");
+  const previewSize = document.getElementById("phone-video-preview-size");
+  const dropzone = document.getElementById("phone-video-dropzone");
+
+  if (previewPlayer) {
+    if (previewPlayer.src && previewPlayer.src.startsWith("blob:")) {
+      try { URL.revokeObjectURL(previewPlayer.src); } catch (e) {}
+    }
+    try {
+      previewPlayer.src = URL.createObjectURL(file);
+      previewPlayer.load();
+    } catch (e) {
+      console.warn("Could not create object URL for preview:", e);
+    }
+  }
+
+  if (previewName) previewName.innerText = file.name || "phone_video.mp4";
+  if (previewSize) previewSize.innerText = `${sizeMb} MB`;
+  if (previewCard) previewCard.style.display = "flex";
+  if (dropzone) dropzone.style.display = "none";
+
+  showToast(`📱 Phone video ready: ${file.name || "video"} (${sizeMb} MB)`, "info");
+}
+
 function openPostVideoModal() {
   const modal = document.getElementById("post-video-modal");
   if (modal) {
     modal.style.display = "flex";
     document.body.style.overflow = "hidden";
+    // Default to phone upload mode
+    setVideoSourceMode("phone");
     const titleInput = document.getElementById("vid-title");
     if (titleInput) setTimeout(() => titleInput.focus(), 100);
   }
@@ -3584,6 +3717,7 @@ function closePostVideoModal() {
   if (modal) {
     modal.style.display = "none";
     document.body.style.overflow = "";
+    resetPhoneVideoUploadState();
   }
 }
 
@@ -3604,6 +3738,58 @@ function initVideoInterviews() {
   if (modal) {
     modal.addEventListener("click", (e) => {
       if (e.target === modal) closePostVideoModal();
+    });
+  }
+
+  // Source Mode Switcher Buttons
+  const btnPhone = document.getElementById("btn-mode-phone-upload");
+  if (btnPhone) {
+    btnPhone.addEventListener("click", () => setVideoSourceMode("phone"));
+  }
+  const btnLink = document.getElementById("btn-mode-link-url");
+  if (btnLink) {
+    btnLink.addEventListener("click", () => setVideoSourceMode("link"));
+  }
+
+  // Phone Video File Input & Dropzone
+  const phoneFileInput = document.getElementById("vid-phone-file-input");
+  const phoneDropzone = document.getElementById("phone-video-dropzone");
+  const removeVideoBtn = document.getElementById("remove-phone-video-btn");
+
+  if (phoneDropzone && phoneFileInput) {
+    phoneDropzone.addEventListener("click", () => {
+      phoneFileInput.click();
+    });
+
+    phoneDropzone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      phoneDropzone.classList.add("drag-over");
+    });
+    phoneDropzone.addEventListener("dragleave", () => {
+      phoneDropzone.classList.remove("drag-over");
+    });
+    phoneDropzone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      phoneDropzone.classList.remove("drag-over");
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        phoneFileInput.files = e.dataTransfer.files;
+        handleSelectedVideoFile(e.dataTransfer.files[0]);
+      }
+    });
+  }
+
+  if (phoneFileInput) {
+    phoneFileInput.addEventListener("change", (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        handleSelectedVideoFile(e.target.files[0]);
+      }
+    });
+  }
+
+  if (removeVideoBtn) {
+    removeVideoBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      resetPhoneVideoUploadState();
     });
   }
 
@@ -3644,68 +3830,142 @@ function initVideoInterviews() {
       const interviewee_name = document.getElementById("vid-name")?.value?.trim() || "";
       const identity_tag = document.getElementById("vid-identity")?.value?.trim() || "LGBTQ+ Community";
       const category = document.getElementById("vid-category")?.value || "Personal Story";
-      const video_url = document.getElementById("vid-url")?.value?.trim() || "";
       const key_quote = document.getElementById("vid-quote")?.value?.trim() || "";
       const location = document.getElementById("vid-location")?.value?.trim() || "India";
-      const duration = document.getElementById("vid-duration")?.value?.trim() || "10 mins";
+      const duration = document.getElementById("vid-duration")?.value?.trim() || "";
       const description = document.getElementById("vid-description")?.value?.trim() || "";
 
-      if (!title || !interviewee_name || !video_url) {
-        showToast("Please fill in all required fields (Title, Interviewee Name, Video URL)", "error");
+      if (!title || !interviewee_name) {
+        showToast("Please fill in Interview Title and Interviewee Name.", "error");
         return;
       }
 
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = `<span>⏳</span> Publishing...`;
-      }
+      // PHONE VIDEO UPLOAD MODE
+      if (currentVideoSourceMode === "phone") {
+        const fileInput = document.getElementById("vid-phone-file-input");
+        const videoFile = fileInput && fileInput.files ? fileInput.files[0] : null;
 
-      try {
-        const headers = { "Content-Type": "application/json" };
-        if (currentAuthToken) {
-          headers["Authorization"] = `Bearer ${currentAuthToken}`;
+        if (!videoFile) {
+          showToast("📱 Please tap to select or record a video from your phone first.", "error");
+          return;
         }
 
-        const res = await fetch("/api/videos", {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            title,
-            interviewee_name,
-            identity_tag,
-            category,
-            video_url,
-            key_quote,
-            location,
-            duration,
-            description,
-          }),
-        });
-
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.detail || "Failed to post video interview");
-        }
-
-        const createdVideo = await res.json();
-        showToast(`🎉 Video interview published: "${createdVideo.title}"!`, "success");
-        form.reset();
-        closePostVideoModal();
-
-        // Switch to all category and refresh feed
-        currentVideoCategory = "all";
-        catPills.forEach((p) => {
-          if (p.getAttribute("data-cat") === "all") p.classList.add("active");
-          else p.classList.remove("active");
-        });
-        loadVideoInterviews("all", "");
-      } catch (err) {
-        console.error("Error posting video:", err);
-        showToast(err.message || "Failed to post video interview. Please check the URL.", "error");
-      } finally {
+        const sizeMb = (videoFile.size / (1024 * 1024)).toFixed(1);
         if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = `<span>⏳</span> Uploading Phone Video (${sizeMb} MB)...`;
+        }
+
+        try {
+          const formData = new FormData();
+          formData.append("file", videoFile);
+          formData.append("title", title);
+          formData.append("interviewee_name", interviewee_name);
+          formData.append("identity_tag", identity_tag);
+          formData.append("category", category);
+          formData.append("key_quote", key_quote);
+          formData.append("location", location);
+          formData.append("duration", duration || "Phone Video");
+          formData.append("description", description);
+
+          const headers = {};
+          if (currentAuthToken) {
+            headers["Authorization"] = `Bearer ${currentAuthToken}`;
+          }
+
+          const res = await fetch("/api/videos/upload", {
+            method: "POST",
+            headers,
+            body: formData,
+          });
+
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.detail || "Failed to upload phone video interview");
+          }
+
+          const createdVideo = await res.json();
+          showToast(`🎉 Phone video published: "${createdVideo.title}"!`, "success");
+          form.reset();
+          resetPhoneVideoUploadState();
+          closePostVideoModal();
+
+          // Refresh feed and highlight All
+          currentVideoCategory = "all";
+          catPills.forEach((p) => {
+            if (p.getAttribute("data-cat") === "all") p.classList.add("active");
+            else p.classList.remove("active");
+          });
+          loadVideoInterviews("all", "");
+        } catch (err) {
+          console.error("Error uploading phone video:", err);
+          showToast(err.message || "Failed to upload phone video. Please try again.", "error");
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+          }
+        }
+      } else {
+        // LINK MODE (YouTube / Vimeo)
+        const video_url = document.getElementById("vid-url")?.value?.trim() || "";
+        if (!video_url) {
+          showToast("Please enter a valid video link (YouTube, Vimeo, or web link).", "error");
+          return;
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = `<span>⏳</span> Publishing link...`;
+        }
+
+        try {
+          const headers = { "Content-Type": "application/json" };
+          if (currentAuthToken) {
+            headers["Authorization"] = `Bearer ${currentAuthToken}`;
+          }
+
+          const res = await fetch("/api/videos", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              title,
+              interviewee_name,
+              identity_tag,
+              category,
+              video_url,
+              key_quote,
+              location,
+              duration: duration || "10 mins",
+              description,
+            }),
+          });
+
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.detail || "Failed to post video interview");
+          }
+
+          const createdVideo = await res.json();
+          showToast(`🎉 Video interview published: "${createdVideo.title}"!`, "success");
+          form.reset();
+          resetPhoneVideoUploadState();
+          closePostVideoModal();
+
+          currentVideoCategory = "all";
+          catPills.forEach((p) => {
+            if (p.getAttribute("data-cat") === "all") p.classList.add("active");
+            else p.classList.remove("active");
+          });
+          loadVideoInterviews("all", "");
+        } catch (err) {
+          console.error("Error posting video:", err);
+          showToast(err.message || "Failed to post video interview. Please check the URL.", "error");
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+          }
         }
       }
     });
