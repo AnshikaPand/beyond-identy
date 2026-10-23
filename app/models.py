@@ -165,3 +165,30 @@ class IncidentReport(Base):
     reporter = relationship("User", foreign_keys=[user_id], back_populates="incident_reports")
 
 
+class VideoInterview(Base):
+    """
+    Video Interview & Community Story:
+    Enables community members and advocates to post and watch video interviews
+    of LGBT individuals across India (workplace, healthcare, legal rights, personal journey).
+    """
+    __tablename__ = "video_interviews"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    interviewee_name = Column(String, nullable=False)
+    identity_tag = Column(String, nullable=True)  # e.g., "Trans Woman (she/her)", "Non-Binary Leader"
+    category = Column(String, default="story", nullable=False)  # "workplace", "rights", "healthcare", "housing", "story"
+    video_url = Column(String, nullable=False)
+    embed_url = Column(String, nullable=True)
+    thumbnail_url = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
+    key_quote = Column(String, nullable=True)
+    duration = Column(String, nullable=True)
+    location = Column(String, nullable=True)
+    submitted_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    is_verified = Column(Boolean, default=True, nullable=False)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    submitted_by = relationship("User", foreign_keys=[submitted_by_id])

@@ -403,3 +403,39 @@ class ChatbotQueryResponse(BaseModel):
     suggested_prompts: List[str] = []
     total_database_records: int = 0
 
+
+# ==========================================
+# 7. Video Interview & Community Stories
+# ==========================================
+
+class VideoInterviewCreate(BaseModel):
+    title: str
+    interviewee_name: str
+    identity_tag: Optional[str] = "LGBTQ+ Community"
+    category: Optional[str] = "Personal Story"
+    video_url: str
+    description: Optional[str] = None
+    key_quote: Optional[str] = None
+    duration: Optional[str] = None
+    location: Optional[str] = None
+
+
+class VideoInterviewOut(BaseModel):
+    id: int
+    title: str
+    interviewee_name: str
+    identity_tag: Optional[str] = None
+    category: str
+    video_url: str
+    embed_url: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    description: Optional[str] = None
+    key_quote: Optional[str] = None
+    duration: Optional[str] = None
+    location: Optional[str] = None
+    is_verified: bool = True
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+

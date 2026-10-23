@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from app.database import Base, engine
-from app.routers import auth, listings, incidents, awareness, health_assistant, chatbot, public_cases
+from app.routers import auth, listings, incidents, awareness, health_assistant, chatbot, public_cases, videos
 
 # Creates tables if they don't exist yet (fine for dev/mock-data phase;
 # use Alembic migrations once the schema stabilizes).
@@ -131,6 +131,7 @@ app.include_router(awareness.router)
 app.include_router(health_assistant.router)
 app.include_router(chatbot.router)
 app.include_router(public_cases.router)
+app.include_router(videos.router)
 
 
 @app.get("/")

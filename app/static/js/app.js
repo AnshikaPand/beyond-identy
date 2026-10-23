@@ -48,6 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupHealthAssistantUI();
   initChatbox();
   initTabChatbox();
+  initVideoInterviews();
 
   // Initialize guest vs member presentation
   renderUserStatus();
@@ -66,12 +67,20 @@ document.addEventListener("DOMContentLoaded", () => {
     currentPath.includes("/triage")
   );
 
-  // Authenticated users or direct case triage requests navigate straight to target
+  const isVideosRequested = (
+    requestedTab === "tab-videos" ||
+    requestedTab === "videos" ||
+    currentHash === "#tab-videos"
+  );
+
+  // Authenticated users or direct case triage/video requests navigate straight to target
   if (currentUser && currentAuthToken) {
-    const target = isCasesRequested ? "tab-cases" : ((requestedTab && document.getElementById(requestedTab)) ? requestedTab : "tab-chat");
+    const target = isCasesRequested ? "tab-cases" : (isVideosRequested ? "tab-videos" : ((requestedTab && document.getElementById(requestedTab)) ? requestedTab : "tab-chat"));
     switchToTab(target);
   } else if (isCasesRequested) {
     switchToTab("tab-cases");
+  } else if (isVideosRequested) {
+    switchToTab("tab-videos");
   } else {
     // Unauthenticated guest: keep single Home as default view
     document.body.classList.remove("tab-chat-active", "portal-view-active");
@@ -146,9 +155,9 @@ function applyTheme(theme) {
 // Tabs Navigation
 // ==========================================
 function switchToTab(targetId) {
-  // All visitors (including unauthenticated guests on phones and laptops) can view the Case Triage Desk
+  // All visitors (including unauthenticated guests on phones and laptops) can view the Case Triage Desk and Video Interviews
   const isGuest = !currentUser || !currentAuthToken;
-  if (isGuest && targetId !== "tab-cases") {
+  if (isGuest && targetId !== "tab-cases" && targetId !== "tab-videos") {
     showToast("Please sign in to access portal features.", "info");
     setTimeout(() => {
       window.location.href = "/login";
@@ -212,6 +221,7 @@ function switchToTab(targetId) {
 
   // Trigger refreshes if necessary
   if (targetId === "tab-cases") loadIncidents();
+  if (targetId === "tab-videos") loadVideoInterviews();
   if (targetId === "tab-chat") {
     setTimeout(() => {
       const input = document.getElementById("tab-chat-text-input");
@@ -3439,3 +3449,272 @@ function initTabChatbox() {
 
 window.initAIChatbox = initChatbox;
 window.initTabAIChatbox = initTabChatbox;
+
+// =========================================================================
+// LGBTQ+ Community Voices & Video Interviews System
+// =========================================================================
+let currentVideoCategory = "all";
+let currentVideoSearchQuery = "";
+let cachedVideoInterviews = [];
+
+async function loadVideoInterviews(category = "", search = "") {
+  const container = document.getElementById("video-interviews-container");
+  if (!container) return;
+
+  if (category) currentVideoCategory = category;
+  if (typeof search === "string") currentVideoSearchQuery = search;
+
+  container.innerHTML = `
+    <div class="video-loading-state" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
+      <div class="video-spinner" style="width: 38px; height: 38px; border: 3px solid rgba(99,102,241,0.2); border-top-color: var(--bi-primary, #6366f1); border-radius: 50%; margin: 0 auto 14px; animation: spin 0.8s linear infinite;"></div>
+      <p style="color: var(--bi-text-muted, #94a3b8); font-size: 13.5px; margin: 0;">Loading authentic community video interviews...</p>
+    </div>
+  `;
+
+  try {
+    const params = new URLSearchParams();
+    if (currentVideoCategory && currentVideoCategory !== "all") {
+      params.append("category", currentVideoCategory);
+    }
+    if (currentVideoSearchQuery && currentVideoSearchQuery.trim()) {
+      params.append("search", currentVideoSearchQuery.trim());
+    }
+
+    const url = `/api/videos${params.toString() ? "?" + params.toString() : ""}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to load video interviews");
+    const videos = await res.json();
+    cachedVideoInterviews = videos;
+
+    if (!videos || videos.length === 0) {
+      container.innerHTML = `
+        <div class="video-empty-state" style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; background: var(--bi-surface-2, rgba(255,255,255,0.03)); border: 1px dashed var(--bi-border-subtle, rgba(255,255,255,0.12)); border-radius: 18px;">
+          <div style="font-size: 42px; margin-bottom: 12px;">🎬</div>
+          <h4 style="font-size: 17px; font-weight: 700; margin: 0 0 6px; color: var(--bi-text-main, #f8fafc);">No video interviews found</h4>
+          <p style="color: var(--bi-text-muted, #94a3b8); font-size: 13.5px; max-width: 440px; margin: 0 auto 18px;">
+            ${currentVideoSearchQuery ? `No videos matched "${escapeHtml(currentVideoSearchQuery)}". Try another topic or search term.` : 'Be the first to share an inspiring LGBTQ+ video interview, personal story, or workplace journey!'}
+          </p>
+          <button type="button" class="btn btn-primary" onclick="openPostVideoModal()" style="padding: 10px 22px; font-size: 13.5px;">
+            <span>➕</span> <strong>Post Video Interview</strong>
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = videos.map((v) => renderVideoCard(v)).join("");
+  } catch (err) {
+    console.error("Error loading video interviews:", err);
+    container.innerHTML = `
+      <div class="video-error-state" style="grid-column: 1 / -1; text-align: center; padding: 36px 20px;">
+        <p style="color: #f43f5e; font-size: 14px; margin-bottom: 12px;">⚠️ Unable to load video interviews right now.</p>
+        <button type="button" class="btn btn-secondary" onclick="loadVideoInterviews()">Try Again</button>
+      </div>
+    `;
+  }
+}
+
+function renderVideoCard(video) {
+  const embedSrc = escapeHtml(video.embed_url || video.video_url);
+  const title = escapeHtml(video.title);
+  const name = escapeHtml(video.interviewee_name);
+  const tag = escapeHtml(video.identity_tag || "LGBTQ+ Community");
+  const category = escapeHtml(video.category);
+  const quote = video.key_quote ? escapeHtml(video.key_quote) : "";
+  const desc = video.description ? escapeHtml(video.description) : "";
+  const duration = escapeHtml(video.duration || "10 min");
+  const location = video.location ? escapeHtml(video.location) : "";
+  const extUrl = escapeHtml(video.video_url);
+
+  return `
+    <article class="video-interview-card" data-id="${video.id}">
+      <div class="video-player-frame">
+        <iframe
+          src="${embedSrc}"
+          title="${title}"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
+      </div>
+      <div class="video-card-body">
+        <div class="video-card-chips">
+          <span class="video-chip-category">${category}</span>
+          <span class="video-chip-duration">⏱️ ${duration}</span>
+          ${location ? `<span class="video-chip-location">📍 ${location}</span>` : ""}
+        </div>
+        <h4 class="video-card-title">${title}</h4>
+        <div class="video-interviewee-row">
+          <div class="video-interviewee-avatar" title="${name}">👤</div>
+          <div class="video-interviewee-details">
+            <span class="video-interviewee-name">${name}</span>
+            <span class="video-interviewee-tag">${tag}</span>
+          </div>
+        </div>
+        ${quote ? `
+          <blockquote class="video-card-quote">
+            “${quote}”
+          </blockquote>
+        ` : ""}
+        ${desc ? `<p class="video-card-description">${desc}</p>` : ""}
+        <div class="video-card-footer">
+          <span class="video-verified-badge">✓ Verified Voice</span>
+          <a href="${extUrl}" target="_blank" rel="noopener noreferrer" class="video-open-external-btn" title="Open source video">
+            <span>Watch External ↗</span>
+          </a>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function openPostVideoModal() {
+  const modal = document.getElementById("post-video-modal");
+  if (modal) {
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+    const titleInput = document.getElementById("vid-title");
+    if (titleInput) setTimeout(() => titleInput.focus(), 100);
+  }
+}
+
+function closePostVideoModal() {
+  const modal = document.getElementById("post-video-modal");
+  if (modal) {
+    modal.style.display = "none";
+    document.body.style.overflow = "";
+  }
+}
+
+function initVideoInterviews() {
+  // Bind Open Modal Button
+  const openBtn = document.getElementById("open-post-video-modal-btn");
+  if (openBtn) {
+    openBtn.addEventListener("click", openPostVideoModal);
+  }
+
+  // Bind Close Modal Buttons
+  const closeBtn = document.getElementById("close-post-video-modal-btn");
+  if (closeBtn) closeBtn.addEventListener("click", closePostVideoModal);
+  const cancelBtn = document.getElementById("cancel-post-video-btn");
+  if (cancelBtn) cancelBtn.addEventListener("click", closePostVideoModal);
+
+  const modal = document.getElementById("post-video-modal");
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closePostVideoModal();
+    });
+  }
+
+  // Category Filter Pills
+  const catPills = document.querySelectorAll("#video-category-filters .video-cat-pill");
+  catPills.forEach((pill) => {
+    pill.addEventListener("click", () => {
+      catPills.forEach((p) => p.classList.remove("active"));
+      pill.classList.add("active");
+      const cat = pill.getAttribute("data-cat");
+      currentVideoCategory = cat;
+      loadVideoInterviews(cat, currentVideoSearchQuery);
+    });
+  });
+
+  // Search Input with Debounce
+  const searchInput = document.getElementById("video-search-input");
+  if (searchInput) {
+    let debounceTimer;
+    searchInput.addEventListener("input", (e) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        currentVideoSearchQuery = e.target.value.trim();
+        loadVideoInterviews(currentVideoCategory, currentVideoSearchQuery);
+      }, 300);
+    });
+  }
+
+  // Submit Video Interview Form
+  const form = document.getElementById("post-video-form");
+  if (form) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById("submit-post-video-btn");
+      const originalText = submitBtn ? submitBtn.innerHTML : "";
+
+      const title = document.getElementById("vid-title")?.value?.trim() || "";
+      const interviewee_name = document.getElementById("vid-name")?.value?.trim() || "";
+      const identity_tag = document.getElementById("vid-identity")?.value?.trim() || "LGBTQ+ Community";
+      const category = document.getElementById("vid-category")?.value || "Personal Story";
+      const video_url = document.getElementById("vid-url")?.value?.trim() || "";
+      const key_quote = document.getElementById("vid-quote")?.value?.trim() || "";
+      const location = document.getElementById("vid-location")?.value?.trim() || "India";
+      const duration = document.getElementById("vid-duration")?.value?.trim() || "10 mins";
+      const description = document.getElementById("vid-description")?.value?.trim() || "";
+
+      if (!title || !interviewee_name || !video_url) {
+        showToast("Please fill in all required fields (Title, Interviewee Name, Video URL)", "error");
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span>⏳</span> Publishing...`;
+      }
+
+      try {
+        const headers = { "Content-Type": "application/json" };
+        if (currentAuthToken) {
+          headers["Authorization"] = `Bearer ${currentAuthToken}`;
+        }
+
+        const res = await fetch("/api/videos", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            title,
+            interviewee_name,
+            identity_tag,
+            category,
+            video_url,
+            key_quote,
+            location,
+            duration,
+            description,
+          }),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.detail || "Failed to post video interview");
+        }
+
+        const createdVideo = await res.json();
+        showToast(`🎉 Video interview published: "${createdVideo.title}"!`, "success");
+        form.reset();
+        closePostVideoModal();
+
+        // Switch to all category and refresh feed
+        currentVideoCategory = "all";
+        catPills.forEach((p) => {
+          if (p.getAttribute("data-cat") === "all") p.classList.add("active");
+          else p.classList.remove("active");
+        });
+        loadVideoInterviews("all", "");
+      } catch (err) {
+        console.error("Error posting video:", err);
+        showToast(err.message || "Failed to post video interview. Please check the URL.", "error");
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
+        }
+      }
+    });
+  }
+
+  // Preload interviews so they are ready when navigated to
+  loadVideoInterviews();
+}
+
+window.openPostVideoModal = openPostVideoModal;
+window.closePostVideoModal = closePostVideoModal;
+window.loadVideoInterviews = loadVideoInterviews;

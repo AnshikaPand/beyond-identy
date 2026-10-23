@@ -2212,3 +2212,293 @@ body.user-logged-in #landing-hero-section {
   }
 }
 
+/* ==========================================================================
+   11. LGBTQ+ Video Interviews & Community Voices Column
+   ========================================================================== */
+.video-interviews-header {
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+  margin-bottom: 22px !important;
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid var(--bi-border-subtle) !important;
+}
+
+.video-header-info {
+  flex: 1 1 320px !important;
+}
+
+.video-header-title {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  margin: 6px 0 !important;
+  color: var(--bi-text-main) !important;
+  letter-spacing: -0.02em !important;
+}
+
+.video-header-sub {
+  color: var(--bi-text-muted) !important;
+  font-size: 13.5px !important;
+  line-height: 1.5 !important;
+  margin: 0 !important;
+  max-width: 720px !important;
+}
+
+.video-header-actions {
+  display: flex !important;
+  gap: 10px !important;
+  align-items: center !important;
+}
+
+.video-filter-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  flex-wrap: wrap !important;
+  margin-bottom: 24px !important;
+}
+
+.video-category-pills {
+  display: flex !important;
+  gap: 6px !important;
+  overflow-x: auto !important;
+  padding-bottom: 4px !important;
+  scrollbar-width: none !important;
+}
+
+.video-category-pills::-webkit-scrollbar {
+  display: none !important;
+}
+
+.video-cat-pill {
+  padding: 6px 14px !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-full) !important;
+  background: var(--bi-surface-2) !important;
+  border: 1px solid var(--bi-border-subtle) !important;
+  color: var(--bi-text-muted) !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: all 0.18s ease !important;
+}
+
+.video-cat-pill:hover {
+  background: var(--bi-primary-light) !important;
+  border-color: var(--bi-primary) !important;
+  color: var(--bi-primary) !important;
+  transform: translateY(-1px) !important;
+}
+
+.video-cat-pill.active {
+  background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.35) !important;
+}
+
+.video-search-wrap {
+  position: relative !important;
+  min-width: 260px !important;
+  flex: 0 1 320px !important;
+}
+
+.video-search-wrap input {
+  width: 100% !important;
+  padding: 8px 14px 8px 34px !important;
+  border-radius: var(--radius-full) !important;
+  background: var(--bi-surface-card) !important;
+  border: 1px solid var(--bi-border-subtle) !important;
+  color: var(--bi-text-main) !important;
+  font-size: 13px !important;
+  outline: none !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.video-search-wrap input:focus {
+  border-color: var(--bi-primary) !important;
+  box-shadow: 0 0 0 3px var(--bi-primary-subtle) !important;
+}
+
+.video-search-icon {
+  position: absolute !important;
+  left: 11px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  font-size: 13px !important;
+  opacity: 0.65 !important;
+  pointer-events: none !important;
+}
+
+/* Video Column Grid */
+.video-interviews-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+  gap: 22px !important;
+}
+
+.video-interview-card {
+  background: var(--bi-surface-card) !important;
+  border: 1px solid rgba(99, 102, 241, 0.18) !important;
+  border-radius: var(--radius-xl) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05) !important;
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.video-interview-card:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(99, 102, 241, 0.42) !important;
+  box-shadow: 0 16px 36px -10px rgba(99, 102, 241, 0.22) !important;
+}
+
+.video-player-frame {
+  position: relative !important;
+  width: 100% !important;
+  padding-top: 56.25% !important; /* 16:9 Aspect Ratio */
+  background: #000000 !important;
+  overflow: hidden !important;
+}
+
+.video-player-frame iframe {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+}
+
+.video-card-body {
+  padding: 16px 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  flex: 1 !important;
+}
+
+.video-card-chips {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-wrap: wrap !important;
+}
+
+.video-chip-category {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: var(--bi-primary) !important;
+  background: var(--bi-primary-light) !important;
+  padding: 3px 9px !important;
+  border-radius: var(--radius-full) !important;
+}
+
+.video-chip-duration,
+.video-chip-location {
+  font-size: 11px !important;
+  color: var(--bi-text-muted) !important;
+  background: var(--bi-surface-2) !important;
+  padding: 3px 8px !important;
+  border-radius: var(--radius-full) !important;
+}
+
+.video-card-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--bi-text-main) !important;
+  margin: 0 !important;
+  line-height: 1.35 !important;
+}
+
+.video-interviewee-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 6px 0 !important;
+}
+
+.video-interviewee-avatar {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #5bcefa, #f5a9b8, #6366f1) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 15px !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.25) !important;
+}
+
+.video-interviewee-details {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1px !important;
+  min-width: 0 !important;
+}
+
+.video-interviewee-name {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: var(--bi-text-main) !important;
+}
+
+.video-interviewee-tag {
+  font-size: 11px !important;
+  color: var(--bi-text-muted) !important;
+}
+
+.video-card-quote {
+  font-size: 12px !important;
+  font-style: italic !important;
+  color: var(--bi-text-main) !important;
+  background: rgba(99, 102, 241, 0.07) !important;
+  border-left: 3px solid var(--bi-primary) !important;
+  padding: 8px 12px !important;
+  border-radius: 0 8px 8px 0 !important;
+  margin: 2px 0 !important;
+  line-height: 1.45 !important;
+}
+
+.video-card-description {
+  font-size: 12px !important;
+  color: var(--bi-text-muted) !important;
+  line-height: 1.45 !important;
+  margin: 0 !important;
+}
+
+.video-card-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  margin-top: auto !important;
+  padding-top: 10px !important;
+  border-top: 1px solid var(--bi-border-subtle) !important;
+}
+
+.video-verified-badge {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: var(--bi-emerald) !important;
+}
+
+.video-open-external-btn {
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  color: var(--bi-primary) !important;
+  text-decoration: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.video-open-external-btn:hover {
+  text-decoration: underline !important;
+  transform: translateX(2px) !important;
+}
+

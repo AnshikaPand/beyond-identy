@@ -47,10 +47,22 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
+    hashed_password = Column(String, nullable=True)  # Nullable for Google OAuth users
+    google_id = Column(String, unique=True, index=True, nullable=True)  # Unique Google sub ID
+    auth_provider = Column(String, default="local", nullable=False)  # "local" or "google"
     role = Column(Enum(UserRole), default=UserRole.user, nullable=False)
+    is_verified = Column(Boolean, default=False, nullable=False)  # Email verification status
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    @property
+    def password_hash(self):
+        """Synonym for hashed_password for codebase compatibility."""
+        return self.hashed_password
+
+    @password_hash.setter
+    def password_hash(self, value):
+        self.hashed_password = value
 
     listings_submitted = relationship(
         "Listing", back_populates="submitted_by", foreign_keys="Listing.submitted_by_id"
@@ -141,8 +153,42 @@ class IncidentReport(Base):
     matched_schemes_json = Column(Text, nullable=True)
     matched_ngos_json = Column(Text, nullable=True)
 
+    # Public Community Case Board controls
+    public_visible = Column(Boolean, default=True, nullable=False)
+    reporter_consent_public = Column(Boolean, default=False, nullable=False)
+    public_summary = Column(Text, nullable=True)
+    entity_type = Column(String, nullable=True)  # Generic type e.g. "Private company", "Government hospital"
+
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     reporter = relationship("User", foreign_keys=[user_id], back_populates="incident_reports")
 
+
+class VideoInterview(Base):
+    """
+    Video Interview & Community Story:
+    Enables community members and advocates to post and watch video interviews
+    of LGBT individuals across India (workplace, healthcare, legal rights, personal journey).
+    """
+    __tablename__ = "video_interviews"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    interviewee_name = Column(String, nullable=False)
+    identity_tag = Column(String, nullable=True)  # e.g., "Trans Woman (she/her)", "Non-Binary Leader"
+    category = Column(String, default="story", nullable=False)  # "workplace", "rights", "healthcare", "housing", "story"
+    video_url = Column(String, nullable=False)
+    embed_url = Column(String, nullable=True)
+    thumbnail_url = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
+    key_quote = Column(String, nullable=True)
+    duration = Column(String, nullable=True)
+    location = Column(String, nullable=True)
+    submitted_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    is_verified = Column(Boolean, default=True, nullable=False)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    submitted_by = relationship("User", foreign_keys=[submitted_by_id])

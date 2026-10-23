@@ -92,6 +92,10 @@
             <svg class="dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div class="nav-dropdown-menu" id="nav-more-menu" role="menu">
+            <a href="#tab-videos" class="dropdown-item" role="menuitem" id="nav-link-videos">
+              <span class="dropdown-item-icon">🎥</span>
+              <span>Video Interviews</span>
+            </a>
             <a href="#tab-listings" class="dropdown-item" role="menuitem" id="nav-link-opportunities">
               <span class="dropdown-item-icon">💼</span>
               <span>Opportunity</span>
@@ -154,6 +158,7 @@
         <a href="/cases" class="nav-mobile-link" id="nav-mobile-caseboard-link">📋 Community Case Board</a>
         <a href="/login" class="nav-mobile-link guest-only-nav" style="font-weight: 700; color: #14B8A6;">🔐 Sign In</a>
         <a href="#tab-chat" class="nav-mobile-link nav-chat-mobile-link auth-only-nav" id="nav-mobile-chat-link">🤖 Chatbot (Voice)</a>
+        <a href="#tab-videos" class="nav-mobile-link auth-only-nav" id="nav-mobile-videos-link">🎥 Video Interviews</a>
         <a href="#tab-listings" class="nav-mobile-link auth-only-nav" id="nav-mobile-listings-link">💼 Opportunity</a>
         <a href="#tab-awareness" class="nav-mobile-link auth-only-nav" id="nav-mobile-awareness-link">⚖️ Rights</a>
         <a href="#tab-health" class="nav-mobile-link auth-only-nav" id="nav-mobile-health-link">🩺 Health Assistant</a>
@@ -248,6 +253,9 @@
       <nav class="tabs-nav" id="authenticated-tabs-nav" aria-label="Portal Modules" style="display: none;">
         <button class="tab-btn active" data-tab="tab-chat" id="tab-btn-chat">
           <span>🤖</span> Voice Assistant
+        </button>
+        <button class="tab-btn" data-tab="tab-videos" id="tab-btn-videos">
+          <span>🎥</span> Video Interviews
         </button>
         <button class="tab-btn" data-tab="tab-listings">
           <span>💼</span> Opportunities
@@ -393,6 +401,49 @@
             <div class="tab-chat-footer-disclaimer">
               <span>🔒 <strong>Confidential &amp; Encrypted:</strong> Transgender Persons Act 2019 data protection • 24/7 Helpline: <a href="tel:868989330" style="color: inherit; text-decoration: underline;">868989330</a></span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: LGBTQ+ Video Interviews & Community Voices -->
+      <section class="tab-panel" id="tab-videos">
+        <!-- Header Banner & Action -->
+        <div class="video-interviews-header">
+          <div class="video-header-info">
+            <span class="decision-badge">🎬 LGBTQ+ Voices &amp; Visual Archive</span>
+            <h3 class="video-header-title">LGBTQ+ Video Interviews &amp; Personal Journeys</h3>
+            <p class="video-header-sub">
+              Watch authentic video interviews of transgender pioneers, non-binary leaders, legal advocates, and community champions across India. Share your story or interview to inspire and empower the community.
+            </p>
+          </div>
+          <div class="video-header-actions">
+            <button type="button" class="btn btn-primary" id="open-post-video-modal-btn">
+              <span>➕</span> <strong>Post Video Interview</strong>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Controls Bar -->
+        <div class="video-filter-bar">
+          <div class="video-category-pills" id="video-category-filters">
+            <button type="button" class="video-cat-pill active" data-cat="all">🌈 All Voices</button>
+            <button type="button" class="video-cat-pill" data-cat="Workplace">💼 Workplace Equality</button>
+            <button type="button" class="video-cat-pill" data-cat="Healthcare">🩺 Healthcare &amp; Transition</button>
+            <button type="button" class="video-cat-pill" data-cat="Garima Greh">🏠 Garima Greh &amp; Housing</button>
+            <button type="button" class="video-cat-pill" data-cat="Legal">⚖️ Legal Rights &amp; TG ID</button>
+            <button type="button" class="video-cat-pill" data-cat="Story">✨ Personal Stories</button>
+          </div>
+          <div class="video-search-wrap">
+            <input type="text" id="video-search-input" placeholder="Search by name, title, quote, city..." />
+            <span class="video-search-icon">🔍</span>
+          </div>
+        </div>
+
+        <!-- Video Interviews Feed / Column -->
+        <div class="video-interviews-grid" id="video-interviews-container">
+          <div class="video-loading-state">
+            <div class="video-spinner"></div>
+            <p>Loading community video interviews...</p>
           </div>
         </div>
       </section>
@@ -805,6 +856,91 @@
     </div>
   </div>
 
+  <!-- Modal: Post Video Interview -->
+  <div class="modal-overlay" id="post-video-modal" style="display: none;">
+    <div class="modal-content video-post-modal-content" style="max-width: 680px; width: 100%; border-radius: 20px; overflow: hidden; padding: 0;">
+      <!-- Pride Ribbon Accent -->
+      <div class="tab-chat-rainbow-ribbon" aria-hidden="true"></div>
+
+      <!-- Modal Header -->
+      <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: var(--bg-tertiary);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #f43f5e, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 22px;">🎬</div>
+          <div>
+            <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: var(--text-primary);">Post an LGBTQ+ Video Interview</h3>
+            <span style="font-size: 12px; color: var(--text-muted);">Share authentic community voices, workplace journeys &amp; legal battles</span>
+          </div>
+        </div>
+        <button type="button" class="close-modal" id="close-post-video-modal-btn" style="position: static; font-size: 20px; color: var(--text-muted); cursor: pointer; background: transparent; border: none;" aria-label="Close Modal">✕</button>
+      </div>
+
+      <!-- Form Body -->
+      <form id="post-video-form" style="padding: 22px 24px;">
+        <div class="form-row" style="display: flex; gap: 14px; margin-bottom: 14px;">
+          <div class="form-group" style="flex: 1; margin-bottom: 0;">
+            <label for="vid-title" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Interview Title *</label>
+            <input type="text" id="vid-title" required placeholder="e.g., Transition Journey & Overcoming Workplace Bias" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 13.5px;" />
+          </div>
+          <div class="form-group" style="flex: 1; margin-bottom: 0;">
+            <label for="vid-name" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Interviewee Name *</label>
+            <input type="text" id="vid-name" required placeholder="e.g., Ananya Sharma" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 13.5px;" />
+          </div>
+        </div>
+
+        <div class="form-row" style="display: flex; gap: 14px; margin-bottom: 14px;">
+          <div class="form-group" style="flex: 1; margin-bottom: 0;">
+            <label for="vid-identity" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Identity Tag / Pronouns</label>
+            <input type="text" id="vid-identity" placeholder="e.g., Trans Woman (she/her), Non-Binary Leader" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 13.5px;" />
+          </div>
+          <div class="form-group" style="flex: 1; margin-bottom: 0;">
+            <label for="vid-category" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Topic Category</label>
+            <select id="vid-category" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 13.5px;">
+              <option value="Personal Story">Personal Story &amp; Journey</option>
+              <option value="Workplace Equality">Workplace Equality &amp; Careers</option>
+              <option value="Healthcare & Transition">Healthcare, HRT &amp; WPATH</option>
+              <option value="Housing & Garima Greh">Garima Greh &amp; Safe Housing</option>
+              <option value="Legal Rights & TG ID">Legal Rights, NALSA &amp; TG Act</option>
+              <option value="Sports & Culture">Sports, Arts &amp; Culture</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="vid-url" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Video URL (YouTube, Vimeo, or Video Link) *</label>
+          <input type="url" id="vid-url" required placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..." style="width: 100%; padding: 10px 14px; border-radius: 8px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 13.5px;" />
+          <small style="display: block; font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Paste any standard YouTube link, Shorts, or Vimeo URL. Player and thumbnail will be automatically created.</small>
+        </div>
+
+        <div class="form-row" style="display: flex; gap: 14px; margin-bottom: 14px;">
+          <div class="form-group" style="flex: 1.5; margin-bottom: 0;">
+            <label for="vid-quote" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Inspiring Pull Quote</label>
+            <input type="text" id="vid-quote" placeholder="e.g., Living authentically is our greatest power." style="width: 100%; padding: 10px 14px; border-radius: 8px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 13.5px;" />
+          </div>
+          <div class="form-group" style="flex: 1; margin-bottom: 0;">
+            <label for="vid-location" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Location / City</label>
+            <input type="text" id="vid-location" placeholder="e.g., Bengaluru, Karnataka" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 13.5px;" />
+          </div>
+          <div class="form-group" style="width: 110px; margin-bottom: 0;">
+            <label for="vid-duration" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Duration</label>
+            <input type="text" id="vid-duration" placeholder="e.g., 15 mins" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 13.5px;" />
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 18px;">
+          <label for="vid-description" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Interview Summary / Key Highlights</label>
+          <textarea id="vid-description" rows="3" placeholder="Briefly describe what this interview covers, key milestones, and practical advice shared..." style="width: 100%; padding: 10px 14px; border-radius: 8px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 13.5px; resize: vertical;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--border-subtle); padding-top: 16px;">
+          <button type="button" class="btn btn-secondary" id="cancel-post-video-btn" style="padding: 9px 18px; font-size: 13px;">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submit-post-video-btn" style="padding: 9px 22px; font-size: 13px;">
+            <span>🚀</span> <strong>Publish Video Interview</strong>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- ========================================================================= -->
   <!-- FLOATING 24/7 CHATBOX WIDGET -->
   <!-- ========================================================================= -->
@@ -946,10 +1082,12 @@
         }
       }
 
+      bindAuthNavLink("#nav-link-videos", "tab-videos");
       bindAuthNavLink("#nav-link-opportunities", "tab-listings");
       bindAuthNavLink("#nav-link-legal", "tab-awareness");
       bindAuthNavLink("#nav-link-health", "tab-health");
       bindAuthNavLink("#nav-link-report", "tab-report");
+      bindAuthNavLink("#nav-mobile-videos-link", "tab-videos");
       bindAuthNavLink("#nav-mobile-listings-link", "tab-listings");
       bindAuthNavLink("#nav-mobile-awareness-link", "tab-awareness");
       bindAuthNavLink("#nav-mobile-health-link", "tab-health");
