@@ -703,8 +703,7 @@ function renderUserStatus() {
             <span class="user-role-badge ${roleClass}">${roleUpper}</span>
           </div>
         </div>
-        <button type="button" class="btn btn-primary" id="nav-direct-chat-btn" style="padding: 6px 12px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px;"><span>🤖</span> Chat</button>
-        <button class="btn btn-outline-danger" id="logout-btn" style="padding: 6px 12px; font-size: 12.5px;">Sign Out</button>
+        <button class="btn btn-outline-danger" id="logout-btn" style="padding: 6px 14px; font-size: 12.5px; border-radius: 8px;">Sign Out</button>
       `;
 
       const directChatBtn = document.getElementById("nav-direct-chat-btn");

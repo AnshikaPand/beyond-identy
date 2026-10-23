@@ -244,13 +244,13 @@
         </button>
       </div>
 
-      <!-- Main Tabs: Clean Single Segmented Pill Bar -->
+      <!-- Main Tabs: Clean Compact Segmented Pill Bar -->
       <nav class="tabs-nav" id="authenticated-tabs-nav" aria-label="Portal Modules" style="display: none;">
         <button class="tab-btn active" data-tab="tab-chat" id="tab-btn-chat">
-          <span>🤖</span> 24/7 Voice Assistant
+          <span>🤖</span> Voice Assistant
         </button>
         <button class="tab-btn" data-tab="tab-listings">
-          <span>💼</span> Opportunities Directory
+          <span>💼</span> Opportunities
         </button>
         <button class="tab-btn" data-tab="tab-report">
           <span>🚨</span> Report Incident
@@ -262,67 +262,49 @@
           <span>🩺</span> Health Assistant
         </button>
         <button class="tab-btn" id="tab-btn-cases" data-tab="tab-cases">
-          <span>📋</span> Case Triage Desk
+          <span>📋</span> Case Triage
         </button>
       </nav>
 
-      <!-- TAB: Chat Assistant (Embedded Full-Width Chat Box - Primary Tab) -->
+      <!-- TAB: Chat Assistant (Clean, Modern, Uncluttered Chat Interface) -->
       <section class="tab-panel active" id="tab-chat">
         <div class="tab-chat-container" id="tab-chat-main-container">
-          <!-- Top Rainbow Pride Ribbon -->
+          <!-- Sleek Top Pride Ribbon -->
           <div class="tab-chat-rainbow-ribbon" aria-hidden="true"></div>
 
-          <!-- Ambient Decorative Glowing Rainbow Orbs -->
-          <div class="tab-chat-ambient-aura" aria-hidden="true">
-            <span class="chat-orb orb-rainbow-1"></span>
-            <span class="chat-orb orb-rainbow-2"></span>
-            <span class="chat-orb orb-rainbow-3"></span>
-            <span class="chat-orb orb-rainbow-4"></span>
-          </div>
-
-          <!-- Ethereal Light Background Watermark Inside Chatbot -->
-          <div class="tab-chat-bg-watermark" aria-hidden="true">
-            <img src="/static/assets/chatbot-watermark.jpg" alt="Beyond Identity Sacred Light Watermark" class="tab-chat-watermark-img" />
-          </div>
-
-          <!-- Chat Header (Creative Holographic Avatar, Spark Title, Voice & Full Page actions) -->
+          <!-- Chat Header: Sleek, Single-Row, Zero-Overlap -->
           <div class="tab-chat-header">
             <div class="tab-chat-header-main">
               <div class="tab-chat-avatar-glow" id="tab-chat-avatar-box">
-                <span class="tab-chat-avatar-holo-ring"></span>
                 <span class="tab-chat-avatar-icon">🤖</span>
-                <span class="tab-chat-status-pulse" id="tab-chat-status-dot" title="Assistant Online &amp; Ready"></span>
+                <span class="tab-chat-status-pulse" id="tab-chat-status-dot" title="Assistant Online"></span>
               </div>
               <div class="tab-chat-header-text">
                 <div class="tab-chat-title-row">
-                  <h3 class="tab-chat-title"><strong class="brand-bold">Beyond Identity</strong> 24/7 Assistant</h3>
-                  <span class="tab-chat-rainbow-pill">🌈 Rainbow Sanctuary</span>
-                  <span class="tab-chat-companion-pill">✨ AI Companion</span>
+                  <h3 class="tab-chat-title">Beyond Identity Assistant</h3>
                   <span class="tab-chat-live-badge" id="tab-chat-live-badge">🟢 Online</span>
                   <div class="tab-chat-speaking-badge" id="tab-chat-speaking-badge" style="display: none;">
                     <div class="voice-waves animating">
                       <span class="voice-wave-bar"></span>
                       <span class="voice-wave-bar"></span>
                       <span class="voice-wave-bar"></span>
-                      <span class="voice-wave-bar"></span>
-                      <span class="voice-wave-bar"></span>
                     </div>
-                    <span>Speaking Aloud...</span>
+                    <span>Speaking...</span>
                     <button type="button" class="tab-chat-stop-speech-btn" id="tab-chat-badge-stop-btn" title="Stop Voice Speech">⏹️ Stop</button>
                   </div>
                 </div>
-                <p class="tab-chat-subtitle">Verified guidance on Indian statutory rights, inclusive jobs, safe housing &amp; clinical health triage.</p>
+                <p class="tab-chat-subtitle">Verified guidance on Indian statutory rights, inclusive jobs, safe housing &amp; healthcare triage.</p>
               </div>
             </div>
             <div class="tab-chat-header-controls">
+              <button type="button" class="tab-chat-control-btn active tab-chat-audio-btn" id="tab-chat-voice-toggle" title="Turn Audio Voice Output ON / OFF">
+                <span id="tab-chat-voice-icon">🔊</span> <span class="tab-chat-btn-text" id="tab-chat-voice-label">Voice: ON</span>
+              </button>
+              <button type="button" class="tab-chat-control-btn tab-chat-stop-btn" id="tab-chat-stop-speaking-btn" title="Stop Audio Speech" style="display: none;">
+                <span>⏹️</span> <span class="tab-chat-btn-text">Stop</span>
+              </button>
               <button type="button" class="tab-chat-control-btn" id="tab-chat-fullscreen-btn" title="Toggle Full Page Chatbot View">
                 <span>⛶</span> <span class="tab-chat-btn-text" id="tab-chat-fullscreen-label">Full Page</span>
-              </button>
-              <button type="button" class="tab-chat-control-btn active tab-chat-audio-btn" id="tab-chat-voice-toggle" title="Turn Audio Voice Output ON / OFF">
-                <span id="tab-chat-voice-icon">🔊</span> <span class="tab-chat-btn-text" id="tab-chat-voice-label">Audio: ON</span>
-              </button>
-              <button type="button" class="tab-chat-control-btn tab-chat-stop-btn" id="tab-chat-stop-speaking-btn" title="Stop Audio Speech Immediately">
-                <span>⏹️</span> <span class="tab-chat-btn-text">Stop Audio</span>
               </button>
               <button type="button" class="tab-chat-control-btn" id="tab-chat-clear-btn" title="Clear Conversation Thread">
                 <span>🗑️</span> <span class="tab-chat-btn-text">Clear</span>
@@ -330,65 +312,35 @@
             </div>
           </div>
 
-          <!-- Topic Filter Bar (Clean Primary Categories) -->
-          <div class="tab-chat-categories" id="tab-chat-category-bar">
-            <button type="button" class="tab-chat-cat-btn active" data-cat="">✨ All Topics</button>
-            <button type="button" class="tab-chat-cat-btn" data-cat="legal">⚖️ Rights &amp; ID</button>
-            <button type="button" class="tab-chat-cat-btn" data-cat="housing">🏠 Housing &amp; Jobs</button>
-            <button type="button" class="tab-chat-cat-btn" data-cat="healthcare">🩺 Health &amp; Schemes</button>
-          </div>
+          <!-- Hidden compatibility anchor for categoryBar in JS -->
+          <div id="tab-chat-category-bar" style="display: none;"></div>
 
-          <!-- Suggested Starter Cards (Creative Spark Launchpad Cards) -->
+          <!-- Single Sleek Starter Prompt Chips Strip -->
           <div class="tab-chat-quick-prompts-container" id="tab-chat-quick-prompts-container">
-            <div class="tab-chat-starter-grid" id="tab-chat-starter-prompts">
-              <button type="button" class="tab-chat-starter-chip" data-prompt="Hello">
-                <span class="chip-kicker">⚡ Quick Start</span>
-                <div class="chip-main-row">
-                  <span class="chip-icon">👋</span>
-                  <div class="chip-content">
-                    <span class="chip-title">Hello / Welcome</span>
-                    <span class="chip-sub">Learn what Beyond Identity offers</span>
-                  </div>
-                  <span class="chip-arrow">→</span>
-                </div>
-              </button>
+            <span class="tab-chat-prompts-label">⚡ Quick Prompts:</span>
+            <div class="tab-chat-prompts-scroll" id="tab-chat-starter-prompts">
               <button type="button" class="tab-chat-starter-chip" data-prompt="What rights do transgender persons have in India?">
-                <span class="chip-kicker">⚖️ Statutory Law</span>
-                <div class="chip-main-row">
-                  <span class="chip-icon">⚖️</span>
-                  <div class="chip-content">
-                    <span class="chip-title">Legal Rights &amp; TG ID Card</span>
-                    <span class="chip-sub">TG Act 2019 &amp; National Portal</span>
-                  </div>
-                  <span class="chip-arrow">→</span>
-                </div>
+                <span>⚖️ TG Act 2019 Rights</span>
               </button>
-              <button type="button" class="tab-chat-starter-chip" data-prompt="Is there shelter or housing support?">
-                <span class="chip-kicker">🏠 Safe Transit</span>
-                <div class="chip-main-row">
-                  <span class="chip-icon">🏠</span>
-                  <div class="chip-content">
-                    <span class="chip-title">Garima Greh Shelters &amp; Housing</span>
-                    <span class="chip-sub">Safe transit housing &amp; nutrition</span>
-                  </div>
-                  <span class="chip-arrow">→</span>
-                </div>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="How do I apply for a Transgender Certificate of Identity in India?">
+                <span>🪪 TG Certificate Portal</span>
               </button>
-              <button type="button" class="tab-chat-starter-chip" data-prompt="Is there health insurance for transgender persons?">
-                <span class="chip-kicker">🩺 Health &amp; HRT</span>
-                <div class="chip-main-row">
-                  <span class="chip-icon">🩺</span>
-                  <div class="chip-content">
-                    <span class="chip-title">Ayushman Bharat &amp; HRT</span>
-                    <span class="chip-sub">₹5L health coverage &amp; hormone care</span>
-                  </div>
-                  <span class="chip-arrow">→</span>
-                </div>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="Where are Garima Greh shelter homes located and what support do they provide?">
+                <span>🏠 Garima Greh Shelters</span>
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="Is gender-affirming surgery or HRT covered under Ayushman Bharat PM-JAY?">
+                <span>🩺 Ayushman Bharat ₹5L</span>
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="Where can I find trans-inclusive jobs and opportunities?">
+                <span>💼 Verified Inclusive Jobs</span>
+              </button>
+              <button type="button" class="tab-chat-starter-chip" data-prompt="What is the 24/7 crisis helpline number for transgender persons?">
+                <span>🚨 24/7 Crisis Helpline (868989330)</span>
               </button>
             </div>
           </div>
 
-          <!-- Messages Thread Container -->
+          <!-- Messages Thread Container: Spacious, Smooth Scrolling -->
           <div class="tab-chat-messages-area" id="tab-chat-messages-container">
             <div class="tab-chat-row assistant">
               <div class="tab-chat-msg-avatar">🤖</div>
@@ -398,44 +350,30 @@
                     <span>🤖</span> <strong>Beyond Identity Intel</strong> <span class="tag-verified">✓ Verified Law &amp; Healthcare</span>
                   </div>
 
-                  <!-- Welcoming Light Art Card Inside Chatbot Bubble -->
-                  <div class="tab-chat-art-welcome-card">
-                    <div class="tab-chat-art-thumb-wrap">
-                      <img src="/static/assets/chatbot-watermark.jpg" alt="Beyond Identity Sacred Light" class="tab-chat-art-thumb" />
-                    </div>
-                    <div class="tab-chat-art-details">
-                      <span class="tab-chat-art-badge">🌈 Safe, Verified &amp; Welcoming</span>
-                      <h4 class="tab-chat-art-title">Welcome to Beyond Identity 24/7 Sanctuary</h4>
-                      <p class="tab-chat-art-text">Your safe, affirming portal for statutory Indian transgender rights, Garima Greh housing shelters, verified inclusive jobs, and PM-JAY Ayushman Bharat healthcare.</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 style="margin: 4px 0 8px; color: var(--bi-primary); font-size: 15px;" id="tab-chat-initial-heading">🙏 Namaste &amp; Welcome to Beyond Identity!</h4>
-                    <p style="margin: 6px 0; font-size: 13.5px; line-height: 1.55;">
-                      I am your 24/7 Rights and Empowerment Assistant. Ask me anything about Indian transgender laws, verified inclusive jobs, safe housing, healthcare, or government schemes.
+                  <div class="tab-chat-clean-greeting">
+                    <h4 style="margin: 2px 0 8px; color: var(--bi-primary, #818cf8); font-size: 15.5px;" id="tab-chat-initial-heading">🙏 Namaste &amp; Welcome to Beyond Identity!</h4>
+                    <p style="margin: 0 0 8px; font-size: 13.5px; line-height: 1.55;">
+                      I am your 24/7 confidential Rights and Clinical Assistant. Ask me anything about Indian transgender protections (TG Act 2019 / NALSA 2014), Garima Greh shelters, PM-JAY Ayushman Bharat healthcare coverage, or inclusive jobs.
                     </p>
-                    <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.45; color: var(--bi-text-muted);">What would you like to know today?</p>
+                    <p style="margin: 0; font-size: 12.5px; color: var(--bi-text-muted, #94a3b8);">
+                      Type a question below or click any quick prompt above to get started.
+                    </p>
                   </div>
                 </div>
                 <div class="tab-chat-actions-row">
                   <button type="button" class="tab-chat-action-btn tab-chat-static-listen-btn" title="Play greeting message aloud"><span>🔊</span> Play Audio</button>
-                  <button type="button" class="tab-chat-action-btn tab-chat-static-stop-btn tab-chat-stop-btn" title="Stop voice speech"><span>⏹️</span> Stop Audio</button>
+                  <button type="button" class="tab-chat-action-btn tab-chat-static-stop-btn tab-chat-stop-btn" title="Stop voice speech" style="display: none;"><span>⏹️</span> Stop Audio</button>
                   <button type="button" class="tab-chat-action-btn tab-chat-static-copy-btn"><span>📋</span> Copy</button>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Chat Input Bar & Quick Prompt Pills -->
+          <!-- Hidden compatibility anchor for quickQueryPills in JS -->
+          <div id="tab-chat-quick-query-pills" style="display: none;"></div>
+
+          <!-- Chat Input Bar -->
           <div class="tab-chat-input-container">
-            <div class="tab-chat-quick-query-pills" id="tab-chat-quick-query-pills">
-              <button type="button" class="tab-chat-quick-query-pill" data-prompt="How do I apply for a Transgender Certificate of Identity in India?">🪪 TG Certificate Portal</button>
-              <button type="button" class="tab-chat-quick-query-pill" data-prompt="Is gender-affirming surgery or HRT covered under Ayushman Bharat PM-JAY?">🩺 Ayushman PM-JAY ₹5L</button>
-              <button type="button" class="tab-chat-quick-query-pill" data-prompt="Where are Garima Greh shelter homes located and what support do they provide?">🏠 Garima Shelters</button>
-              <button type="button" class="tab-chat-quick-query-pill" data-prompt="What legal protections exist under the Transgender Persons Act 2019?">⚖️ TG Act 2019 Rights</button>
-              <button type="button" class="tab-chat-quick-query-pill" data-prompt="What is the 24/7 crisis helpline number for transgender persons?">🚨 24/7 Helpline (868989330)</button>
-            </div>
             <div class="tab-chat-input-bar">
               <button type="button" class="tab-chat-mic-button" id="tab-chat-mic-btn" title="Speak question into microphone (Speech-to-Text)">
                 🎙️
@@ -453,7 +391,7 @@
               </button>
             </div>
             <div class="tab-chat-footer-disclaimer">
-              <span>🔒 <strong>Confidential &amp; Encrypted:</strong> Transgender Persons Act 2019 data protection • Direct crisis support is available 24/7 in the top bar.</span>
+              <span>🔒 <strong>Confidential &amp; Encrypted:</strong> Transgender Persons Act 2019 data protection • 24/7 Helpline: <a href="tel:868989330" style="color: inherit; text-decoration: underline;">868989330</a></span>
             </div>
           </div>
         </div>
