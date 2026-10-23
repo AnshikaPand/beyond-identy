@@ -597,7 +597,54 @@ body.user-logged-in .guest-only-nav {
 .listing-card:hover {
   transform: translateY(-2px) !important;
   border-color: var(--bi-primary) !important;
-  box-shadow: var(--bi-shadow-lg) !important;
+.card-contacts-wrap {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.contact-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+  font-size: 11.5px !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.phone-pill {
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+.phone-pill:hover {
+  background: rgba(16, 185, 129, 0.22) !important;
+  color: #a7f3d0 !important;
+  border-color: rgba(16, 185, 129, 0.5) !important;
+}
+
+.email-pill {
+  background: rgba(56, 189, 248, 0.12) !important;
+  color: #38bdf8 !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+}
+.email-pill:hover {
+  background: rgba(56, 189, 248, 0.22) !important;
+  color: #7dd3fc !important;
+}
+
+.web-pill {
+  background: rgba(168, 85, 247, 0.12) !important;
+  color: #c084fc !important;
+  border: 1px solid rgba(168, 85, 247, 0.3) !important;
+}
+.web-pill:hover {
+  background: rgba(168, 85, 247, 0.22) !important;
+  color: #e9d5ff !important;
 }
 
 /* ==========================================================================

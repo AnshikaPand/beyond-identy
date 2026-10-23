@@ -882,5 +882,44 @@ def test_verified_ngo_phone_authenticity():
     assert ngo_map["Born2Win Social Welfare Trust"]["contact_phone"] is None
 
 
+def test_listings_search_query():
+    """Verify that listings search endpoint supports filtering by keyword across title, org, location, and contact."""
+    # Search by college name
+    res_college = client.get("/listings/?search=Tata+Institute+of+Social+Sciences")
+    assert res_college.status_code == 200
+    college_data = res_college.json()
+    assert len(college_data) >= 1
+    assert any("TISS" in item["title"] or "Tata Institute" in item["organization_name"] for item in college_data)
+
+    # Search by workplace name
+    res_workplace = client.get("/listings/?search=Lalit+Suri")
+    assert res_workplace.status_code == 200
+    workplace_data = res_workplace.json()
+    assert len(workplace_data) >= 1
+    assert any("Lalit" in item["organization_name"] for item in workplace_data)
+
+    # Search by NGO / helpline phone number
+    res_phone = client.get("/listings/?search=26673800")
+    assert res_phone.status_code == 200
+    phone_data = res_phone.json()
+    assert len(phone_data) >= 1
+    assert any("Humsafar" in item["organization_name"] for item in phone_data)
 
 
+def test_opportunity_directory_real_contacts():
+    """Verify that seeded college, workplace, and NGO listings contain real authentic phone numbers."""
+    res = client.get("/listings/")
+    assert res.status_code == 200
+    listings = res.json()
+
+    # Check that known real organizations exist in directory with valid phone formatting
+    org_contacts = {l["organization_name"]: l.get("contact_info", "") for l in listings}
+
+    assert "The Humsafar Trust" in org_contacts
+    assert "+91-22-26673800" in org_contacts["The Humsafar Trust"]
+
+    assert "The Lalit Suri Hospitality Group" in org_contacts
+    assert "+91-11-44447777" in org_contacts["The Lalit Suri Hospitality Group"]
+
+    assert "Tata Institute of Social Sciences (TISS)" in org_contacts
+    assert "+91-22-25525252" in org_contacts["Tata Institute of Social Sciences (TISS)"]

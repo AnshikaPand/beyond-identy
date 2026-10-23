@@ -462,20 +462,36 @@
       <!-- TAB 1: Verified Opportunities Directory -->
       <section class="tab-panel" id="tab-listings">
       <div style="margin-bottom: 24px;">
-        <h3 style="font-size: 22px; margin-bottom: 6px;">Verified Community Opportunities</h3>
-        <p style="color: var(--text-muted); font-size: 14px;">Browse trusted education programs, inclusive jobs, safe housing shelters, and healthcare providers vetted by partner NGOs.</p>
+        <h3 style="font-size: 22px; margin-bottom: 6px;">Verified Community Opportunities Directory</h3>
+        <p style="color: var(--text-muted); font-size: 14px;">Browse vetted NGOs, colleges &amp; universities with Equal Opportunity Cells, trans-inclusive workplaces, safe housing, and statutory government welfare schemes.</p>
+      </div>
+
+      <!-- Search & Filter Controls -->
+      <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
+        <div style="position: relative; flex: 1; min-width: 260px;">
+          <input
+            type="text"
+            id="listings-search-input"
+            placeholder="🔍 Search verified NGOs, colleges, workplaces, cities, phone..."
+            style="width: 100%; padding: 10px 16px 10px 38px; border-radius: 9999px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); color: var(--text-main); font-size: 14px; outline: none; transition: border-color 0.2s;"
+          />
+          <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: 0.7;">🔍</span>
+        </div>
+        <div id="listings-count-badge" style="font-size: 13px; color: var(--text-muted); padding: 6px 14px; background: rgba(255,255,255,0.04); border-radius: 9999px; border: 1px solid var(--border-subtle);">
+          Loading verified listings...
+        </div>
       </div>
 
       <!-- Category Filter Pills -->
       <div class="filter-bar" style="display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap;">
         <button class="btn btn-secondary filter-pill active" data-cat="">All Categories</button>
-        <button class="btn btn-secondary filter-pill" data-cat="education">🎓 Education</button>
-        <button class="btn btn-secondary filter-pill" data-cat="employment">💼 Employment</button>
-        <button class="btn btn-secondary filter-pill" data-cat="housing">🏠 Housing & Shelter</button>
+        <button class="btn btn-secondary filter-pill" data-cat="community">🤝 NGOs &amp; Trusts</button>
+        <button class="btn btn-secondary filter-pill" data-cat="education">🎓 Colleges &amp; Universities</button>
+        <button class="btn btn-secondary filter-pill" data-cat="employment">💼 Workplaces &amp; Jobs</button>
+        <button class="btn btn-secondary filter-pill" data-cat="housing">🏠 Housing &amp; Shelters</button>
         <button class="btn btn-secondary filter-pill" data-cat="healthcare">🏥 Healthcare</button>
         <button class="btn btn-secondary filter-pill" data-cat="scheme">🏛️ Govt Schemes</button>
         <button class="btn btn-secondary filter-pill" data-cat="scholarship">📜 Scholarships</button>
-        <button class="btn btn-secondary filter-pill" data-cat="community">🤝 Community</button>
       </div>
 
       <!-- Listings Grid Container (Populated by app.js) -->

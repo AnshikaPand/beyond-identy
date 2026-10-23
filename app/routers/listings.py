@@ -29,9 +29,12 @@ def create_listing(
 def list_listings(
     category: Optional[str] = None,
     status: Optional[str] = "verified",
+    search: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
     """Public browsing endpoint. Defaults to showing only verified listings — that's the whole trust model."""
+    from sqlalchemy import or_, func
+
     query = db.query(models.Listing)
     if category:
         cat_clean = category.strip().lower()
@@ -51,6 +54,17 @@ def list_listings(
             query = query.filter(models.Listing.status == enum_status)
         except Exception:
             pass
+    if search and search.strip():
+        term = f"%{search.strip().lower()}%"
+        query = query.filter(
+            or_(
+                func.lower(models.Listing.title).like(term),
+                func.lower(models.Listing.organization_name).like(term),
+                func.lower(models.Listing.description).like(term),
+                func.lower(models.Listing.location).like(term),
+                func.lower(models.Listing.contact_info).like(term),
+            )
+        )
     return query.order_by(models.Listing.created_at.desc()).all()
 
 

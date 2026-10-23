@@ -982,13 +982,149 @@ async function loadStats() {
 }
 
 // ==========================================
+// ==========================================
 // Listings Directory
 // ==========================================
-async function loadListings(categoryFilter = "") {
+let allCachedListings = [];
+let currentCategoryFilter = "";
+let currentListingsSearch = "";
+
+function formatContactInfo(contactInfo) {
+  if (!contactInfo) {
+    return `<span style="color: var(--text-muted); font-size: 11.5px;">📞 Relay via Beyond Identity</span>`;
+  }
+
+  // Split by " / " or " /" or "/ " or "," while keeping parts clean
+  const pieces = contactInfo.split(/\s*[\/,]\s*/).map(p => p.trim()).filter(Boolean);
+  const pills = [];
+
+  for (const piece of pieces) {
+    if (piece.includes("@") && !piece.startsWith("http")) {
+      pills.push(`
+        <a href="mailto:${escapeHtml(piece)}" class="contact-pill email-pill" title="Send email to ${escapeHtml(piece)}">
+          ✉️ <span>${escapeHtml(piece)}</span>
+        </a>
+      `);
+    } else if (piece.startsWith("http://") || piece.startsWith("https://") || piece.startsWith("www.")) {
+      const url = piece.startsWith("www.") ? `https://${piece}` : piece;
+      const cleanDisplay = piece.replace(/^https?:\/\//i, "").replace(/\/$/, "");
+      pills.push(`
+        <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="contact-pill web-pill" title="Visit website">
+          🌐 <span>${escapeHtml(cleanDisplay)}</span>
+        </a>
+      `);
+    } else if (/\d{4,}/.test(piece) || /^\d{5}$/.test(piece)) {
+      const cleanTel = piece.replace(/[^\d+]/g, "");
+      pills.push(`
+        <a href="tel:${escapeHtml(cleanTel)}" class="contact-pill phone-pill" title="Call ${escapeHtml(piece)}">
+          📞 <strong>${escapeHtml(piece)}</strong>
+        </a>
+      `);
+    } else {
+      pills.push(`
+        <span class="contact-pill info-pill">
+          📌 <span>${escapeHtml(piece)}</span>
+        </span>
+      `);
+    }
+  }
+
+  return pills.length > 0
+    ? `<div class="card-contacts-wrap">${pills.join("")}</div>`
+    : `<span>📞 ${escapeHtml(contactInfo)}</span>`;
+}
+
+function renderListings(listings) {
   const container = document.getElementById("listings-container");
   if (!container) return;
 
-  container.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">Loading verified opportunities...</div>`;
+  const countBadge = document.getElementById("listings-count-badge");
+  if (countBadge) {
+    countBadge.textContent = `${listings.length} verified opportunit${listings.length === 1 ? 'y' : 'ies'}`;
+  }
+
+  if (listings.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align:center; padding: 48px 20px; color: var(--text-muted); background: var(--bg-card); border-radius: 12px; border: 1px dashed var(--border-subtle);">
+        <div style="font-size: 32px; margin-bottom: 12px;">🔍</div>
+        <h4 style="font-size: 16px; margin-bottom: 6px; color: var(--text-main);">No verified opportunities match your search</h4>
+        <p style="font-size: 13px;">Try selecting "All Categories" or searching for a different city, college, NGO, or workplace.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const categoryIcons = {
+    education: "🎓",
+    employment: "💼",
+    housing: "🏠",
+    healthcare: "🏥",
+    scheme: "🏛️",
+    scholarship: "📜",
+    community: "🤝",
+  };
+
+  container.innerHTML = listings
+    .map((item) => {
+      const badgeClass =
+        item.status === "verified"
+          ? "badge-verified"
+          : item.status === "pending"
+          ? "badge-pending"
+          : "badge-delisted";
+
+      const catIcon = categoryIcons[item.category] || "📂";
+
+      return `
+      <div class="listing-card">
+        <div>
+          <div class="card-top">
+            <span class="category-tag">${catIcon} ${item.category.toUpperCase()}</span>
+            <span class="badge ${badgeClass}">${item.status}</span>
+          </div>
+          <h3 class="card-title">${escapeHtml(item.title)}</h3>
+          <div class="card-org">🏛️ ${escapeHtml(item.organization_name || "Community Partner")}</div>
+          <p class="card-desc">${escapeHtml(item.description || "No description provided.")}</p>
+        </div>
+        <div>
+          <div class="card-footer">
+            <div class="card-footer-row">
+              <span class="card-location">📍 <strong>${escapeHtml(item.location || "Pan-India")}</strong></span>
+            </div>
+            <div class="card-footer-row" style="margin-top: 8px;">
+              ${formatContactInfo(item.contact_info)}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    })
+    .join("");
+}
+
+function filterAndRenderListings() {
+  let filtered = allCachedListings;
+  if (currentListingsSearch) {
+    const term = currentListingsSearch.toLowerCase();
+    filtered = filtered.filter(item => {
+      const title = (item.title || "").toLowerCase();
+      const org = (item.organization_name || "").toLowerCase();
+      const desc = (item.description || "").toLowerCase();
+      const loc = (item.location || "").toLowerCase();
+      const contact = (item.contact_info || "").toLowerCase();
+      const cat = (item.category || "").toLowerCase();
+      return title.includes(term) || org.includes(term) || desc.includes(term) || loc.includes(term) || contact.includes(term) || cat.includes(term);
+    });
+  }
+  renderListings(filtered);
+}
+
+async function loadListings(categoryFilter = "") {
+  currentCategoryFilter = categoryFilter;
+  const container = document.getElementById("listings-container");
+  if (!container) return;
+
+  container.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; padding: 40px; color: var(--text-muted);">Loading verified opportunities...</div>`;
 
   try {
     let url = `${API_BASE}/listings/`;
@@ -996,43 +1132,8 @@ async function loadListings(categoryFilter = "") {
 
     const res = await fetch(url);
     if (!res.ok) throw new Error("Failed to load listings");
-    const listings = await res.json();
-
-    if (listings.length === 0) {
-      container.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">No verified listings found in this category.</div>`;
-      return;
-    }
-
-    container.innerHTML = listings
-      .map((item) => {
-        const badgeClass =
-          item.status === "verified"
-            ? "badge-verified"
-            : item.status === "pending"
-            ? "badge-pending"
-            : "badge-delisted";
-
-        return `
-        <div class="listing-card">
-          <div>
-            <div class="card-top">
-              <span class="category-tag">📂 ${item.category.toUpperCase()}</span>
-              <span class="badge ${badgeClass}">${item.status}</span>
-            </div>
-            <h3 class="card-title">${escapeHtml(item.title)}</h3>
-            <div class="card-org">🏛️ ${escapeHtml(item.organization_name || "Community Partner")}</div>
-            <p class="card-desc">${escapeHtml(item.description || "No description provided.")}</p>
-          </div>
-          <div>
-            <div class="card-footer">
-              <span>📍 ${escapeHtml(item.location || "Pan-India")}</span>
-              <span>📞 ${escapeHtml(item.contact_info || "Relay via Beyond Identity")}</span>
-            </div>
-          </div>
-        </div>
-      `;
-      })
-      .join("");
+    allCachedListings = await res.json();
+    filterAndRenderListings();
   } catch (err) {
     container.innerHTML = `<div style="color:var(--accent-rose); padding:20px;">Error loading listings: ${err.message}</div>`;
   }
@@ -1045,6 +1146,17 @@ document.addEventListener("click", (e) => {
     e.target.classList.add("active");
     const cat = e.target.getAttribute("data-cat");
     loadListings(cat);
+  }
+});
+
+// Setup search bar listener
+document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.getElementById("listings-search-input");
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      currentListingsSearch = e.target.value.trim();
+      filterAndRenderListings();
+    });
   }
 });
 
