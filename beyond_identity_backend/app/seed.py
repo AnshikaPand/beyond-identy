@@ -1406,6 +1406,19 @@ def seed():
         ),
     ]
 
+    test_incident_titles = [
+        "Admin Visibility Toggle Test Case",
+        "Private Confidential Case Test No Consent Given",
+        "Consented Public Workplace Discrimination Case Test",
+        "Harassment and extortion at railway station",
+        "Unlawful denial of promotion following transition disclosure",
+        "Unlawful eviction from rented room in Chennai",
+        "Hospital refused to provide gender affirmation hormone treatment",
+    ]
+    for t in test_incident_titles:
+        db.query(models.IncidentReport).filter(models.IncidentReport.title == t).delete()
+    db.commit()
+
     for inc_data in sample_incidents:
         exists = db.query(models.IncidentReport).filter(models.IncidentReport.title == inc_data["title"]).first()
         if exists:
@@ -1426,9 +1439,11 @@ def seed():
         )
         db.add(report)
 
-    db.commit()
+    print("Seeding and safeguarding authentic community video interviews...")
+    from app.routers.videos import ensure_seed_videos
+    ensure_seed_videos(db)
 
-    print(f"Done. Seeded listings, 15 realistic sample cases, and users.")
+    print(f"Done. Seeded listings, 15 realistic sample cases, authentic community videos, and users.")
     print("\nDemo logins:")
     print("  Admin:    admin@beyondidentity.org / admin123")
     print("  Verifier: ngo@shreetrust.org / verifier123")

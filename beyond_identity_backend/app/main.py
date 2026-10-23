@@ -75,6 +75,19 @@ def _ensure_sqlite_columns():
 
 _ensure_sqlite_columns()
 
+def _initialize_seed_data():
+    """Ensure essential tables and authentic community videos are automatically populated on startup."""
+    try:
+        from app.database import SessionLocal
+        from app.routers.videos import ensure_seed_videos
+        with SessionLocal() as db:
+            ensure_seed_videos(db)
+    except Exception:
+        pass
+
+_initialize_seed_data()
+
+
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 ASSETS_DIR = STATIC_DIR / "assets"
 INDEX_FILE = STATIC_DIR / "index.html"

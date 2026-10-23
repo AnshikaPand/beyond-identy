@@ -1439,9 +1439,11 @@ def seed():
         )
         db.add(report)
 
-    db.commit()
+    print("Seeding and safeguarding authentic community video interviews...")
+    from app.routers.videos import ensure_seed_videos
+    ensure_seed_videos(db)
 
-    print(f"Done. Seeded listings, 15 realistic sample cases, and users.")
+    print(f"Done. Seeded listings, 15 realistic sample cases, authentic community videos, and users.")
     print("\nDemo logins:")
     print("  Admin:    admin@beyondidentity.org / admin123")
     print("  Verifier: ngo@shreetrust.org / verifier123")
