@@ -2512,11 +2512,12 @@ function getBilingualGreeting(lang) {
         "6️⃣ 🚨 **आपातकालीन सहायता** — 24/7 Tele-MANAS (14416) व कम्युनिटी हेल्पलाइन (868989330)",
       suggestions: [],
       suggested_prompts: [
+        "वेबसाइट के बारे में जानें (Explore website)",
+        "इंटरव्यू से सीखें (Learn from interviews)",
+        "मुझे किसी से बात करनी है (I need someone to talk to)",
         "मेरा बच्चा ट्रांसजेंडर है, क्या हमसे कुछ गलत हुआ?",
         "क्या ये बीमारी है?",
         "हम कैसे सपोर्ट करें?",
-        "मैं गे हूँ",
-        "मैं ट्रांसजेंडर हूँ",
         "मुझे डर लग रहा है",
         "भारत में मेरे क्या अधिकार हैं?",
         "🚨 आपातकालीन हेल्पलाइन (14416)",
@@ -2528,22 +2529,23 @@ function getBilingualGreeting(lang) {
       role: "assistant",
       content:
         "### 🙏 Namaste! Welcome to Beyond Identity\n\n" +
-        "I am your 24/7 confidential Rights & Healthcare Assistant. You are safe and valid here just as you are.\n\n" +
-        "Please choose an option below or type your question:\n\n" +
-        "1️⃣ 👨‍👩‍👧 **Family & Parents** — 'Did we do something wrong?', 'Is it an illness?', 'How to support our child?'\n" +
-        "2️⃣ 🌈 **Identity & Affirmation** — I am gay, I am trans, feeling confused or scared\n" +
-        "3️⃣ 💼 **Jobs & Opportunities** — Verified trans-inclusive workplaces\n" +
-        "4️⃣ 🏠 **Housing & Shelters** — Garima Greh transit shelters\n" +
-        "5️⃣ 🩺 **Healthcare & HRT** — Ayushman Bharat ₹5 Lakh package & HRT roadmap\n" +
+        "I am your 24/7 confidential Website Guide & Emotional Support Companion. You are safe, respected, and valid here just as you are.\n\n" +
+        "Please choose a topic below or type any question:\n\n" +
+        "1️⃣ 🌐 **Website Guide** — Explore Beyond Identity mission, features, and educational tools\n" +
+        "2️⃣ 🎥 **Real-Life Interviews** — Learn from 13 verified community video stories\n" +
+        "3️⃣ 💬 **Emotional Support** — I feel different, afraid of judgment, or need someone to listen\n" +
+        "4️⃣ 👨‍👩‍👧 **Family & Parents** — 'Did we do something wrong?', 'Is it an illness?', 'How to support our child?'\n" +
+        "5️⃣ ⚖️ **Legal Rights & ID** — Transgender Persons Act 2019, NALSA (2014) & TG Certificate portal\n" +
         "6️⃣ 🚨 **Crisis & Helplines** — 24/7 Tele-MANAS (14416) & Community Helpline (868989330)",
       suggestions: [],
       suggested_prompts: [
+        "Explore the website",
+        "Learn from interviews",
+        "I need someone to talk to",
         "My child is transgender, did we do something wrong?",
         "Is it a disease? Can it be cured?",
         "How can we support our child?",
-        "I am gay",
-        "I am transgender",
-        "I am scared",
+        "I feel different from everyone",
         "What rights do transgender persons have in India?",
         "🚨 24/7 Crisis Helpline (14416)",
       ],
@@ -2687,9 +2689,10 @@ function initChatbox() {
     html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
     html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
 
-    // Markdown Links [text](url)
+    // Markdown Links [text](url) - internal hash links vs external links
+    html = html.replace(/\[(.*?)\]\((#.*?)\)/g, `<a href="$2" class="bi-chat-internal-link">$1</a>`);
     html = html.replace(
-      /\[(.*?)\]\((.*?)\)/g,
+      /\[(.*?)\]\((https?:\/\/.*?|\/[a-zA-Z0-9_\-\/]+)\)/g,
       `<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>`
     );
 
@@ -2767,6 +2770,64 @@ function initChatbox() {
       const bodyDiv = document.createElement("div");
       bodyDiv.innerHTML = isUser ? escapeHtml(msg.content) : parseMarkdown(msg.content);
       bubble.appendChild(bodyDiv);
+
+      // Delegated click handling for internal tab links in markdown
+      bodyDiv.querySelectorAll("a.bi-chat-internal-link, a[href^='#tab-']").forEach((link) => {
+        link.onclick = (e) => {
+          const href = link.getAttribute("href");
+          if (href && href.startsWith("#tab-")) {
+            e.preventDefault();
+            const tabId = href.substring(1);
+            const tabBtn = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector(`a[href="${href}"]`);
+            if (tabBtn) tabBtn.click();
+            const modal = document.getElementById("beyond-identity-chat-modal");
+            if (modal) modal.classList.remove("active");
+            window.location.hash = tabId;
+          }
+        };
+      });
+
+      // Real Community Video Interviews
+      if (!isUser && msg.suggested_interviews && msg.suggested_interviews.length > 0) {
+        const interviewGrid = document.createElement("div");
+        interviewGrid.className = "bi-chat-interviews-grid";
+
+        msg.suggested_interviews.forEach((v) => {
+          const card = document.createElement("div");
+          card.className = "bi-chat-interview-card";
+          card.innerHTML = `
+            <div class="bi-chat-interview-header">
+              <span class="bi-chat-interview-icon">🎥</span>
+              <div style="flex: 1; min-width: 0;">
+                <div class="bi-chat-interview-name">${escapeHtml(v.interviewee_name || "Community Leader")}</div>
+                <div class="bi-chat-interview-tag">${escapeHtml(v.identity_tag || v.category || "Community Voice")}</div>
+              </div>
+            </div>
+            ${v.key_quote ? `<div class="bi-chat-interview-quote">“${escapeHtml(v.key_quote)}”</div>` : ""}
+            <div class="bi-chat-interview-footer">
+              <span class="bi-chat-interview-meta">📍 ${escapeHtml(v.location || "India")} · ⏱️ ${escapeHtml(v.duration || "Video")}</span>
+              <button type="button" class="bi-chat-interview-cta">Watch Video ↗</button>
+            </div>
+          `;
+          const cta = card.querySelector(".bi-chat-interview-cta");
+          if (cta) {
+            cta.onclick = (e) => {
+              e.preventDefault();
+              if (typeof openVideoModal === "function" && (v.embed_url || v.video_url)) {
+                openVideoModal(v);
+              } else {
+                const vidTabBtn = document.querySelector('[data-tab="tab-videos"]') || document.querySelector('a[href="#tab-videos"]');
+                if (vidTabBtn) vidTabBtn.click();
+                const modal = document.getElementById("beyond-identity-chat-modal");
+                if (modal) modal.classList.remove("active");
+                window.location.hash = "tab-videos";
+              }
+            };
+          }
+          interviewGrid.appendChild(card);
+        });
+        bubble.appendChild(interviewGrid);
+      }
 
       // Suggestions from Database
       if (!isUser && msg.suggestions && msg.suggestions.length > 0) {
@@ -2963,6 +3024,7 @@ function initChatbox() {
         content: data.reply,
         suggestions: data.suggestions || [],
         suggested_prompts: data.suggested_prompts || [],
+        suggested_interviews: data.suggested_interviews || [],
         language_switch_prompt: data.language_switch_prompt,
         detected_language: data.detected_language,
         timestamp: formatTime(new Date()),
@@ -3530,6 +3592,46 @@ function initTabChatbox() {
         bubble.appendChild(grid);
       }
 
+      // Real Community Video Interviews in Tab Chat
+      if (!isUser && msg.suggested_interviews && msg.suggested_interviews.length > 0) {
+        const interviewGrid = document.createElement("div");
+        interviewGrid.className = "bi-chat-interviews-grid";
+
+        msg.suggested_interviews.forEach((v) => {
+          const card = document.createElement("div");
+          card.className = "bi-chat-interview-card";
+          card.innerHTML = `
+            <div class="bi-chat-interview-header">
+              <span class="bi-chat-interview-icon">🎥</span>
+              <div style="flex: 1; min-width: 0;">
+                <div class="bi-chat-interview-name">${escapeHtml(v.interviewee_name || "Community Leader")}</div>
+                <div class="bi-chat-interview-tag">${escapeHtml(v.identity_tag || v.category || "Community Voice")}</div>
+              </div>
+            </div>
+            ${v.key_quote ? `<div class="bi-chat-interview-quote">“${escapeHtml(v.key_quote)}”</div>` : ""}
+            <div class="bi-chat-interview-footer">
+              <span class="bi-chat-interview-meta">📍 ${escapeHtml(v.location || "India")} · ⏱️ ${escapeHtml(v.duration || "Video")}</span>
+              <button type="button" class="bi-chat-interview-cta">Watch Video ↗</button>
+            </div>
+          `;
+          const cta = card.querySelector(".bi-chat-interview-cta");
+          if (cta) {
+            cta.onclick = (e) => {
+              e.preventDefault();
+              if (typeof openVideoModal === "function" && (v.embed_url || v.video_url)) {
+                openVideoModal(v);
+              } else {
+                const vidTabBtn = document.querySelector('[data-tab="tab-videos"]') || document.querySelector('a[href="#tab-videos"]');
+                if (vidTabBtn) vidTabBtn.click();
+                window.location.hash = "tab-videos";
+              }
+            };
+          }
+          interviewGrid.appendChild(card);
+        });
+        bubble.appendChild(interviewGrid);
+      }
+
       bubbleWrap.appendChild(bubble);
 
       // Actions & Prompts for Assistant messages
@@ -3709,6 +3811,7 @@ function initTabChatbox() {
         content: data.reply,
         suggestions: data.suggestions || [],
         suggested_prompts: data.suggested_prompts || [],
+        suggested_interviews: data.suggested_interviews || [],
         language_switch_prompt: data.language_switch_prompt,
         detected_language: data.detected_language,
         timestamp: formatTime(new Date()),

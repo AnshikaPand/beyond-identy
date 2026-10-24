@@ -407,6 +407,7 @@ class ChatbotQueryResponse(BaseModel):
     language: Optional[str] = "en"
     detected_language: Optional[str] = None
     language_switch_prompt: Optional[str] = None
+    suggested_interviews: Optional[List[dict]] = []
 
 
 # ==========================================

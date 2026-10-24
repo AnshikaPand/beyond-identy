@@ -2806,6 +2806,113 @@ body.tab-chat-active #bi-chatbox-window {
   margin-top: 2px;
 }
 
+/* Real Community Interview Cards in Chat */
+.bi-chat-interviews-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.bi-chat-interview-card {
+  background: linear-gradient(135deg, rgba(238, 77, 45, 0.08) 0%, rgba(99, 102, 241, 0.12) 100%);
+  border: 1px solid rgba(238, 77, 45, 0.25);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bi-chat-interview-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(238, 77, 45, 0.5);
+  box-shadow: 0 6px 20px rgba(238, 77, 45, 0.15);
+}
+
+.bi-chat-interview-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.bi-chat-interview-icon {
+  font-size: 18px;
+  line-height: 1;
+  background: rgba(238, 77, 45, 0.15);
+  padding: 6px;
+  border-radius: 8px;
+}
+
+.bi-chat-interview-name {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #fff;
+  letter-spacing: 0.2px;
+}
+
+.bi-chat-interview-tag {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.bi-chat-interview-quote {
+  font-size: 12px;
+  font-style: italic;
+  color: #e2e8f0;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8px 10px;
+  border-left: 3px solid #ee4d2d;
+  border-radius: 0 6px 6px 0;
+  margin: 4px 0;
+  line-height: 1.4;
+}
+
+.bi-chat-interview-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.bi-chat-interview-cta {
+  background: linear-gradient(135deg, #ee4d2d, #ff6b4a);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.bi-chat-interview-cta:hover {
+  opacity: 0.92;
+  transform: scale(1.03);
+}
+
+.bi-chat-internal-link {
+  color: #38bdf8;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.bi-chat-internal-link:hover {
+  color: #7dd3fc;
+}
+
 /* Assistant Bubble Actions */
 .bi-chat-actions {
   display: flex;
