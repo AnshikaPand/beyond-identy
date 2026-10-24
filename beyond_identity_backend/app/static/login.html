@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beyond Identity - Log in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1F2937;
+    --muted: #5B6472;
+    --blue: #3BB4E5;
+    --pink: #E8749A;
+    --purple: #7C3AED;
+    --line: #E3E6EC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px 16px;
+    font-family: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--ink);
+    background: url("bg.webp") center / cover no-repeat fixed;
+  }
+  .card {
+    width: 100%;
+    max-width: 400px;
+    padding: 32px 26px 26px;
+    background: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(124, 58, 237, 0.15);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .brand svg { flex: none; }
+  .brand h1 { margin: 0; font-size: 22px; font-weight: 600; line-height: 1.1; }
+  .brand p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+  .roles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 18px;
+    background: #EEF1F6;
+    border-radius: 12px;
+  }
+  .roles button {
+    padding: 10px 8px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .roles button[aria-pressed="true"] {
+    background: #fff;
+    color: var(--ink);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  }
+  .hint { margin: 0 0 18px; font-size: 14px; color: var(--muted); min-height: 21px; }
+  label { display: block; margin-bottom: 16px; font-size: 14px; font-weight: 500; }
+  input {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    font: inherit;
+    font-size: 15px;
+    color: var(--ink);
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input:focus-visible, button:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+  }
+  .pw { position: relative; }
+  .pw input { padding-right: 64px; }
+  .pw button {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+    color: var(--purple);
+    cursor: pointer;
+  }
+  .success-banner {
+    display: none;
+    background: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    color: #15803D;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+  .error {
+    min-height: 20px;
+    margin: 0 0 14px;
+    font-size: 14px;
+    color: #B42318;
+    line-height: 1.45;
+  }
+  .submit {
+    width: 100%;
+    padding: 13px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--blue), var(--pink));
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(59, 180, 229, 0.35);
+    transition: filter 0.15s, opacity 0.15s, transform 0.15s;
+  }
+  .submit:hover { filter: brightness(1.05); transform: translateY(-1px); }
+  .submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+  .foot { margin: 20px 0 0; text-align: center; font-size: 14px; color: var(--muted); }
+  .foot a { color: var(--purple); font-weight: 600; text-decoration: none; }
+  .foot a:hover { text-decoration: underline; }
+  
+  .resend-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    background: #B42318;
+    color: #fff !important;
+    border: 0;
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none !important;
+  }
+  .resend-btn:hover { background: #91180F; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="brand">
+      <svg width="48" height="56" viewBox="-30 -38 60 76" role="img" aria-label="Beyond Identity shield">
+        <path d="M-28,-30L0,-36L28,-30V0L0,36L-28,0Z" fill="#F4A6A0"/>
+        <path d="M-28,-30L0,-36V36L-28,0Z" fill="#5BCEFA"/>
+        <path d="M0,-36L28,-30V0L0,36Z" fill="#F5A9B8"/>
+        <circle cx="-6" cy="0" r="10" fill="none" stroke="#fff" stroke-width="2.5"/>
+        <circle cx="6" cy="0" r="10" fill="none" stroke="#fff" stroke-width="2.5"/>
+      </svg>
+      <div>
+        <h1>Beyond Identity</h1>
+        <p>Welcome back</p>
+      </div>
+    </div>
+
+    <!-- Role Switcher -->
+    <div class="roles" role="group" aria-label="Log in as">
+      <button type="button" data-role="community" aria-pressed="true">Community member</button>
+      <button type="button" data-role="ngo" aria-pressed="false">NGO partner</button>
+    </div>
+    <p class="hint" id="hint"></p>
+
+    <!-- Success Feedback (e.g., after verifying email link) -->
+    <div class="success-banner" id="successBanner"></div>
+
+    <!-- Username, Gmail & Password Login Form -->
+    <form id="loginForm" novalidate>
+      <label for="loginName">Name
+        <input 
+          type="text" 
+          id="loginName" 
+          autocomplete="name" 
+          placeholder="Enter your Name" 
+          required 
+          autofocus
+        >
+      </label>
+
+      <label for="loginEmail">Gmail
+        <input 
+          type="email" 
+          id="loginEmail" 
+          autocomplete="email" 
+          placeholder="abc@xyz.com" 
+          required
+        >
+      </label>
+
+      <label class="pw" for="password">Password
+        <input 
+          type="password" 
+          id="password" 
+          autocomplete="current-password" 
+          placeholder="Enter your password" 
+          required
+        >
+        <button type="button" id="togglePw" aria-label="Show password">Show</button>
+      </label>
+
+      <div class="error" id="error" role="alert"></div>
+
+      <button class="submit" id="submitBtn" type="submit">Log in</button>
+    </form>
+
+    <p class="foot">New here? <a href="register.html">Create an account</a></p>
+  </main>
+
+<script>
+  // Smart API Base: Works seamlessly on http://localhost:8000 and http://localhost:5500
+  const API_BASE = window.location.port === "8000" ? "" : "http://127.0.0.1:8000";
+  const API_URL = `${API_BASE}/auth/login`;
+
+  const hints = {
+    community: "Log in with your Name, Gmail and Password to report discrimination and find welfare schemes.",
+    ngo: "Log in with your Name, Gmail and Password to manage verified support listings."
+  };
+
+  let role = "community";
+  const hint = document.getElementById("hint");
+  const error = document.getElementById("error");
+  const successBanner = document.getElementById("successBanner");
+  const nameInput = document.getElementById("loginName");
+  const emailInput = document.getElementById("loginEmail");
+  const pw = document.getElementById("password");
+  const submitBtn = document.getElementById("submitBtn");
+
+  hint.textContent = hints[role];
+
+  // 1. Check URL parameters (?registered=1, ?email=..., ?name=...)
+  const queryParams = new URLSearchParams(window.location.search);
+  if (queryParams.get("registered") === "1") {
+    successBanner.textContent = "🎉 Account created successfully! Please sign in with your Name, Gmail and Password.";
+    successBanner.style.display = "block";
+  }
+
+  if (queryParams.get("name")) {
+    nameInput.value = queryParams.get("name");
+  }
+  if (queryParams.get("email") || queryParams.get("username")) {
+    emailInput.value = queryParams.get("email") || queryParams.get("username");
+    pw.focus();
+  }
+
+  // Role toggle
+  document.querySelectorAll(".roles button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      role = btn.dataset.role;
+      document.querySelectorAll(".roles button").forEach(b =>
+        b.setAttribute("aria-pressed", b === btn ? "true" : "false"));
+      hint.textContent = hints[role];
+      error.innerHTML = "";
+    });
+  });
+
+  // Password visibility toggle
+  document.getElementById("togglePw").addEventListener("click", e => {
+    const show = pw.type === "password";
+    pw.type = show ? "text" : "password";
+    e.target.textContent = show ? "Hide" : "Show";
+    e.target.setAttribute("aria-label", show ? "Hide password" : "Show password");
+  });
+
+  // Form submission: Name, Gmail & Password Login
+  document.getElementById("loginForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const nameVal = nameInput.value.trim();
+    const emailVal = emailInput.value.trim().toLowerCase();
+    const password = pw.value;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!nameVal || !emailVal || !password || !emailRegex.test(emailVal)) {
+      error.textContent = "Name, Gmail ya password galat hai";
+      return;
+    }
+
+    error.innerHTML = "";
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Logging in...";
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: nameVal,
+          email: emailVal,
+          username: emailVal,
+          identifier: emailVal,
+          password: password,
+          role: role
+        })
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        error.textContent = "Name, Gmail ya password galat hai";
+        return;
+      }
+
+      // Success: Save token & user details in localStorage (persistent across refreshes)
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("bi_token", data.access_token);
+      
+      const userRole = (data.user && data.user.role) ? data.user.role : (role === "ngo" ? "verifier" : "user");
+      localStorage.setItem("bi_role", userRole);
+      
+      if (data.user) {
+        localStorage.setItem("bi_user", JSON.stringify(data.user));
+      }
+
+      // Check if user has chosen "Don't show again" for the overview tour
+      const skipOverview = localStorage.getItem("bi_skip_overview") === "true";
+      if (skipOverview) {
+        window.location.href = userRole === "verifier" ? "ngo-dashboard.html" : "dashboard.html";
+      } else {
+        window.location.href = "welcome.html";
+      }
+    } catch {
+      error.textContent = "Name, Gmail ya password galat hai";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Log in";
+    }
+  });
+</script>
+</body>
+</html>

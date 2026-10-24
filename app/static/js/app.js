@@ -37,7 +37,234 @@ function parseMarkdown(text) {
   return html;
 }
 
+// ============================================================================
+// SWEET & SOOTHING FEMALE VOICE ENGINE (Web Speech API)
+// Rate ~0.95 (soft & slow), Pitch ~1.1 (sweet & melodic female voice)
+// Fallback to default voice gracefully if no female voice is detected
+// ============================================================================
+const SweetVoiceEngine = {
+  availableVoices: [],
+  currentProfile: localStorage.getItem("bi_voice_profile") || "sweet",
+  activeUtterance: null,
+  listeners: [],
+
+  // Strict male disqualification terms
+  maleKeywords: [
+    "ravi", "david", "mark", "george", "guy", "richard", "james", "stefan",
+    "prabhat", "hemant", "sean", "eric", "paul", "martin", "christopher",
+    "ryan", "brian", "daniel", "oliver", "alex", "fred", "male", "man", "boy",
+    "prakash", "tarun", "ajay", "karan", "vikram", "amit", "rahul", "arun", "stephen"
+  ],
+
+  // Priority female voices
+  hindiFemaleKeywords: ["swara", "aditi", "kalpana", "google हिन्दी", "hindi female"],
+  indianEnFemaleKeywords: ["neerja", "heera", "veena"],
+  ukEnFemaleKeywords: ["google uk english female", "sonia", "hazel", "libby"],
+  usEnFemaleKeywords: ["microsoft zira", "zira", "jenny", "aria", "samantha", "victoria", "karen", "google us english"],
+
+  init() {
+    if (!("speechSynthesis" in window)) return;
+    this.loadVoices();
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        this.loadVoices();
+        this.notifyListeners();
+      };
+    }
+  },
+
+  onVoicesLoaded(callback) {
+    if (typeof callback === "function") {
+      this.listeners.push(callback);
+      if (this.availableVoices && this.availableVoices.length > 0) {
+        callback(this.availableVoices);
+      }
+    }
+  },
+
+  notifyListeners() {
+    this.listeners.forEach(cb => {
+      try { cb(this.availableVoices); } catch (e) { console.warn(e); }
+    });
+  },
+
+  loadVoices() {
+    if (!("speechSynthesis" in window)) return [];
+    this.availableVoices = window.speechSynthesis.getVoices() || [];
+    return this.availableVoices;
+  },
+
+  isMaleVoice(v) {
+    if (!v || !v.name) return false;
+    const lower = (v.name + " " + (v.voiceURI || "")).toLowerCase();
+    return this.maleKeywords.some(keyword => lower.includes(keyword));
+  },
+
+  getSweetFemaleVoice(profile) {
+    if (!this.availableVoices || this.availableVoices.length === 0) {
+      this.loadVoices();
+    }
+    const voices = this.availableVoices;
+    if (!voices || voices.length === 0) return null;
+
+    const nonMaleVoices = voices.filter(v => !this.isMaleVoice(v));
+
+    // Priority 1: Hindi / Hinglish female voice (hi-IN)
+    const hiVoice = nonMaleVoices.find(v => {
+      const l = (v.lang || "").toLowerCase();
+      const n = (v.name || "").toLowerCase();
+      const isHi = l === "hi-in" || l.replace("_", "-") === "hi-in" || l.startsWith("hi");
+      const hasFemaleName = this.hindiFemaleKeywords.some(k => n.includes(k)) || n.includes("female");
+      return isHi && (hasFemaleName || !this.isMaleVoice(v));
+    });
+    if (profile === "hi_female" && hiVoice) return hiVoice;
+
+    // Priority 2: Indian English Female (Neerja, Heera, Veena)
+    for (const name of this.indianEnFemaleKeywords) {
+      const match = nonMaleVoices.find(v => v.name.toLowerCase().includes(name));
+      if (match) return match;
+    }
+    const enInFemale = nonMaleVoices.find(v => {
+      const l = (v.lang || "").toLowerCase();
+      return (l === "en-in" || l.replace("_", "-") === "en-in") && !this.isMaleVoice(v);
+    });
+    if (profile === "in_female" && (enInFemale || hiVoice)) return enInFemale || hiVoice;
+
+    // Priority 3: Google UK English Female
+    for (const name of this.ukEnFemaleKeywords) {
+      const match = nonMaleVoices.find(v => v.name.toLowerCase().includes(name));
+      if (match) return match;
+    }
+
+    // Priority 4: Microsoft Zira & US Female (Jenny, Aria, Samantha)
+    for (const name of this.usEnFemaleKeywords) {
+      const match = nonMaleVoices.find(v => v.name.toLowerCase().includes(name));
+      if (match) return match;
+    }
+
+    // If hiVoice exists, it's also a great fit for Indian users
+    if (hiVoice) return hiVoice;
+
+    // Priority 5: Any voice explicitly containing "female" or "woman"
+    const anyFemale = nonMaleVoices.find(v => {
+      const n = (v.name || "").toLowerCase();
+      return n.includes("female") || n.includes("woman");
+    });
+    if (anyFemale) return anyFemale;
+
+    // Priority 6: Any non-male English voice
+    const anyNonMaleEn = nonMaleVoices.find(v => (v.lang || "").toLowerCase().startsWith("en"));
+    if (anyNonMaleEn) return anyNonMaleEn;
+
+    // Fallback: Return first non-male voice or default voice without crashing
+    return nonMaleVoices[0] || voices[0] || null;
+  },
+
+  cleanForSpeech(text) {
+    if (!text) return "";
+    let clean = text
+      .replace(/### (.*?)\n/g, "$1. ")
+      .replace(/#### (.*?)\n/g, "$1. ")
+      .replace(/[1-9]️⃣/g, "")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
+      .replace(/₹\s*([0-9,]+)\s*(?:Lakh|L|lakh)?/gi, "$1 lakh rupees")
+      .replace(/\bTG\b/g, "Transgender")
+      .replace(/\bHRT\b/g, "Hormone Replacement Therapy")
+      .replace(/\bNALSA\b/g, "Nalsa")
+      .replace(/\bPM-JAY\b/g, "P M Jay")
+      .replace(/\bNGOs\b/g, "N G Os")
+      .replace(/\bNGO\b/g, "N G O")
+      .replace(/[`*#_>•\-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const sentences = clean.split(". ");
+    if (sentences.length > 5) {
+      clean = sentences.slice(0, 5).join(". ") + ".";
+    }
+    return clean;
+  },
+
+  speak(text, options = {}) {
+    if (!("speechSynthesis" in window)) return;
+    this.stop();
+    if (!text) return;
+
+    const speechScript = this.cleanForSpeech(text);
+    if (!speechScript) return;
+
+    const utterance = new SpeechSynthesisUtterance(speechScript);
+    // User requested: voice soft aur slow (rate ~0.95, pitch ~1.1)
+    utterance.rate = 0.95;
+    utterance.pitch = 1.1;
+    utterance.volume = 1.0;
+
+    const bestVoice = this.getSweetFemaleVoice(options.profile || this.currentProfile);
+    if (bestVoice) {
+      utterance.voice = bestVoice;
+      utterance.lang = bestVoice.lang || "en-IN";
+    } else {
+      utterance.lang = "en-IN";
+    }
+
+    window.__activeSpeechUtterance = utterance;
+    this.activeUtterance = utterance;
+
+    if (options.onstart) utterance.onstart = options.onstart;
+    
+    const cleanup = () => {
+      window.__activeSpeechUtterance = null;
+      this.activeUtterance = null;
+    };
+
+    utterance.onend = (e) => {
+      cleanup();
+      if (options.onend) options.onend(e);
+    };
+
+    utterance.onerror = (e) => {
+      cleanup();
+      if (options.onerror) options.onerror(e);
+    };
+
+    try {
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.warn("Speech synthesis error fallback:", err);
+      cleanup();
+    }
+    return utterance;
+  },
+
+  stop() {
+    if ("speechSynthesis" in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    window.__activeSpeechUtterance = null;
+    this.activeUtterance = null;
+  },
+
+  testVoice(customText) {
+    const text =
+      customText ||
+      "Namaste! I am your Beyond Identity assistant. I speak with a soft, sweet and soothing voice to support you with care and respect.";
+    return this.speak(text);
+  },
+
+  setProfile(profile) {
+    this.currentProfile = profile;
+    localStorage.setItem("bi_voice_profile", profile);
+  }
+};
+window.SweetVoiceEngine = SweetVoiceEngine;
+
 document.addEventListener("DOMContentLoaded", () => {
+  SweetVoiceEngine.init();
   initTheme();
   setupTabs();
   setupAuthUI();
@@ -1356,42 +1583,38 @@ function setupAwarenessUI() {
   // Speech Synthesis Helper
   function speakText(text) {
     if (!("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
     if (!text) return;
 
     lastSpokenText = text;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.lang = "en-IN";
-
-    if (talkOrb && talkMicBtn) {
-      utterance.onstart = () => {
-        talkOrb.classList.add("speaking");
-        talkOrb.classList.remove("listening");
-        talkMicBtn.classList.add("speaking");
-        talkMicBtn.classList.remove("listening");
-        if (talkStatusText) talkStatusText.innerText = "Speaking Answer Aloud...";
-      };
-      utterance.onend = () => {
-        talkOrb.classList.remove("speaking");
-        talkMicBtn.classList.remove("speaking");
-        if (talkStatusText) talkStatusText.innerText = "Click Microphone to Talk";
-      };
-      utterance.onerror = () => {
-        talkOrb.classList.remove("speaking");
-        talkMicBtn.classList.remove("speaking");
-        if (talkStatusText) talkStatusText.innerText = "Click Microphone to Talk";
-      };
-    }
-
-    window.speechSynthesis.speak(utterance);
+    SweetVoiceEngine.speak(text, {
+      onstart: () => {
+        if (talkOrb && talkMicBtn) {
+          talkOrb.classList.add("speaking");
+          talkOrb.classList.remove("listening");
+          talkMicBtn.classList.add("speaking");
+          talkMicBtn.classList.remove("listening");
+          if (talkStatusText) talkStatusText.innerText = "Speaking Answer Aloud (Female Voice)...";
+        }
+      },
+      onend: () => {
+        if (talkOrb && talkMicBtn) {
+          talkOrb.classList.remove("speaking");
+          talkMicBtn.classList.remove("speaking");
+          if (talkStatusText) talkStatusText.innerText = "Click Microphone to Talk";
+        }
+      },
+      onerror: () => {
+        if (talkOrb && talkMicBtn) {
+          talkOrb.classList.remove("speaking");
+          talkMicBtn.classList.remove("speaking");
+          if (talkStatusText) talkStatusText.innerText = "Click Microphone to Talk";
+        }
+      }
+    });
   }
 
   function stopSpeech() {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
+    SweetVoiceEngine.stop();
     if (talkOrb && talkMicBtn) {
       talkOrb.classList.remove("speaking");
       talkMicBtn.classList.remove("speaking");
@@ -2241,13 +2464,13 @@ function initChatbox() {
     const label = document.getElementById("bi-chat-voice-label");
     const icon = document.getElementById("bi-chat-voice-icon");
     if (biChatVoiceEnabled) {
-      if (icon) icon.innerText = "🔊";
-      if (label) label.innerText = "Audio: ON";
-      voiceToggle.title = "Audio speech is ON. Click to mute.";
+      if (icon) icon.innerText = "🌸";
+      if (label) label.innerText = "Voice: ON";
+      voiceToggle.title = "Sweet Female Voice is ON. Click to mute.";
       voiceToggle.classList.add("active");
     } else {
       if (icon) icon.innerText = "🔇";
-      if (label) label.innerText = "Audio: OFF";
+      if (label) label.innerText = "Voice: OFF";
       voiceToggle.title = "Audio speech is OFF. Click to turn audio ON.";
       voiceToggle.classList.remove("active");
     }
@@ -2257,36 +2480,15 @@ function initChatbox() {
     biChatVoiceEnabled = !biChatVoiceEnabled;
     localStorage.setItem("bi_chat_voice", biChatVoiceEnabled ? "true" : "false");
     updateVoiceIcon();
-    if (!biChatVoiceEnabled && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
+    if (!biChatVoiceEnabled) {
+      SweetVoiceEngine.stop();
     }
   }
 
   function speakText(text) {
-    if (!("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
+    if (!("speechSynthesis" in window) || !biChatVoiceEnabled) return;
     if (!text) return;
-
-    let clean = text
-      .replace(/### (.*?)\n/g, "$1. ")
-      .replace(/#### (.*?)\n/g, "$1. ")
-      .replace(/[1-9]️⃣/g, "")
-      .replace(/\*\*(.*?)\*\*/g, "$1")
-      .replace(/\[(.*?)\]\(.*?\)/g, "$1")
-      .replace(/[`*#_>-]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    const sentences = clean.split(". ");
-    if (sentences.length > 3) {
-      clean = sentences.slice(0, 3).join(". ") + ".";
-    }
-
-    const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.lang = "en-IN";
-    window.speechSynthesis.speak(utterance);
+    SweetVoiceEngine.speak(text);
   }
 
   function openChatbox() {
@@ -2735,43 +2937,6 @@ function initTabChatbox() {
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
 
-  // Voice Selection for Web Speech API
-  let availableVoices = [];
-  function loadVoices() {
-    if (!("speechSynthesis" in window)) return;
-    availableVoices = window.speechSynthesis.getVoices();
-  }
-  loadVoices();
-  if ("speechSynthesis" in window && window.speechSynthesis.onvoiceschanged !== undefined) {
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-  }
-
-  function getBestVoice() {
-    if (!availableVoices || availableVoices.length === 0) {
-      loadVoices();
-    }
-    if (!availableVoices || availableVoices.length === 0) return null;
-
-    // Prioritize natural Indian English voice (en-IN), e.g. Heera, Neerja, Google UK English Female, etc.
-    const inVoice = availableVoices.find(
-      (v) => v.lang === "en-IN" || v.lang.replace("_", "-") === "en-IN"
-    );
-    if (inVoice) return inVoice;
-
-    const naturalEn = availableVoices.find(
-      (v) =>
-        (v.lang.startsWith("en") || v.lang.startsWith("en-")) &&
-        (v.name.includes("Natural") ||
-          v.name.includes("Google") ||
-          v.name.includes("Samantha") ||
-          v.name.includes("Zira"))
-    );
-    if (naturalEn) return naturalEn;
-
-    const generalEn = availableVoices.find((v) => v.lang.startsWith("en"));
-    return generalEn || availableVoices[0];
-  }
-
   const defaultGreeting = {
     role: "assistant",
     content: "🙏 Namaste! I'm Beyond Identity — a verified platform where you get trustworthy information about transgender rights, healthcare, and opportunities.",
@@ -2785,13 +2950,13 @@ function initTabChatbox() {
   function updateVoiceUI() {
     if (!voiceToggle) return;
     if (tabVoiceEnabled) {
-      if (voiceIcon) voiceIcon.innerText = "🔊";
-      if (voiceLabel) voiceLabel.innerText = "Audio: ON";
-      voiceToggle.title = "Audio speech is ON. Click to mute.";
+      if (voiceIcon) voiceIcon.innerText = "🌸";
+      if (voiceLabel) voiceLabel.innerText = "Voice: ON";
+      voiceToggle.title = "Sweet Female Voice is ON. Click to mute.";
       voiceToggle.classList.add("active");
     } else {
       if (voiceIcon) voiceIcon.innerText = "🔇";
-      if (voiceLabel) voiceLabel.innerText = "Audio: OFF";
+      if (voiceLabel) voiceLabel.innerText = "Voice: OFF";
       voiceToggle.title = "Audio speech is OFF. Click to unmute and turn audio ON.";
       voiceToggle.classList.remove("active");
       stopSpeech();
@@ -2805,9 +2970,7 @@ function initTabChatbox() {
   }
 
   function stopSpeech() {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
+    SweetVoiceEngine.stop();
     if (avatarBox) avatarBox.classList.remove("is-talking");
     if (speakingBadge) speakingBadge.classList.remove("active");
     if (stopSpeakingBtn) {
@@ -2821,85 +2984,101 @@ function initTabChatbox() {
     activeSpeakingRow = null;
   }
 
-  function cleanMarkdownForSpeech(text) {
-    if (!text) return "";
-    let clean = text
-      .replace(/### (.*?)\n/g, "$1. ")
-      .replace(/#### (.*?)\n/g, "$1. ")
-      .replace(/[1-9]️⃣/g, "")
-      .replace(/\*\*(.*?)\*\*/g, "$1")
-      .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
-      .replace(/[`*#_>•\-]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    // Split into sentences and keep speech punchy and pleasant
-    const sentences = clean.split(". ");
-    if (sentences.length > 5) {
-      clean = sentences.slice(0, 5).join(". ") + ".";
-    }
-    return clean;
-  }
-
   function speakText(text, rowElement) {
     if (!("speechSynthesis" in window) || !tabVoiceEnabled) return;
     stopSpeech();
     if (!text) return;
 
-    const speechScript = cleanMarkdownForSpeech(text);
-    if (!speechScript) return;
+    SweetVoiceEngine.speak(text, {
+      onstart: () => {
+        if (avatarBox) avatarBox.classList.add("is-talking");
+        if (speakingBadge) speakingBadge.classList.add("active");
+        if (stopSpeakingBtn) {
+          stopSpeakingBtn.classList.add("is-active-speaking");
+          const label = stopSpeakingBtn.querySelector(".tab-chat-btn-text");
+          if (label) label.innerText = "Stop Audio (Playing)";
+        }
+        if (liveBadge) liveBadge.innerText = "🌸 Speaking...";
 
-    const utterance = new SpeechSynthesisUtterance(speechScript);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
+        if (rowElement) {
+          activeSpeakingRow = rowElement;
+          rowElement.classList.add("speaking-now");
+          const actionsRow = rowElement.querySelector(".tab-chat-actions-row");
+          if (actionsRow && !actionsRow.querySelector(".tab-chat-speaking-indicator-mini")) {
+            const mini = document.createElement("div");
+            mini.className = "tab-chat-speaking-indicator-mini";
+            mini.innerHTML = `
+              <div class="voice-waves animating">
+                <span class="voice-wave-bar"></span>
+                <span class="voice-wave-bar"></span>
+                <span class="voice-wave-bar"></span>
+              </div>
+              <span>Speaking with sweet girl voice...</span>
+            `;
+            actionsRow.appendChild(mini);
+          }
+        }
+      },
+      onend: () => {
+        stopSpeech();
+      },
+      onerror: () => {
+        stopSpeech();
+      }
+    });
+  }
 
-    const bestVoice = getBestVoice();
-    if (bestVoice) {
-      utterance.voice = bestVoice;
-      utterance.lang = bestVoice.lang;
-    } else {
-      utterance.lang = "en-IN";
+  // Voice Picker Dropdown Controls
+  const voicePickerBtn = document.getElementById("tab-chat-voice-picker-btn");
+  const voiceDropdown = document.getElementById("tab-chat-voice-dropdown");
+  const voiceSelect = document.getElementById("tab-chat-voice-select");
+  const voiceToneSelect = document.getElementById("tab-chat-tone-select");
+  const voiceTestBtn = document.getElementById("tab-chat-voice-test-btn");
+  const voiceCloseBtn = document.getElementById("tab-chat-voice-close-btn");
+  const voiceDetectedName = document.getElementById("voice-detected-name");
+
+  function refreshVoiceUI() {
+    const v = SweetVoiceEngine.getSweetFemaleVoice();
+    if (voiceDetectedName) {
+      voiceDetectedName.textContent = v ? `${v.name} (${v.lang})` : "Default Female Voice";
+    }
+  }
+
+  if (voicePickerBtn && voiceDropdown) {
+    voicePickerBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isVisible = voiceDropdown.style.display !== "none";
+      voiceDropdown.style.display = isVisible ? "none" : "block";
+      if (!isVisible) refreshVoiceUI();
+    });
+
+    if (voiceCloseBtn) {
+      voiceCloseBtn.addEventListener("click", () => {
+        voiceDropdown.style.display = "none";
+      });
     }
 
-    utterance.onstart = () => {
-      if (avatarBox) avatarBox.classList.add("is-talking");
-      if (speakingBadge) speakingBadge.classList.add("active");
-      if (stopSpeakingBtn) {
-        stopSpeakingBtn.classList.add("is-active-speaking");
-        const label = stopSpeakingBtn.querySelector(".tab-chat-btn-text");
-        if (label) label.innerText = "Stop Audio (Playing)";
+    if (voiceSelect) {
+      voiceSelect.value = SweetVoiceEngine.currentProfile || "sweet";
+      voiceSelect.addEventListener("change", (e) => {
+        SweetVoiceEngine.setProfile(e.target.value);
+        refreshVoiceUI();
+      });
+    }
+
+    if (voiceTestBtn) {
+      voiceTestBtn.addEventListener("click", () => {
+        SweetVoiceEngine.testVoice();
+      });
+    }
+
+    document.addEventListener("click", (e) => {
+      if (voiceDropdown && !voiceDropdown.contains(e.target) && e.target !== voicePickerBtn && !voicePickerBtn.contains(e.target)) {
+        voiceDropdown.style.display = "none";
       }
-      if (liveBadge) liveBadge.innerText = "🔊 Speaking...";
+    });
 
-      if (rowElement) {
-        activeSpeakingRow = rowElement;
-        rowElement.classList.add("speaking-now");
-        const actionsRow = rowElement.querySelector(".tab-chat-actions-row");
-        if (actionsRow && !actionsRow.querySelector(".tab-chat-speaking-indicator-mini")) {
-          const mini = document.createElement("div");
-          mini.className = "tab-chat-speaking-indicator-mini";
-          mini.innerHTML = `
-            <div class="voice-waves animating">
-              <span class="voice-wave-bar"></span>
-              <span class="voice-wave-bar"></span>
-              <span class="voice-wave-bar"></span>
-            </div>
-            <span>Talking aloud...</span>
-          `;
-          actionsRow.appendChild(mini);
-        }
-      }
-    };
-
-    utterance.onend = () => {
-      stopSpeech();
-    };
-
-    utterance.onerror = () => {
-      stopSpeech();
-    };
-
-    window.speechSynthesis.speak(utterance);
+    SweetVoiceEngine.onVoicesLoaded(() => refreshVoiceUI());
   }
 
   // Global post-login vocal greeting trigger

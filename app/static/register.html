@@ -431,19 +431,19 @@
           <form id="registerForm" novalidate style="margin-top: 10px;">
             <div class="field">
               <label for="name">
-                <span id="nameLabel">Username</span>
-                <span class="hint" id="nameHint">(chosen username for your profile & login)</span>
+                <span id="nameLabel">Name</span>
+                <span class="hint" id="nameHint">(your full name)</span>
               </label>
-              <input type="text" id="name" placeholder="Enter your chosen username" required autocomplete="username" />
+              <input type="text" id="name" placeholder="Enter your full name" required autocomplete="name" />
               <p class="err" id="nameErr"></p>
             </div>
 
             <div class="field">
               <label for="email">
-                Email Address
-                <span class="hint">(for account recovery & notices)</span>
+                Gmail
+                <span class="hint">(abc@xyz.com)</span>
               </label>
-              <input type="email" id="email" placeholder="you@example.com" required autocomplete="email" />
+              <input type="email" id="email" placeholder="abc@xyz.com" required autocomplete="email" />
               <p class="err" id="emailErr"></p>
             </div>
 
@@ -453,7 +453,7 @@
                 <span class="hint">(minimum 6 characters)</span>
               </label>
               <div class="pw">
-                <input type="password" id="password" placeholder="Create a secure password (min 6 chars)" required autocomplete="new-password" />
+                <input type="password" id="password" placeholder="Create password (min 6 chars)" required autocomplete="new-password" />
                 <button type="button" id="togglePw" aria-label="Show password">Show</button>
               </div>
               <p class="err" id="passwordErr"></p>
@@ -465,7 +465,7 @@
           </form>
 
           <div class="foot">
-            <p>Already have an account? <a href="/login">Sign In with Username & Password</a></p>
+            <p>Already have an account? <a href="/login.html">Sign In with Name, Gmail &amp; Password</a></p>
           </div>
         </div>
 
@@ -478,12 +478,12 @@
           </p>
           
           <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 14px; margin-bottom: 22px; font-size: 0.88rem; color: #166534; text-align: left;">
-            <p style="margin: 0 0 6px;">✨ <strong>Ready to go:</strong> You can now sign in instantly with your username and password.</p>
+            <p style="margin: 0 0 6px;">✨ <strong>Ready to go:</strong> Your account is active. You can sign in immediately.</p>
           </div>
 
           <div style="display: flex; flex-direction: column; gap: 10px;">
-            <a href="/login.html" id="goToLoginBtn" class="submit" style="text-decoration: none; text-align: center;">
-              Proceed to Sign In →
+            <a href="welcome.html" id="goToLoginBtn" class="submit" style="text-decoration: none; text-align: center;">
+              Proceed to Overview Tour →
             </a>
           </div>
         </div>
@@ -515,22 +515,22 @@
         accent: "#0F766E",
         title: "Create Account",
         sub: "Your identity, your choice. Safe space for community members.",
-        nameLabel: "Username",
-        nameHint: "(chosen username for your profile & login)",
-        namePlaceholder: "Enter your username",
+        nameLabel: "Name",
+        nameHint: "(your full name)",
+        namePlaceholder: "Enter your full name",
         button: "Register as Community Member",
-        redirect: "/dashboard.html"
+        redirect: "/welcome.html"
       },
       ngo: {
         backendRole: "verifier",
         accent: "#1F1B4D",
         title: "Register NGO Partner",
         sub: "Verified portal for community organizations and support shelters.",
-        nameLabel: "Representative / Org Username",
-        nameHint: "(authorized coordinator or handle)",
-        namePlaceholder: "Enter coordinator username or name",
+        nameLabel: "Representative / Org Name",
+        nameHint: "(authorized coordinator or name)",
+        namePlaceholder: "Enter coordinator or organization name",
         button: "Register as NGO Partner",
-        redirect: "/ngo-dashboard.html"
+        redirect: "/welcome.html"
       }
     };
 
@@ -581,14 +581,15 @@
       const nameVal = f.name.value.trim();
       const emailVal = f.email.value.trim().toLowerCase();
       const pwVal = f.password.value;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (nameVal.length < 2) {
-        setErr("name", "Username must be at least 2 characters.");
+        setErr("name", "Name must be at least 2 characters.");
         ok = false;
       }
 
-      if (!emailVal || !emailVal.includes("@") || !emailVal.includes(".")) {
-        setErr("email", "Please enter a valid email address.");
+      if (!emailVal || !emailRegex.test(emailVal)) {
+        setErr("email", "Gmail ka format sahi nahi hai (jaise: abc@xyz.com)");
         ok = false;
       }
 
@@ -627,7 +628,11 @@
 
         const data = await res.json();
         if (!res.ok) {
-          throw new Error(data.detail || "Registration failed. This email or username may already be in use.");
+          const detail = data.detail || "";
+          if (detail.includes("Is Gmail se account pehle se hai") || detail.includes("already registered")) {
+            throw new Error("Is Gmail se account pehle se hai, sign in karo");
+          }
+          throw new Error(detail || "Registration failed. Please check your details.");
         }
 
         // Automatic instant login after registration:
@@ -636,7 +641,8 @@
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              username: nameVal,
+              name: nameVal,
+              username: emailVal,
               email: emailVal,
               password: pwVal,
               role: currentRole
@@ -652,7 +658,7 @@
             if (loginData.user) {
               localStorage.setItem("bi_user", JSON.stringify(loginData.user));
             }
-            window.location.href = userRole === "verifier" ? "ngo-dashboard.html" : "dashboard.html";
+            window.location.href = "welcome.html";
             return;
           }
         } catch {
@@ -661,7 +667,7 @@
 
         // Show confirmation view and redirect option
         $("registeredNameDisplay").textContent = nameVal;
-        $("goToLoginBtn").href = `login.html?registered=1&username=${encodeURIComponent(nameVal)}`;
+        $("goToLoginBtn").href = `login.html?registered=1&email=${encodeURIComponent(emailVal)}&name=${encodeURIComponent(nameVal)}`;
         $("registerFormContainer").style.display = "none";
         $("verifyConfirmationView").classList.add("active");
 

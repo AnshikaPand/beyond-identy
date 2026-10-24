@@ -186,16 +186,26 @@
     <!-- Success Feedback (e.g., after verifying email link) -->
     <div class="success-banner" id="successBanner"></div>
 
-    <!-- Username & Password Login Form -->
+    <!-- Username, Gmail & Password Login Form -->
     <form id="loginForm" novalidate>
-      <label for="identifier">Username or Email
+      <label for="loginName">Name
         <input 
           type="text" 
-          id="identifier" 
-          autocomplete="username" 
-          placeholder="Enter your username or email" 
+          id="loginName" 
+          autocomplete="name" 
+          placeholder="Enter your Name" 
           required 
           autofocus
+        >
+      </label>
+
+      <label for="loginEmail">Gmail
+        <input 
+          type="email" 
+          id="loginEmail" 
+          autocomplete="email" 
+          placeholder="abc@xyz.com" 
+          required
         >
       </label>
 
@@ -224,34 +234,33 @@
   const API_URL = `${API_BASE}/auth/login`;
 
   const hints = {
-    community: "Log in with your username and password to report discrimination and find welfare schemes.",
-    ngo: "Log in with your username and password to manage verified support listings."
+    community: "Log in with your Name, Gmail and Password to report discrimination and find welfare schemes.",
+    ngo: "Log in with your Name, Gmail and Password to manage verified support listings."
   };
 
   let role = "community";
   const hint = document.getElementById("hint");
   const error = document.getElementById("error");
   const successBanner = document.getElementById("successBanner");
+  const nameInput = document.getElementById("loginName");
+  const emailInput = document.getElementById("loginEmail");
   const pw = document.getElementById("password");
-  const identifierInput = document.getElementById("identifier");
   const submitBtn = document.getElementById("submitBtn");
 
   hint.textContent = hints[role];
 
-  // 1. Check URL parameters (?registered=1, ?verified=1, ?username=...)
+  // 1. Check URL parameters (?registered=1, ?email=..., ?name=...)
   const queryParams = new URLSearchParams(window.location.search);
   if (queryParams.get("registered") === "1") {
-    successBanner.textContent = "🎉 Account created successfully! Please log in with your username and password.";
+    successBanner.textContent = "🎉 Account created successfully! Please sign in with your Name, Gmail and Password.";
     successBanner.style.display = "block";
-  } else if (queryParams.get("verified") === "1") {
-    successBanner.textContent = "✅ Your email has been verified successfully! You can now log in.";
-    successBanner.style.display = "block";
-  } else if (queryParams.get("verified") === "0") {
-    error.textContent = "Verification link was invalid or has expired. Please log in or request a new link.";
   }
 
-  if (queryParams.get("username")) {
-    identifierInput.value = queryParams.get("username");
+  if (queryParams.get("name")) {
+    nameInput.value = queryParams.get("name");
+  }
+  if (queryParams.get("email") || queryParams.get("username")) {
+    emailInput.value = queryParams.get("email") || queryParams.get("username");
     pw.focus();
   }
 
@@ -274,20 +283,17 @@
     e.target.setAttribute("aria-label", show ? "Hide password" : "Show password");
   });
 
-  // Form submission: User ID/Email + Password Login
+  // Form submission: Name, Gmail & Password Login
   document.getElementById("loginForm").addEventListener("submit", async e => {
     e.preventDefault();
-    const identifier = identifierInput.value.trim();
+    const nameVal = nameInput.value.trim();
+    const emailVal = emailInput.value.trim().toLowerCase();
     const password = pw.value;
 
-    if (!identifier) {
-      error.textContent = "Please enter your User ID or Email.";
-      identifierInput.focus();
-      return;
-    }
-    if (!password) {
-      error.textContent = "Please enter your password.";
-      pw.focus();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!nameVal || !emailVal || !password || !emailRegex.test(emailVal)) {
+      error.textContent = "Name, Gmail ya password galat hai";
       return;
     }
 
@@ -300,73 +306,22 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          identifier: identifier,
-          email: identifier,
-          username: identifier,
+          name: nameVal,
+          email: emailVal,
+          username: emailVal,
+          identifier: emailVal,
           password: password,
           role: role
         })
       });
       const data = await res.json().catch(() => ({}));
 
-      // Reject unverified users with HTTP 403 and offer an inline Resend button
-      if (res.status === 403) {
-        error.innerHTML = `
-          <div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 10px;">
-            <div style="font-weight: 600; color: #991B1B;">⚠️ Verify your email first</div>
-            <div style="font-size: 13px; color: #7F1D1D; margin: 4px 0 6px;">
-              Please check your inbox for the verification link.
-            </div>
-            <button type="button" class="resend-btn" id="resendVerificationBtn">
-              ✉️ Resend verification email
-            </button>
-          </div>
-        `;
-
-        document.getElementById("resendVerificationBtn").onclick = async () => {
-          const btn = document.getElementById("resendVerificationBtn");
-          btn.disabled = true;
-          btn.textContent = "Sending link...";
-          try {
-            const r = await fetch(`${API_BASE}/auth/resend-verification`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email: identifier })
-            });
-            const d = await r.json();
-            if (r.ok) {
-              error.innerHTML = `<span style="color:#15803D; font-weight:600;">✅ Verification link resent to ${identifier}! Check your inbox.</span>`;
-            } else {
-              error.textContent = d.detail || "Could not resend email.";
-            }
-          } catch {
-            error.textContent = "Network error. Please try again.";
-          }
-        };
-        return;
-      }
-
       if (!res.ok) {
-        const detail = data.detail || "Could not log in. Check your details and try again.";
-        if (detail.includes("Account not found") || detail.includes("not found")) {
-          error.innerHTML = `
-            <div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 10px;">
-              <div style="font-weight: 600; color: #991B1B;">⚠️ Account Not Found</div>
-              <div style="font-size: 13px; color: #7F1D1D; margin: 4px 0 6px;">
-                No Beyond Identity account was found for <strong>${identifier}</strong>.
-              </div>
-              <a href="register.html?email=${encodeURIComponent(identifier)}&role=${role}" class="resend-btn" style="background:#7C3AED;">
-                ✨ Create This Account Now
-              </a>
-            </div>
-          `;
-        } else {
-          error.textContent = detail;
-        }
+        error.textContent = "Name, Gmail ya password galat hai";
         return;
       }
 
-      // Success: Save token & user details
+      // Success: Save token & user details in localStorage (persistent across refreshes)
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("bi_token", data.access_token);
       
@@ -377,10 +332,15 @@
         localStorage.setItem("bi_user", JSON.stringify(data.user));
       }
 
-      // Redirect to community or ngo dashboard
-      window.location.href = userRole === "verifier" ? "ngo-dashboard.html" : "dashboard.html";
+      // Check if user has chosen "Don't show again" for the overview tour
+      const skipOverview = localStorage.getItem("bi_skip_overview") === "true";
+      if (skipOverview) {
+        window.location.href = userRole === "verifier" ? "ngo-dashboard.html" : "dashboard.html";
+      } else {
+        window.location.href = "welcome.html";
+      }
     } catch {
-      error.textContent = "Could not log in. Please check your network and try again.";
+      error.textContent = "Name, Gmail ya password galat hai";
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = "Log in";

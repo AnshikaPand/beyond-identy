@@ -41,7 +41,10 @@ def register(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
     # 3. Check for existing account
     existing = db.query(models.User).filter(models.User.email == clean_email).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(
+            status_code=400,
+            detail="Is Gmail se account pehle se hai, sign in karo (Email already registered)",
+        )
 
     user_role = user_in.role if user_in.role else models.UserRole.user
 
@@ -131,6 +134,7 @@ async def login(
     content_type = request.headers.get("content-type", "").lower()
     email = None
     password = None
+    name = None
 
     if "application/json" in content_type:
         try:
@@ -142,6 +146,7 @@ async def login(
                 or body.get("identifier")
             )
             password = body.get("password")
+            name = body.get("name")
         except Exception:
             pass
     else:
@@ -154,13 +159,14 @@ async def login(
                 or form.get("identifier")
             )
             password = form.get("password")
+            name = form.get("name")
         except Exception:
             pass
 
     if not email or not password:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username / email and password are required",
+            detail="Name, Gmail ya password galat hai (Username / email and password are required)",
         )
 
     identifier = str(email).strip()
@@ -171,16 +177,18 @@ async def login(
             (models.User.email == identifier.lower()) | (models.User.name.ilike(identifier))
         ).first()
 
-    if not user:
+    if not user or not auth.verify_password(str(password), user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Account not found. Please click 'Create an account' to register first.",
+            detail="Name, Gmail ya password galat hai (Incorrect email or password)",
         )
-    if not auth.verify_password(str(password), user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-        )
+
+    if name and str(name).strip():
+        if user.name.strip().lower() != str(name).strip().lower():
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Name, Gmail ya password galat hai (Incorrect email or password)",
+            )
 
     # Auto-activate user on successful password verification
     if not user.is_verified:
@@ -202,16 +210,18 @@ def login_json(credentials: schemas.UserLoginJSON, db: Session = Depends(get_db)
             (models.User.email == identifier.lower()) | (models.User.name.ilike(identifier))
         ).first()
 
-    if not user:
+    if not user or not auth.verify_password(credentials.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Account not found. Please click 'Create an account' to register first.",
+            detail="Name, Gmail ya password galat hai (Incorrect email or password)",
         )
-    if not auth.verify_password(credentials.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-        )
+
+    if credentials.name and credentials.name.strip():
+        if user.name.strip().lower() != credentials.name.strip().lower():
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Name, Gmail ya password galat hai (Incorrect email or password)",
+            )
 
     if not user.is_verified:
         user.is_verified = True
@@ -219,6 +229,7 @@ def login_json(credentials: schemas.UserLoginJSON, db: Session = Depends(get_db)
 
     token = auth.create_access_token(data={"sub": str(user.id)})
     return schemas.Token(access_token=token, token_type="bearer", user=user)
+
 
 
 @router.get("/google-client-id")

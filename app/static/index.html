@@ -314,6 +314,49 @@
               <button type="button" class="tab-chat-control-btn active tab-chat-audio-btn" id="tab-chat-voice-toggle" title="Turn Audio Voice Output ON / OFF">
                 <span id="tab-chat-voice-icon">🔊</span> <span class="tab-chat-btn-text" id="tab-chat-voice-label">Voice: ON</span>
               </button>
+              <!-- Sweet & Soothing Voice Customization Dropdown -->
+              <div class="tab-chat-voice-picker-wrapper" style="position: relative; display: inline-block;">
+                <button type="button" class="tab-chat-control-btn tab-chat-voice-picker-btn" id="tab-chat-voice-picker-btn" title="Sweet &amp; Soothing Voice Settings">
+                  <span>🌸</span> <span class="tab-chat-btn-text" id="tab-chat-voice-picker-label">Sweet Voice</span>
+                  <span style="font-size: 10px; margin-left: 2px;">▾</span>
+                </button>
+                <div class="tab-chat-voice-dropdown" id="tab-chat-voice-dropdown" style="display: none;">
+                  <div class="voice-dropdown-header">
+                    <span class="voice-dropdown-title">🌸 Sweet &amp; Soothing Voice</span>
+                    <span class="voice-dropdown-badge">Empathetic AI</span>
+                  </div>
+                  <p class="voice-dropdown-desc">Tuned with gentle pace, melodic pitch, and soft cadence for comfortable transgender &amp; healthcare guidance.</p>
+                  
+                  <label class="voice-dropdown-label" for="tab-chat-voice-select">Voice Character:</label>
+                  <select class="tab-chat-voice-select" id="tab-chat-voice-select">
+                    <option value="sweet" selected>🌸 Sweet &amp; Soothing Female (Auto-Selected Best)</option>
+                    <option value="in_female">🇮🇳 Indian English Female (Neerja / Heera / Veena)</option>
+                    <option value="natural_female">🎙️ Natural Empathetic (Jenny / Aria)</option>
+                    <option value="uk_female">🇬🇧 Gentle British (Sonia / UK Female)</option>
+                    <option value="us_female">🇺🇸 Gentle US Female (Samantha / Zira)</option>
+                  </select>
+
+                  <label class="voice-dropdown-label" for="tab-chat-tone-select">Tone &amp; Cadence:</label>
+                  <select class="tab-chat-voice-select" id="tab-chat-tone-select">
+                    <option value="sweet_soothing" selected>🌸 Sweet &amp; Melodic (Warm pitch 1.08, gentle pace)</option>
+                    <option value="calm_gentle">🕊️ Calm &amp; Gentle (Soft tone, relaxed pace)</option>
+                    <option value="crisp_clear">⚡ Crisp &amp; Clear (Standard pace)</option>
+                  </select>
+
+                  <div class="voice-detected-info" id="voice-detected-info">
+                    <span>🎙️ Detected: <strong id="voice-detected-name">Loading voice...</strong></span>
+                  </div>
+
+                  <div class="voice-dropdown-actions">
+                    <button type="button" class="voice-test-btn" id="tab-chat-voice-test-btn" title="Hear an instant voice sample">
+                      <span>▶️</span> Test Sweet Voice
+                    </button>
+                    <button type="button" class="voice-close-btn" id="tab-chat-voice-close-btn">
+                      Done
+                    </button>
+                  </div>
+                </div>
+              </div>
               <button type="button" class="tab-chat-control-btn tab-chat-stop-btn" id="tab-chat-stop-speaking-btn" title="Stop Audio Speech" style="display: none;">
                 <span>⏹️</span> <span class="tab-chat-btn-text">Stop</span>
               </button>
@@ -1026,8 +1069,8 @@
         </div>
       </div>
       <div class="bi-chat-header-actions">
-        <button type="button" class="bi-chat-tool-btn bi-chat-audio-btn active" id="bi-chat-voice-toggle" title="Turn Audio Voice Output ON / OFF">
-          <span id="bi-chat-voice-icon">🔊</span> <span id="bi-chat-voice-label">Audio: ON</span>
+        <button type="button" class="bi-chat-tool-btn bi-chat-audio-btn active" id="bi-chat-voice-toggle" title="Turn Audio Output ON / OFF (Sweet &amp; Soothing Female Voice)">
+          <span id="bi-chat-voice-icon">🌸</span> <span id="bi-chat-voice-label">Voice: Sweet</span>
         </button>
         <button type="button" class="bi-chat-tool-btn bi-chat-stop-btn" id="bi-chat-stop-btn" title="Stop Audio Speech">
           <span>⏹️</span> <span>Stop</span>
