@@ -100,7 +100,7 @@ const SweetVoiceEngine = {
     return this.maleKeywords.some(keyword => lower.includes(keyword));
   },
 
-  getSweetFemaleVoice(profile) {
+  getSweetFemaleVoice(profile, lang = "en") {
     if (!this.availableVoices || this.availableVoices.length === 0) {
       this.loadVoices();
     }
@@ -117,7 +117,7 @@ const SweetVoiceEngine = {
       const hasFemaleName = this.hindiFemaleKeywords.some(k => n.includes(k)) || n.includes("female");
       return isHi && (hasFemaleName || !this.isMaleVoice(v));
     });
-    if (profile === "hi_female" && hiVoice) return hiVoice;
+    if ((profile === "hi_female" || lang === "hi") && hiVoice) return hiVoice;
 
     // Priority 2: Indian English Female (Neerja, Heera, Veena)
     for (const name of this.indianEnFemaleKeywords) {
@@ -200,12 +200,16 @@ const SweetVoiceEngine = {
     utterance.pitch = 1.1;
     utterance.volume = 1.0;
 
-    const bestVoice = this.getSweetFemaleVoice(options.profile || this.currentProfile);
+    const activeLang = options.lang || (window.__getChatLanguage ? window.__getChatLanguage() : "en");
+    const isHindiText = /[\u0900-\u097F]/.test(speechScript) || activeLang === "hi";
+    const effectiveLang = isHindiText ? "hi" : "en";
+
+    const bestVoice = this.getSweetFemaleVoice(options.profile || this.currentProfile, effectiveLang);
     if (bestVoice) {
       utterance.voice = bestVoice;
-      utterance.lang = bestVoice.lang || "en-IN";
+      utterance.lang = bestVoice.lang || (effectiveLang === "hi" ? "hi-IN" : "en-IN");
     } else {
-      utterance.lang = "en-IN";
+      utterance.lang = effectiveLang === "hi" ? "hi-IN" : "en-IN";
     }
 
     window.__activeSpeechUtterance = utterance;
@@ -2462,6 +2466,106 @@ function escapeHtml(str) {
 }
 
 // ==========================================================================
+// Chat Language Controller (EN | हिंदी)
+// ==========================================================================
+let currentChatLanguage = localStorage.getItem("bi_chat_lang") || "en";
+let isChatLanguageChosen = localStorage.getItem("bi_chat_lang_chosen") === "true";
+
+window.__getChatLanguage = function() {
+  return currentChatLanguage === "hi" ? "hi" : "en";
+};
+
+window.__setChatLanguage = function(lang) {
+  currentChatLanguage = lang === "hi" ? "hi" : "en";
+  localStorage.setItem("bi_chat_lang", currentChatLanguage);
+  localStorage.setItem("bi_chat_lang_chosen", "true");
+  isChatLanguageChosen = true;
+
+  // Sync header toggle buttons in both tabs
+  document.querySelectorAll("#tab-lang-btn-en, #float-lang-btn-en").forEach((btn) => {
+    btn.classList.toggle("active", currentChatLanguage === "en");
+  });
+  document.querySelectorAll("#tab-lang-btn-hi, #float-lang-btn-hi").forEach((btn) => {
+    btn.classList.toggle("active", currentChatLanguage === "hi");
+  });
+
+  // Re-sync starter prompt chips in tab chat
+  if (window.__syncTabChatStarterPrompts) {
+    window.__syncTabChatStarterPrompts(currentChatLanguage);
+  }
+};
+
+function getBilingualGreeting(lang) {
+  const isHi = lang === "hi";
+  if (isHi) {
+    return {
+      role: "assistant",
+      content:
+        "### 🙏 नमस्ते! Beyond Identity में आपका स्वागत है\n\n" +
+        "मैं आपकी 24/7 सहायक हूँ। आप यहाँ पूरी तरह सुरक्षित हैं और आपकी पहचान मान्य है।\n\n" +
+        "नीचे दिए गए विकल्पों में से चुनें या अपना सवाल पूछें:\n\n" +
+        "1️⃣ 👨‍👩‍👧 **परिवार व रिश्तेदार** — 'क्या हमसे कुछ गलत हुआ?', 'क्या ये बीमारी है?', 'हम कैसे सपोर्ट करें?'\n" +
+        "2️⃣ 🌈 **पहचान व बातचीत** — मैं गे हूँ, मैं ट्रांसजेंडर हूँ, डर या भ्रम महसूस होना\n" +
+        "3️⃣ 💼 **नौकरी व करियर** — वेरीफाइड ट्रांस-इन्क्लूसिव नौकरियाँ\n" +
+        "4️⃣ 🏠 **आवास व शेल्टर** — गरिमा गृह सुरक्षित ट्रांजिट शेल्टर\n" +
+        "5️⃣ 🩺 **स्वास्थ्य व सर्जरी** — आयुष्मान भारत ₹5 लाख योजना व HRT रोडमैप\n" +
+        "6️⃣ 🚨 **आपातकालीन सहायता** — 24/7 Tele-MANAS (14416) व कम्युनिटी हेल्पलाइन (868989330)",
+      suggestions: [],
+      suggested_prompts: [
+        "मेरा बच्चा ट्रांसजेंडर है, क्या हमसे कुछ गलत हुआ?",
+        "क्या ये बीमारी है?",
+        "हम कैसे सपोर्ट करें?",
+        "मैं गे हूँ",
+        "मैं ट्रांसजेंडर हूँ",
+        "मुझे डर लग रहा है",
+        "भारत में मेरे क्या अधिकार हैं?",
+        "🚨 आपातकालीन हेल्पलाइन (14416)",
+      ],
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+  } else {
+    return {
+      role: "assistant",
+      content:
+        "### 🙏 Namaste! Welcome to Beyond Identity\n\n" +
+        "I am your 24/7 confidential Rights & Healthcare Assistant. You are safe and valid here just as you are.\n\n" +
+        "Please choose an option below or type your question:\n\n" +
+        "1️⃣ 👨‍👩‍👧 **Family & Parents** — 'Did we do something wrong?', 'Is it an illness?', 'How to support our child?'\n" +
+        "2️⃣ 🌈 **Identity & Affirmation** — I am gay, I am trans, feeling confused or scared\n" +
+        "3️⃣ 💼 **Jobs & Opportunities** — Verified trans-inclusive workplaces\n" +
+        "4️⃣ 🏠 **Housing & Shelters** — Garima Greh transit shelters\n" +
+        "5️⃣ 🩺 **Healthcare & HRT** — Ayushman Bharat ₹5 Lakh package & HRT roadmap\n" +
+        "6️⃣ 🚨 **Crisis & Helplines** — 24/7 Tele-MANAS (14416) & Community Helpline (868989330)",
+      suggestions: [],
+      suggested_prompts: [
+        "My child is transgender, did we do something wrong?",
+        "Is it a disease? Can it be cured?",
+        "How can we support our child?",
+        "I am gay",
+        "I am transgender",
+        "I am scared",
+        "What rights do transgender persons have in India?",
+        "🚨 24/7 Crisis Helpline (14416)",
+      ],
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+  }
+}
+
+function getLanguageSelectionCard() {
+  return {
+    role: "assistant",
+    isLangSelector: true,
+    content:
+      "### 🌐 Language Selection / भाषा का चयन\n\n" +
+      "**Hi! Please choose your language.**\n" +
+      "**नमस्ते! कृपया अपनी भाषा चुनें।**\n\n" +
+      "Chat mein ek **Language: EN | हिंदी** toggle hamesha upar dikhega taaki aap beech mein badal sakein.",
+    timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+  };
+}
+
+// ==========================================================================
 // 24/7 Beyond Identity Chatbox Controller
 // ==========================================================================
 function initChatbox() {
@@ -2491,29 +2595,12 @@ function initChatbox() {
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
 
-  const defaultGreeting = {
-    role: "assistant",
-    content:
-      "### 🙏 Namaste! Welcome to Beyond Identity\n\n" +
-      "I am your 24/7 Assistant. How are you doing today?\n\n" +
-      "Please choose an option below or type your question:\n\n" +
-      "1️⃣ 💼 **Jobs & Employment** — Find verified trans-inclusive jobs & career opportunities\n" +
-      "2️⃣ 🏠 **Housing & Shelters** — Safe rental housing & Garima Greh transit shelters\n" +
-      "3️⃣ 🩺 **Healthcare & HRT** — Hormone therapy roadmap & Ayushman Bharat ₹5L coverage\n" +
-      "4️⃣ ⚖️ **Legal Rights** — TG Act 2019 protections, Certificate of Identity & free legal aid\n" +
-      "5️⃣ 🚨 **Crisis & Helplines** — 24/7 Community Crisis Helpline (868989330)",
-    suggestions: [],
-    suggested_prompts: [
-      "💼 Find Verified Jobs",
-      "🏠 Safe Housing & Transit Shelters",
-      "🩺 Healthcare & HRT Guidance",
-      "⚖️ Know My Legal Rights",
-      "🚨 24/7 Crisis Helpline (868989330)",
-    ],
-    timestamp: formatTime(new Date()),
-  };
-
-  let biChatHistory = [defaultGreeting];
+  let biChatHistory = [];
+  if (!isChatLanguageChosen) {
+    biChatHistory.push(getLanguageSelectionCard());
+  } else {
+    biChatHistory.push(getBilingualGreeting(currentChatLanguage));
+  }
 
   function updateVoiceIcon() {
     if (!voiceToggle) return;
@@ -2544,7 +2631,7 @@ function initChatbox() {
   function speakText(text) {
     if (!("speechSynthesis" in window) || !biChatVoiceEnabled) return;
     if (!text) return;
-    SweetVoiceEngine.speak(text);
+    SweetVoiceEngine.speak(text, { lang: currentChatLanguage });
   }
 
   function openChatbox() {
@@ -2637,7 +2724,49 @@ function initChatbox() {
 
       const bubble = document.createElement("div");
       bubble.className = "bi-chat-bubble";
-      bubble.innerHTML = isUser ? escapeHtml(msg.content) : parseMarkdown(msg.content);
+
+      // First-time Language Selection Welcome Card
+      if (!isUser && msg.isLangSelector) {
+        const welcomeCard = document.createElement("div");
+        welcomeCard.className = "chat-lang-welcome-card";
+        welcomeCard.innerHTML = `
+          <div class="lang-welcome-header">
+            <span class="lang-welcome-badge">🌐 Language / भाषा</span>
+            <span class="lang-welcome-title">Language Selection</span>
+          </div>
+          <div class="lang-welcome-text">
+            <strong>Hi! Please choose your language.</strong><br/>
+            <span>नमस्ते! कृपया अपनी भाषा चुनें।</span>
+          </div>
+          <div class="lang-welcome-options">
+            <button type="button" class="lang-select-cta" data-choice-lang="en">
+              <span>🇬🇧</span> English
+            </button>
+            <button type="button" class="lang-select-cta" data-choice-lang="hi">
+              <span>🇮🇳</span> हिंदी (Hindi)
+            </button>
+          </div>
+        `;
+        welcomeCard.querySelectorAll(".lang-select-cta").forEach((b) => {
+          b.onclick = () => {
+            const chosen = b.getAttribute("data-choice-lang");
+            window.__setChatLanguage(chosen);
+            biChatHistory = [getBilingualGreeting(chosen)];
+            renderChatMessages();
+            if (biChatVoiceEnabled) {
+              const greetText = chosen === "hi"
+                ? "नमस्ते! Beyond Identity में आपका स्वागत है। मैं आपकी सहायक हूँ।"
+                : "Namaste! Welcome to Beyond Identity. I am your 24/7 assistant.";
+              speakText(greetText);
+            }
+          };
+        });
+        bubble.appendChild(welcomeCard);
+      }
+
+      const bodyDiv = document.createElement("div");
+      bodyDiv.innerHTML = isUser ? escapeHtml(msg.content) : parseMarkdown(msg.content);
+      bubble.appendChild(bodyDiv);
 
       // Suggestions from Database
       if (!isUser && msg.suggestions && msg.suggestions.length > 0) {
@@ -2664,7 +2793,7 @@ function initChatbox() {
       }
 
       // Action Buttons (Listen Aloud & Copy)
-      if (!isUser) {
+      if (!isUser && !msg.isLangSelector) {
         const actions = document.createElement("div");
         actions.className = "bi-chat-actions";
 
@@ -2706,6 +2835,32 @@ function initChatbox() {
 
         bubbleWrap.appendChild(bubble);
         bubbleWrap.appendChild(actions);
+
+        // Language Mismatch Switch Prompt Card
+        if (msg.language_switch_prompt) {
+          const switchCard = document.createElement("div");
+          switchCard.className = "lang-switch-card";
+          const targetLang = msg.detected_language || (currentChatLanguage === "en" ? "hi" : "en");
+          switchCard.innerHTML = `
+            <div class="lang-switch-prompt-text">
+              <span>💬</span> <strong>${escapeHtml(msg.language_switch_prompt)}</strong>
+            </div>
+            <button type="button" class="btn-lang-switch-act">
+              ${targetLang === "hi" ? "हाँ, हिंदी में बदलें" : "Yes, switch to English"}
+            </button>
+          `;
+          const actBtn = switchCard.querySelector(".btn-lang-switch-act");
+          if (actBtn) {
+            actBtn.onclick = () => {
+              window.__setChatLanguage(targetLang);
+              switchCard.innerHTML = `<span>✓</span> <strong>${targetLang === "hi" ? "भाषा बदलकर हिंदी कर दी गई है।" : "Switched to English."}</strong>`;
+              if (biChatVoiceEnabled) {
+                SweetVoiceEngine.speak(targetLang === "hi" ? "भाषा बदल दी गई है।" : "Language switched to English.", { lang: targetLang });
+              }
+            };
+          }
+          bubbleWrap.appendChild(switchCard);
+        }
 
         // Suggested Prompt Chips (only on latest assistant message)
         if (idx === biChatHistory.length - 1 && msg.suggested_prompts && msg.suggested_prompts.length > 0) {
@@ -2789,6 +2944,7 @@ function initChatbox() {
           query: cleanText,
           history: historyPayload,
           category_filter: biChatActiveCategory || null,
+          language: currentChatLanguage,
         }),
       });
 
@@ -2807,6 +2963,8 @@ function initChatbox() {
         content: data.reply,
         suggestions: data.suggestions || [],
         suggested_prompts: data.suggested_prompts || [],
+        language_switch_prompt: data.language_switch_prompt,
+        detected_language: data.detected_language,
         timestamp: formatTime(new Date()),
       });
 
@@ -2837,7 +2995,7 @@ function initChatbox() {
 
   // Clear Chat History
   function clearChat() {
-    biChatHistory = [defaultGreeting];
+    biChatHistory = [getBilingualGreeting(currentChatLanguage)];
     if ("speechSynthesis" in window) {
       window.speechSynthesis.cancel();
     }
@@ -2855,7 +3013,7 @@ function initChatbox() {
 
     try {
       biActiveSpeechRec = new SpeechRec();
-      biActiveSpeechRec.lang = "en-IN";
+      biActiveSpeechRec.lang = currentChatLanguage === "hi" ? "hi-IN" : "en-IN";
       biActiveSpeechRec.continuous = false;
       biActiveSpeechRec.interimResults = false;
 
@@ -2915,6 +3073,28 @@ function initChatbox() {
           sendMessage(`Show me verified ${catLabel} resources and rights`);
         }
       });
+    });
+  }
+
+  // Header Language Switch Buttons
+  const floatLangEn = document.getElementById("float-lang-btn-en");
+  const floatLangHi = document.getElementById("float-lang-btn-hi");
+  if (floatLangEn) {
+    floatLangEn.addEventListener("click", () => {
+      window.__setChatLanguage("en");
+      if (biChatHistory.length === 1 && !biChatHistory[0].isLangSelector) {
+        biChatHistory = [getBilingualGreeting("en")];
+      }
+      renderChatMessages();
+    });
+  }
+  if (floatLangHi) {
+    floatLangHi.addEventListener("click", () => {
+      window.__setChatLanguage("hi");
+      if (biChatHistory.length === 1 && !biChatHistory[0].isLangSelector) {
+        biChatHistory = [getBilingualGreeting("hi")];
+      }
+      renderChatMessages();
     });
   }
 
@@ -2993,15 +3173,12 @@ function initTabChatbox() {
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
 
-  const defaultGreeting = {
-    role: "assistant",
-    content: "🙏 Namaste! I'm Beyond Identity — a verified platform where you get trustworthy information about transgender rights, healthcare, and opportunities.",
-    suggestions: [],
-    suggested_prompts: [],
-    timestamp: formatTime(new Date()),
-  };
-
-  let tabChatHistory = [defaultGreeting];
+  let tabChatHistory = [];
+  if (!isChatLanguageChosen) {
+    tabChatHistory.push(getLanguageSelectionCard());
+  } else {
+    tabChatHistory.push(getBilingualGreeting(currentChatLanguage));
+  }
 
   function updateVoiceUI() {
     if (!voiceToggle) return;
@@ -3046,6 +3223,7 @@ function initTabChatbox() {
     if (!text) return;
 
     SweetVoiceEngine.speak(text, {
+      lang: currentChatLanguage,
       onstart: () => {
         if (avatarBox) avatarBox.classList.add("is-talking");
         if (speakingBadge) speakingBadge.classList.add("active");
@@ -3285,6 +3463,45 @@ function initTabChatbox() {
         bubble.appendChild(artCard);
       }
 
+      // First-time Language Selection Welcome Card
+      if (!isUser && msg.isLangSelector) {
+        const welcomeCard = document.createElement("div");
+        welcomeCard.className = "chat-lang-welcome-card";
+        welcomeCard.innerHTML = `
+          <div class="lang-welcome-header">
+            <span class="lang-welcome-badge">🌐 Language / भाषा</span>
+            <span class="lang-welcome-title">Language Selection</span>
+          </div>
+          <div class="lang-welcome-text">
+            <strong>Hi! Please choose your language.</strong><br/>
+            <span>नमस्ते! कृपया अपनी भाषा चुनें।</span>
+          </div>
+          <div class="lang-welcome-options">
+            <button type="button" class="lang-select-cta" data-choice-lang="en">
+              <span>🇬🇧</span> English
+            </button>
+            <button type="button" class="lang-select-cta" data-choice-lang="hi">
+              <span>🇮🇳</span> हिंदी (Hindi)
+            </button>
+          </div>
+        `;
+        welcomeCard.querySelectorAll(".lang-select-cta").forEach((b) => {
+          b.onclick = () => {
+            const chosen = b.getAttribute("data-choice-lang");
+            window.__setChatLanguage(chosen);
+            tabChatHistory = [getBilingualGreeting(chosen)];
+            renderMessages();
+            if (tabVoiceEnabled) {
+              const greetText = chosen === "hi"
+                ? "नमस्ते! Beyond Identity में आपका स्वागत है। मैं आपकी सहायक हूँ।"
+                : "Namaste! Welcome to Beyond Identity. I am your 24/7 assistant.";
+              speakText(greetText);
+            }
+          };
+        });
+        bubble.appendChild(welcomeCard);
+      }
+
       const bodyDiv = document.createElement("div");
       bodyDiv.innerHTML = isUser ? escapeHtml(msg.content) : parseMarkdown(msg.content);
       bubble.appendChild(bodyDiv);
@@ -3316,7 +3533,7 @@ function initTabChatbox() {
       bubbleWrap.appendChild(bubble);
 
       // Actions & Prompts for Assistant messages
-      if (!isUser) {
+      if (!isUser && !msg.isLangSelector) {
         const actionsRow = document.createElement("div");
         actionsRow.className = "tab-chat-actions-row";
 
@@ -3355,6 +3572,32 @@ function initTabChatbox() {
         actionsRow.appendChild(copyBtn);
 
         bubbleWrap.appendChild(actionsRow);
+
+        // Language Mismatch Switch Prompt Card
+        if (msg.language_switch_prompt) {
+          const switchCard = document.createElement("div");
+          switchCard.className = "lang-switch-card";
+          const targetLang = msg.detected_language || (currentChatLanguage === "en" ? "hi" : "en");
+          switchCard.innerHTML = `
+            <div class="lang-switch-prompt-text">
+              <span>💬</span> <strong>${escapeHtml(msg.language_switch_prompt)}</strong>
+            </div>
+            <button type="button" class="btn-lang-switch-act">
+              ${targetLang === "hi" ? "हाँ, हिंदी में बदलें" : "Yes, switch to English"}
+            </button>
+          `;
+          const actBtn = switchCard.querySelector(".btn-lang-switch-act");
+          if (actBtn) {
+            actBtn.onclick = () => {
+              window.__setChatLanguage(targetLang);
+              switchCard.innerHTML = `<span>✓</span> <strong>${targetLang === "hi" ? "भाषा बदलकर हिंदी कर दी गई है।" : "Switched to English."}</strong>`;
+              if (tabVoiceEnabled) {
+                speakText(targetLang === "hi" ? "भाषा बदल दी गई है।" : "Language switched to English.");
+              }
+            };
+          }
+          bubbleWrap.appendChild(switchCard);
+        }
 
         // Suggested Follow-up Prompts (Only on the last message)
         if (idx === tabChatHistory.length - 1 && msg.suggested_prompts && msg.suggested_prompts.length > 0) {
@@ -3447,6 +3690,7 @@ function initTabChatbox() {
           query: cleanText,
           history: historyPayload,
           category_filter: tabActiveCategory || null,
+          language: currentChatLanguage,
         }),
       });
 
@@ -3465,6 +3709,8 @@ function initTabChatbox() {
         content: data.reply,
         suggestions: data.suggestions || [],
         suggested_prompts: data.suggested_prompts || [],
+        language_switch_prompt: data.language_switch_prompt,
+        detected_language: data.detected_language,
         timestamp: formatTime(new Date()),
       });
 
@@ -3498,7 +3744,7 @@ function initTabChatbox() {
 
   function clearChat() {
     stopSpeech();
-    tabChatHistory = [defaultGreeting];
+    tabChatHistory = [getBilingualGreeting(currentChatLanguage)];
     renderMessages();
     const starterContainer = document.getElementById("tab-chat-quick-prompts-container");
     if (starterContainer) {
@@ -3518,7 +3764,7 @@ function initTabChatbox() {
 
     try {
       tabSpeechRec = new SpeechRec();
-      tabSpeechRec.lang = "en-IN";
+      tabSpeechRec.lang = currentChatLanguage === "hi" ? "hi-IN" : "en-IN";
       tabSpeechRec.continuous = false;
       tabSpeechRec.interimResults = false;
 
@@ -3574,15 +3820,74 @@ function initTabChatbox() {
     });
   }
 
-  // Starter quick questions
-  if (starterPrompts) {
-    starterPrompts.querySelectorAll(".tab-chat-starter-chip").forEach((chip) => {
-      chip.addEventListener("click", () => {
-        const promptText = chip.getAttribute("data-prompt") || chip.innerText.trim();
-        sendTabMessage(promptText);
-      });
+  // Starter quick questions synchronization
+  window.__syncTabChatStarterPrompts = function(lang) {
+    const starterContainer = document.getElementById("tab-chat-starter-prompts");
+    if (!starterContainer) return;
+    const isHi = lang === "hi";
+    const prompts = isHi ? [
+      { label: "👨‍👩‍👧 क्या हमसे कुछ गलत हुआ?", query: "मेरा बच्चा ट्रांसजेंडर है, क्या हमसे कुछ गलत हुआ?" },
+      { label: "👨‍👩‍👧 क्या ये बीमारी है?", query: "क्या ये बीमारी है, ठीक हो सकती है?" },
+      { label: "👨‍👩‍👧 हम कैसे सपोर्ट करें?", query: "हम कैसे सपोर्ट करें?" },
+      { label: "👨‍👩‍👧 क्या शादी व नौकरी कर सकते हैं?", query: "क्या transgender log job shaadi padhai kar sakte hain" },
+      { label: "🌈 मैं गे हूँ (I am gay)", query: "main gay hu" },
+      { label: "🏳️‍⚧️ मैं ट्रांसजेंडर हूँ", query: "main transgender hu" },
+      { label: "💙 मुझे डर लग रहा है", query: "mujhe darr lag raha hai" },
+      { label: "⚖️ TG कानून 2019 अधिकार", query: "भारत में ट्रांसजेंडर व्यक्तियों के क्या अधिकार हैं?" },
+      { label: "🏠 गरिमा गृह शेल्टर", query: "गरिमा गृह शेल्टर कहाँ हैं और क्या सुविधा मिलती है?" },
+      { label: "🩺 आयुष्मान भारत ₹5L", query: "क्या आयुष्मान भारत में सर्जरी व HRT शामिल है?" },
+      { label: "🚨 24/7 हेल्पलाइन (14416)", query: "आपातकालीन हेल्पलाइन नंबर क्या है?" },
+    ] : [
+      { label: "👨‍👩‍👧 Did we do something wrong?", query: "My child is transgender, did we do something wrong?" },
+      { label: "👨‍👩‍👧 Is it an illness? Can it be cured?", query: "Is it a disease? Can it be cured?" },
+      { label: "👨‍👩‍👧 How can we support our child?", query: "How can we support them?" },
+      { label: "👨‍👩‍👧 Can trans people study, work, marry?", query: "Can transgender people study, work or marry?" },
+      { label: "🌈 I am gay", query: "I am gay" },
+      { label: "🏳️‍⚧️ I am transgender", query: "I am transgender" },
+      { label: "💙 I feel scared / confused", query: "I am scared" },
+      { label: "⚖️ TG Act 2019 Rights", query: "What rights do transgender persons have in India?" },
+      { label: "🏠 Garima Greh Shelters", query: "Where are Garima Greh shelter homes located and what support do they provide?" },
+      { label: "🩺 Ayushman Bharat ₹5L", query: "Is gender-affirming surgery or HRT covered under Ayushman Bharat PM-JAY?" },
+      { label: "🚨 24/7 Crisis Helpline (14416)", query: "What is the 24/7 crisis helpline number for transgender persons?" },
+    ];
+
+    starterContainer.innerHTML = "";
+    prompts.forEach((p) => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "tab-chat-starter-chip";
+      chip.setAttribute("data-prompt", p.query);
+      chip.innerHTML = `<span>${escapeHtml(p.label)}</span>`;
+      chip.onclick = () => {
+        sendTabMessage(p.query);
+      };
+      starterContainer.appendChild(chip);
+    });
+  };
+
+  // Header Language Switch Buttons for Tab Chat
+  const tabLangEn = document.getElementById("tab-lang-btn-en");
+  const tabLangHi = document.getElementById("tab-lang-btn-hi");
+  if (tabLangEn) {
+    tabLangEn.addEventListener("click", () => {
+      window.__setChatLanguage("en");
+      if (tabChatHistory.length === 1 && !tabChatHistory[0].isLangSelector) {
+        tabChatHistory = [getBilingualGreeting("en")];
+      }
+      renderMessages();
     });
   }
+  if (tabLangHi) {
+    tabLangHi.addEventListener("click", () => {
+      window.__setChatLanguage("hi");
+      if (tabChatHistory.length === 1 && !tabChatHistory[0].isLangSelector) {
+        tabChatHistory = [getBilingualGreeting("hi")];
+      }
+      renderMessages();
+    });
+  }
+
+  window.__syncTabChatStarterPrompts(currentChatLanguage);
 
   // Quick prompt pills above input bar
   const quickQueryPills = document.getElementById("tab-chat-quick-query-pills");

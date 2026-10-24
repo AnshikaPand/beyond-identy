@@ -394,6 +394,7 @@ class ChatbotQueryRequest(BaseModel):
     history: Optional[List[dict]] = []
     category_filter: Optional[str] = None
     location_filter: Optional[str] = None
+    language: Optional[str] = "en"
 
 
 class ChatbotQueryResponse(BaseModel):
@@ -403,6 +404,9 @@ class ChatbotQueryResponse(BaseModel):
     user_cases: List[ChatbotCaseOut] = []
     suggested_prompts: List[str] = []
     total_database_records: int = 0
+    language: Optional[str] = "en"
+    detected_language: Optional[str] = None
+    language_switch_prompt: Optional[str] = None
 
 
 # ==========================================

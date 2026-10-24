@@ -800,6 +800,47 @@ def generate_curated_reply(
     return reply, suggested_prompts
 
 
+def detect_query_language(text: str) -> Optional[str]:
+    """
+    Detects if the query is in Hindi (Devanagari or Romanized Hinglish) vs English.
+    Returns 'hi', 'en', or None if indeterminate.
+    """
+    if not text:
+        return None
+    # 1. Devanagari Unicode Block (U+0900 to U+097F)
+    if re.search(r"[\u0900-\u097f]", text):
+        return "hi"
+
+    # 2. Strong Romanized Hindi / Hinglish keywords
+    hi_markers = [
+        r"\bmain\b", r"\bmai\b", r"\bmera\b", r"\bmeri\b", r"\bmere\b",
+        r"\bhum\b", r"\bhumne\b", r"\bhumein\b", r"\bmujhe\b", r"\bmujh\b",
+        r"\bkya\b", r"\bhai\b", r"\bhain\b", r"\bhoon\b", r"\bhu\b",
+        r"\bnahi\b", r"\bna\b", r"\bka\b", r"\bki\b", r"\bke\b", r"\bko\b",
+        r"\bse\b", r"\bpar\b", r"\bpe\b", r"\bmein\b", r"\bme\b",
+        r"\bkarna\b", r"\bkar\b", r"\bkarein\b", r"\bkarta\b", r"\bchahiye\b",
+        r"\bkaise\b", r"\bkyu\b", r"\bkyun\b", r"\bdarr\b", r"\blag\b",
+        r"\braha\b", r"\brahi\b", r"\bbaat\b", r"\bbimari\b", r"\bbachcha\b",
+        r"\bshukriya\b", r"\bdhanyawad\b", r"\btheek\b", r"\bsahi\b",
+        r"\bshaadi\b", r"\bpadhai\b", r"\bmarna\b"
+    ]
+    hi_count = sum(1 for p in hi_markers if re.search(p, text, re.IGNORECASE))
+    if hi_count >= 2 or (len(text.split()) <= 4 and hi_count >= 1):
+        return "hi"
+
+    # 3. English indicators when no Hindi markers matched
+    en_markers = [
+        r"\bi\b", r"\bam\b", r"\bthe\b", r"\bis\b", r"\bare\b", r"\byou\b",
+        r"\bwhat\b", r"\bhow\b", r"\bcan\b", r"\bwe\b", r"\bdo\b", r"\bnot\b",
+        r"\bmy\b", r"\bchild\b", r"\bto\b", r"\bfor\b", r"\babout\b", r"\bthis\b"
+    ]
+    en_count = sum(1 for p in en_markers if re.search(p, text, re.IGNORECASE))
+    if en_count >= 2 and hi_count == 0:
+        return "en"
+
+    return None
+
+
 def answer_chatbot_query(
     db: Session,
     request: schemas.ChatbotQueryRequest,
@@ -811,10 +852,22 @@ def answer_chatbot_query(
     and returns a structured response conforming to friendly chatbot rules.
     """
     query = request.query.strip()
+    lang = (request.language or "en").lower().strip()
+    if lang not in ("en", "hi"):
+        lang = "en"
 
-    # Step 0: Check Built-in Q&A Knowledge Base first (Answers instantly)
+    # Step 0: Check Built-in Q&A Knowledge Base first with requested language
     from app.data import knowledge_base
-    kb_match = knowledge_base.find_best_match(query, threshold=0.65)
+    kb_match = knowledge_base.find_best_match(query, threshold=0.65, lang=lang)
+
+    # Detect language of current query to prompt language switch if mismatch occurs
+    detected_lang = detect_query_language(query)
+    lang_switch_prompt = None
+    if detected_lang and detected_lang != lang:
+        if lang == "en" and detected_lang == "hi":
+            lang_switch_prompt = "Kya aap language badalna chahenge? (Switch to हिंदी?)"
+        elif lang == "hi" and detected_lang == "en":
+            lang_switch_prompt = "Would you like to switch to English? (English mein badalna chahenge?)"
 
     # Count total verified database records
     total_records = db.query(models.Listing).filter(
@@ -975,15 +1028,33 @@ def answer_chatbot_query(
                 "Direct community crisis support is also available 24/7 at 868989330."
             )
             suggested_prompts = ["Call Tele-MANAS: 14416", "Emergency: 112"]
-        elif tag == "user_is_gay" or qid == 25:
+        elif tag in ("identity_gay", "user_is_gay") or qid == 25:
             intent = "user_is_gay"
-            suggested_prompts = ["Legal Rights in India (Section 377)", "Safe Spaces & Community Groups", "Tele-MANAS: 14416"]
-        elif tag == "user_is_lesbian" or qid == 26:
+            suggested_prompts = ["Section 377 Legal Rights", "Humsafar Trust Support", "Tele-MANAS: 14416"] if lang == "en" else ["धारा 377 और अधिकार", "हमसफ़र ट्रस्ट सहायता", "Tele-MANAS: 14416"]
+        elif tag in ("identity_lesbian", "user_is_lesbian") or qid == 26:
             intent = "user_is_lesbian"
-            suggested_prompts = ["Sappho for Equality & Support", "Legal Protections against Harassment", "Safe Housing"]
-        elif tag == "user_is_bisexual" or qid == 27:
+            suggested_prompts = ["Sappho for Equality & Support", "Legal Protections against Harassment", "Safe Housing"] if lang == "en" else ["सैफो फॉर इक्वैलिटी", "कानूनी अधिकार व सुरक्षा", "गरिमा गृह शेल्टर"]
+        elif tag in ("identity_bisexual", "user_is_bisexual") or qid == 27:
             intent = "user_is_bisexual"
-            suggested_prompts = ["LGBTQ+ Community Support", "Queer Affirmative Therapists", "Coming Out Advice"]
+            suggested_prompts = ["LGBTQ+ Community Support", "Queer Affirmative Therapists", "Coming Out Advice"] if lang == "en" else ["कम्युनिटी सपोर्ट ग्रुप्स", "काउंसलिंग व मानसिक स्वास्थ्य", "परिवार से बात करने के टिप्स"]
+        elif tag in ("identity_transgender", "user_is_transgender"):
+            intent = "user_is_transgender"
+            suggested_prompts = ["What are my legal rights in India?", "How to get TG Certificate", "Garima Greh Shelters"] if lang == "en" else ["भारत में मेरे क्या अधिकार हैं?", "TG सर्टिफिकेट कैसे बनवाएँ?", "गरिमा गृह शेल्टर"]
+        elif tag in ("identity_other", "user_is_nonbinary_queer"):
+            intent = "user_is_nonbinary_queer"
+            suggested_prompts = ["Pronouns & Terminology Guide", "Transgender Persons Act 2019", "Affirming Doctors"] if lang == "en" else ["Pronouns और पहचान गाइड", "ट्रांसजेंडर कानून 2019", "सपोर्ट ग्रुप्स"]
+        elif tag in ("identity_confused", "confused_need_help") or qid == 23:
+            intent = "confused_need_help"
+            suggested_prompts = ["Gender Identity Basics", "LGBTQ+ Affirmative Therapists", "Tele-MANAS: 14416"] if lang == "en" else ["जेंडर पहचान की बुनियादी बातें", "काउंसलर सहायता", "Tele-MANAS: 14416"]
+        elif tag == "scared":
+            intent = "scared"
+            suggested_prompts = ["Tele-MANAS: 14416 (24/7)", "Crisis Support: 868989330", "Emergency: 112"] if lang == "en" else ["Tele-MANAS: 14416 (24/7)", "सपोर्ट लाइन: 868989330", "आपातकालीन: 112"]
+        elif tag.startswith("family_"):
+            intent = tag
+            suggested_prompts = ["Tips for Friends & Family", "NGO Parents Support Groups", "Transgender Persons Act 2019"] if lang == "en" else ["माता-पिता के लिए टिप्स", "NGO सपोर्ट ग्रुप्स", "ट्रांसजेंडर कानून 2019"]
+        elif tag in ("crisis_self_harm", "self_harm_support", "crisis_safety"):
+            intent = "emergency_crisis"
+            suggested_prompts = ["Tele-MANAS: 14416", "Emergency: 112", "Helpline: 868989330"]
         elif tag == "user_is_asexual" or qid == 28:
             intent = "user_is_asexual"
             suggested_prompts = ["Indian Aces Community", "Queer Support Groups", "Affirming Mental Health"]
@@ -1022,6 +1093,9 @@ def answer_chatbot_query(
             user_cases=user_cases,
             suggested_prompts=suggested_prompts,
             total_database_records=total_records,
+            language=lang,
+            detected_language=detected_lang,
+            language_switch_prompt=lang_switch_prompt,
         )
 
     # Step 1: Secondary Intent and Live Database Search Fallback
@@ -1052,6 +1126,9 @@ def answer_chatbot_query(
             user_cases=user_cases,
             suggested_prompts=suggested_prompts,
             total_database_records=total_records,
+            language=lang,
+            detected_language=detected_lang,
+            language_switch_prompt=lang_switch_prompt,
         )
 
     # Curated Knowledge & Database Engine Fallback
@@ -1074,4 +1151,7 @@ def answer_chatbot_query(
         user_cases=user_cases,
         suggested_prompts=suggested_prompts,
         total_database_records=total_records,
+        language=lang,
+        detected_language=detected_lang,
+        language_switch_prompt=lang_switch_prompt,
     )

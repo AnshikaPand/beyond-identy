@@ -734,6 +734,150 @@
         "India has thriving, welcoming LGBTQ+ groups! In Mumbai: The Humsafar Trust and Yaariyan; Delhi: Naz Foundation and Harmless Hugs; Bengaluru: Sangama and Good As You; Kolkata: Sappho for Equality; Chennai: Sahodaran and Orinam; Hyderabad: Mobbera Foundation.",
         "You can connect with peer support groups, local Pride organizing collectives, and verified community NGOs right through the Beyond Identity platform."
       ]
+    },
+    {
+      "tag": "identity_gay",
+      "patterns": ["I am gay", "I'm gay", "main gay hu", "मैं गे हूँ", "i think i am gay", "am i gay", "i am a gay man"],
+      "responses": {
+        "en": "Thank you for telling me. That takes courage. Being gay is completely okay, natural and valid just as you are. I'm here to listen. Would you like to share more?",
+        "hi": "मुझे बताने के लिए शुक्रिया। ये कहना आसान नहीं होता। आप जैसे हैं, बिल्कुल ठीक हैं। मैं सुनने के लिए यहाँ हूँ। क्या आप कुछ और बताना चाहेंगे?"
+      }
+    },
+    {
+      "tag": "identity_lesbian",
+      "patterns": ["I am lesbian", "I'm a lesbian", "main lesbian hu", "मैं लेस्बियन हूँ", "am i lesbian", "i think i am lesbian"],
+      "responses": {
+        "en": "Thank you for trusting me with this. Who you are is valid, and you are safe here. Do you want to talk about how you're feeling?",
+        "hi": "मुझ पर भरोसा करने के लिए शुक्रिया। आप जो हैं, वो पूरी तरह सही है, और यहाँ आप सुरक्षित हैं। क्या आप अपनी feelings के बारे में बात करना चाहेंगी?"
+      }
+    },
+    {
+      "tag": "identity_bisexual",
+      "patterns": ["I am bisexual", "I'm bi", "main bisexual hu", "मैं बाइसेक्सुअल हूँ", "am i bi", "i think i am bi"],
+      "responses": {
+        "en": "Thank you for sharing that. Your identity is real and valid. Take your time, I'm here whenever you want to talk.",
+        "hi": "ये बताने के लिए शुक्रिया। आपकी पहचान असली और सही है। अपना समय लीजिए, जब भी बात करनी हो मैं यहाँ हूँ।"
+      }
+    },
+    {
+      "tag": "identity_transgender",
+      "patterns": ["I am transgender", "I'm trans", "main transgender hu", "मैं ट्रांसजेंडर हूँ", "mai trans hu", "i think i am trans"],
+      "responses": {
+        "en": "Thank you for trusting me. Your identity is valid and you are safe here. You can tell me your story, or I can share schemes, NGOs and support available for you.",
+        "hi": "मुझ पर भरोसा करने के लिए शुक्रिया। आपकी पहचान सही है और आप यहाँ सुरक्षित हैं। आप अपनी कहानी बता सकते हैं, या मैं आपके लिए योजनाएँ, NGO और सहायता की जानकारी दे सकता हूँ।"
+      }
+    },
+    {
+      "tag": "identity_other",
+      "patterns": ["I am non-binary", "I am queer", "I am intersex", "main non-binary hu", "मैं नॉन-बाइनरी हूँ", "main queer hu", "मैं क्वीयर हूँ"],
+      "responses": {
+        "en": "I'm glad you told me. Your identity is real and valid. How would you like to be addressed (name and pronouns)?",
+        "hi": "आपने बताया, ये अच्छा लगा। आपकी पहचान असली और सही है। आप किस नाम और pronouns से बुलाया जाना पसंद करेंगे?"
+      }
+    },
+    {
+      "tag": "identity_confused",
+      "patterns": ["I am confused about my identity", "I don't know who I am", "mujhe samajh nahi aa raha", "मैं अपनी पहचान को लेकर confuse हूँ", "i am confused about my gender"],
+      "responses": {
+        "en": "Feeling confused is completely normal. There is no rush. Understand yourself at your own pace. We can talk through it one step at a time if you like.",
+        "hi": "Confuse होना बिल्कुल सामान्य है। कोई जल्दी नहीं है। अपनी रफ़्तार से खुद को समझिए। चाहें तो हम एक-एक कदम करके बात कर सकते हैं।"
+      }
+    },
+    {
+      "tag": "scared",
+      "patterns": ["I am scared", "I'm afraid", "mujhe darr lag raha hai", "मुझे डर लग रहा है", "i am feeling scared"],
+      "responses": {
+        "en": "Your fear is understandable, and you are not alone. If you feel very overwhelmed, you can talk to Tele-MANAS for free, 24/7, at 14416.",
+        "hi": "आपका डर समझ में आता है, और आप अकेले नहीं हैं। अगर बहुत परेशान हैं, तो Tele-MANAS पर 14416 पर मुफ़्त बात कर सकते हैं (24/7)।"
+      }
+    },
+    {
+      "tag": "family_what_did_we_do_wrong",
+      "patterns": ["My child is transgender, did we do something wrong?", "mera bachcha transgender hai, humne kya galat kiya", "मेरा बच्चा ट्रांसजेंडर है, क्या हमसे कुछ गलत हुआ?", "did we do something wrong"],
+      "responses": {
+        "en": "You did nothing wrong. Gender identity is not caused by anyone's mistake or upbringing. It is a natural part of who a person is.",
+        "hi": "आपसे कुछ गलत नहीं हुआ। जेंडर पहचान किसी की गलती या परवरिश का नतीजा नहीं होती। ये इंसान का अपना हिस्सा है।"
+      }
+    },
+    {
+      "tag": "family_is_it_illness",
+      "patterns": ["Is it a disease?", "Can it be cured?", "kya ye bimari hai", "क्या ये बीमारी है, ठीक हो सकती है?", "is lgbtq a disease", "is being trans an illness"],
+      "responses": {
+        "en": "No, it is not an illness. The WHO and the Indian Psychiatric Society both state that being LGBTQ+ is not a disorder. It doesn't need to be 'fixed', it needs to be understood.",
+        "hi": "नहीं, ये बीमारी नहीं है। WHO और Indian Psychiatric Society दोनों मानते हैं कि LGBTQ+ होना कोई disorder नहीं है। इसे 'ठीक' करने की ज़रूरत नहीं, समझने की ज़रूरत है।"
+      }
+    },
+    {
+      "tag": "family_is_it_phase",
+      "patterns": ["Is this a phase?", "Will it change?", "kya ye phase hai", "क्या ये बस एक फेज़ है?", "is it just a phase"],
+      "responses": {
+        "en": "Most people know who they are long before they say it out loud. Pushing your child only makes them hide. Listening and standing by them is the best thing you can do.",
+        "hi": "ज़्यादातर लोग अपनी पहचान पहले से जानते हैं, बस बताने में समय लगता है। ज़ोर देने से बच्चा सिर्फ़ छुपाएगा। सुनना और साथ देना सबसे अच्छा है।"
+      }
+    },
+    {
+      "tag": "family_what_will_people_say",
+      "patterns": ["What will people say?", "log kya kahenge", "लोग क्या कहेंगे?", "what will society say"],
+      "responses": {
+        "en": "That worry is natural. But your child's safety and happiness matter more. If you like, I can share NGO support groups for parents.",
+        "hi": "ये चिंता स्वाभाविक है। पर आपके बच्चे की खुशी और सुरक्षा ज़्यादा ज़रूरी है। चाहें तो मैं माता-पिता के लिए NGO सपोर्ट ग्रुप बता सकता हूँ।"
+      }
+    },
+    {
+      "tag": "family_force_change",
+      "patterns": ["Can we force them to change?", "can conversion therapy change them", "force conversion therapy", "kya hum force karke badal sakte hain", "क्या हम उन्हें बदल सकते हैं?", "can we cure them"],
+      "responses": {
+        "en": "No. Forcing change or conversion therapy increases depression and anxiety. Love and support keep your child safer and happier.",
+        "hi": "नहीं। ज़बरदस्ती बदलने या conversion therapy से डिप्रेशन और anxiety बढ़ती है। प्यार और सपोर्ट से बच्चा ज़्यादा सुरक्षित और खुश रहता है।"
+      }
+    },
+    {
+      "tag": "family_what_to_do",
+      "patterns": ["What should we do now?", "ab humein kya karna chahiye", "अब हमें क्या करना चाहिए?", "what to do as parents"],
+      "responses": {
+        "en": "First step: listen calmly and say 'We are with you.' After that, I can share counselling options, NGO helplines and information about legal rights.",
+        "hi": "पहला कदम: शांति से सुनें और कहें 'हम तुम्हारे साथ हैं।' उसके बाद मैं counselling, NGO helpline और कानूनी अधिकारों की जानकारी दे सकता हूँ।"
+      }
+    },
+    {
+      "tag": "family_rights_job_marriage",
+      "patterns": ["Can transgender people study, work or marry?", "kya transgender log job shaadi padhai kar sakte hain", "क्या ट्रांसजेंडर लोग पढ़ाई, नौकरी, शादी कर सकते हैं?"],
+      "responses": {
+        "en": "Yes. Under the Transgender Persons (Protection of Rights) Act, 2019, they have equal rights. Schemes and NGO support are also available. I can share the list.",
+        "hi": "हाँ। Transgender Persons (Protection of Rights) Act, 2019 के तहत उन्हें समान अधिकार हैं। योजनाएँ और NGO सपोर्ट भी उपलब्ध हैं। मैं लिस्ट दे सकता हूँ।"
+      }
+    },
+    {
+      "tag": "family_contagious",
+      "patterns": ["Did friends influence them?", "Is it contagious?", "kya ye dost ki wajah se hua", "क्या ये दोस्तों की वजह से हुआ?"],
+      "responses": {
+        "en": "No. Identity is not caught from anyone. It comes from within the person.",
+        "hi": "नहीं। पहचान किसी से 'लगती' नहीं है। ये इंसान के अंदर से आती है।"
+      }
+    },
+    {
+      "tag": "family_surgery",
+      "patterns": ["Is surgery necessary?", "kya surgery zaruri hai", "क्या सर्जरी ज़रूरी है?"],
+      "responses": {
+        "en": "No. Not every transgender person wants surgery. It is a personal decision, taken with a doctor and counsellor.",
+        "hi": "नहीं। हर ट्रांसजेंडर व्यक्ति सर्जरी नहीं चाहता। ये उनका निजी फ़ैसला है, जो डॉक्टर और काउंसलर के साथ लिया जाता है।"
+      }
+    },
+    {
+      "tag": "family_how_to_support",
+      "patterns": ["How can we support them?", "hum kaise support karein", "हम कैसे सपोर्ट करें?", "how to support my trans child"],
+      "responses": {
+        "en": "Use their chosen name and pronouns, listen without judging, and remind them your love hasn't changed.",
+        "hi": "उनका चुना हुआ नाम और pronouns इस्तेमाल करें, बिना judge किए सुनें, और बताएँ कि आपका प्यार कम नहीं हुआ।"
+      }
+    },
+    {
+      "tag": "crisis_self_harm",
+      "patterns": ["I want to die", "I want to hurt myself", "main marna chahta hu", "मैं मरना चाहता हूँ", "मैं खुद को नुकसान पहुँचाना चाहता हूँ", "i want to kill myself"],
+      "responses": {
+        "en": "I'm really sorry you're in so much pain. You matter, and you are not alone. Please call Tele-MANAS at 14416 (free, 24/7) or the support line 868989330 right now. If you're in immediate danger, call 112.",
+        "hi": "मुझे बहुत दुख है कि आप इतने दर्द में हैं। आप मायने रखते हैं और अकेले नहीं हैं। कृपया अभी Tele-MANAS 14416 (मुफ़्त, 24/7) या सपोर्ट लाइन 868989330 पर कॉल करें। अगर तुरंत खतरा है, तो 112 पर कॉल करें।"
+      }
     }
   ]
 }
