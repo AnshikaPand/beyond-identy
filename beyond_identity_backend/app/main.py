@@ -97,6 +97,7 @@ ABOUT_FILE = STATIC_DIR / "about.html"
 DASHBOARD_FILE = STATIC_DIR / "dashboard.html"
 NGO_DASHBOARD_FILE = STATIC_DIR / "ngo-dashboard.html"
 CASES_FILE = STATIC_DIR / "cases.html"
+WELCOME_FILE = STATIC_DIR / "welcome.html"
 
 app = FastAPI(
     title="Beyond Identity API",
@@ -258,6 +259,24 @@ def serve_ngo_dashboard():
     if target.exists():
         return FileResponse(str(target))
     return {"message": "NGO Dashboard not found"}
+
+
+@app.get("/welcome")
+@app.get("/welcome.html")
+@app.get("/overview")
+def serve_welcome():
+    """Serves the 'Is website mein kya hai' Welcome / Overview page."""
+    target = WELCOME_FILE if WELCOME_FILE.exists() else INDEX_FILE
+    if target.exists():
+        return FileResponse(
+            str(target),
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
+    return {"message": "Welcome page not found"}
 
 
 @app.get("/cases")

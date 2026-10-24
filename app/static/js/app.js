@@ -981,10 +981,66 @@ function renderUserStatus() {
       });
     }
 
-    // Case Triage Desk is visible for all users and devices
+    // Role-specific action buttons & Case Triage Desk visibility
+    const isNGOorAdmin = currentUser && (currentUser.role === "verifier" || currentUser.role === "admin");
     const verifierTab = document.getElementById("tab-btn-cases");
+    const navLinkCases = document.getElementById("nav-link-cases");
+    const navMobileCases = document.getElementById("nav-mobile-cases-link");
+
     if (verifierTab) {
-      verifierTab.style.display = "flex";
+      verifierTab.style.display = isNGOorAdmin ? "flex" : "none";
+    }
+    if (navLinkCases) {
+      navLinkCases.style.display = isNGOorAdmin ? "" : "none";
+    }
+    if (navMobileCases) {
+      navMobileCases.style.display = isNGOorAdmin ? "" : "none";
+    }
+
+    // Role-based Quick Action buttons inside authenticated portal
+    const roleActionsContainer = document.getElementById("auth-role-quick-actions");
+    if (roleActionsContainer) {
+      if (isNGOorAdmin) {
+        // NGO Partner: Case Board, Case Triage Desk, Video Interviews
+        roleActionsContainer.innerHTML = `
+          <span style="font-size: 12.5px; font-weight: 700; color: #2DD4BF; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 6px;">
+            🏢 NGO Partner Quick Actions:
+          </span>
+          <a href="/cases" class="btn btn-secondary" style="padding: 10px 18px; font-size: 13px; text-decoration: none; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; border-radius: 10px; font-weight: 600;">
+            <span>📋</span> Case Board
+          </a>
+          <button type="button" class="btn btn-secondary" id="quick-action-triage" style="padding: 10px 18px; font-size: 13px; border-color: rgba(45, 212, 191, 0.4); color: #2DD4BF; border-radius: 10px; font-weight: 600; background: rgba(45, 212, 191, 0.08); cursor: pointer;">
+            <span>🛡️</span> Case Triage Desk
+          </button>
+          <button type="button" class="btn btn-secondary" id="quick-action-videos" style="padding: 10px 18px; font-size: 13px; border-color: rgba(244, 63, 94, 0.45); color: #FB7185; border-radius: 10px; font-weight: 700; background: rgba(244, 63, 94, 0.08); cursor: pointer;">
+            <span>🎥</span> Video Interviews
+          </button>
+        `;
+        const triageBtn = document.getElementById("quick-action-triage");
+        if (triageBtn) triageBtn.addEventListener("click", () => switchToTab("tab-cases"));
+        const videosBtn = document.getElementById("quick-action-videos");
+        if (videosBtn) videosBtn.addEventListener("click", () => switchToTab("tab-videos"));
+      } else {
+        // Community Member: Anonymous Report, Case Board, Video Interviews
+        roleActionsContainer.innerHTML = `
+          <span style="font-size: 12.5px; font-weight: 700; color: #E8749A; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 6px;">
+            🌈 Community Quick Actions:
+          </span>
+          <button type="button" class="btn btn-secondary" id="quick-action-report" style="padding: 10px 18px; font-size: 13px; border-color: rgba(244, 63, 94, 0.45); color: #FB7185; border-radius: 10px; font-weight: 600; background: rgba(244, 63, 94, 0.08); cursor: pointer;">
+            <span>🚨</span> Anonymous Report
+          </button>
+          <a href="/cases" class="btn btn-secondary" style="padding: 10px 18px; font-size: 13px; text-decoration: none; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; border-radius: 10px; font-weight: 600;">
+            <span>📋</span> Case Board
+          </a>
+          <button type="button" class="btn btn-secondary" id="quick-action-videos" style="padding: 10px 18px; font-size: 13px; border-color: rgba(244, 63, 94, 0.45); color: #FB7185; border-radius: 10px; font-weight: 700; background: rgba(244, 63, 94, 0.08); cursor: pointer;">
+            <span>🎥</span> Video Interviews
+          </button>
+        `;
+        const reportBtn = document.getElementById("quick-action-report");
+        if (reportBtn) reportBtn.addEventListener("click", () => switchToTab("tab-report"));
+        const videosBtn = document.getElementById("quick-action-videos");
+        if (videosBtn) videosBtn.addEventListener("click", () => switchToTab("tab-videos"));
+      }
     }
 
     // Show floating launcher for authenticated users if not on chat tab

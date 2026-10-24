@@ -6,6 +6,16 @@
   <title>Community Case Board — Beyond Identity | Public Discrimination Transparency</title>
   <meta name="description" content="Community Case Board: Anonymous, transparent view of discrimination cases reported on Beyond Identity. Explore real cases, welfare schemes matched, and NGO redressal across India." />
 
+  <!-- Immediate Auth Session Guardian -->
+  <script>
+    (function() {
+      const token = localStorage.getItem("bi_token") || localStorage.getItem("token") || sessionStorage.getItem("bi_token");
+      if (!token) {
+        window.location.href = "/login.html?relogin=1";
+      }
+    })();
+  </script>
+
   <!-- Google Fonts: Plus Jakarta Sans & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

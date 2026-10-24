@@ -78,10 +78,10 @@
       <!-- Center: Main Navigation Links + More Dropdown -->
       <nav class="nav-links-menu" id="nav-links-menu" aria-label="Main Navigation">
         <a href="#landing-hero-section" class="nav-link active">Home</a>
-        <a href="/cases" class="nav-link" id="nav-case-board-link">
+        <a href="/cases" class="nav-link auth-only-nav" id="nav-case-board-link">
           <span>📋</span> <strong>Case Board</strong>
         </a>
-        <a href="#tab-videos" class="nav-link" id="nav-videos-link">
+        <a href="#tab-videos" class="nav-link auth-only-nav" id="nav-videos-link">
           <span>🎥</span> <strong>Videos</strong>
         </a>
         <a href="#tab-chat" class="nav-link nav-chat-link auth-only-nav" id="nav-open-chat-btn">
@@ -158,9 +158,9 @@
     <div class="nav-mobile-drawer" id="nav-mobile-drawer">
       <div class="nav-mobile-drawer-inner">
         <a href="#landing-hero-section" class="nav-mobile-link active">Home</a>
-        <a href="/cases" class="nav-mobile-link" id="nav-mobile-caseboard-link">📋 Community Case Board</a>
+        <a href="/cases" class="nav-mobile-link auth-only-nav" id="nav-mobile-caseboard-link">📋 Community Case Board</a>
         <a href="/login" class="nav-mobile-link guest-only-nav" style="font-weight: 700; color: #14B8A6;">🔐 Sign In</a>
-        <a href="#tab-videos" class="nav-mobile-link" id="nav-mobile-videos-link">🎥 Video Interviews</a>
+        <a href="#tab-videos" class="nav-mobile-link auth-only-nav" id="nav-mobile-videos-link">🎥 Video Interviews</a>
         <a href="#tab-chat" class="nav-mobile-link nav-chat-mobile-link auth-only-nav" id="nav-mobile-chat-link">🤖 Chatbot (Voice)</a>
         <a href="#tab-listings" class="nav-mobile-link auth-only-nav" id="nav-mobile-listings-link">💼 Opportunity</a>
         <a href="#tab-awareness" class="nav-mobile-link auth-only-nav" id="nav-mobile-awareness-link">⚖️ Rights</a>
@@ -187,24 +187,12 @@
             style="width: 100%; height: auto; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.45); display: block;"
           />
         </div>
-        <div class="prelogin-action-wrapper" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 20px;">
-          <a href="/login?role=community" class="btn btn-primary" style="padding: 12px 22px; font-size: 14px; text-decoration: none; font-weight: 700; border-radius: 10px; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);">
+        <div class="prelogin-action-wrapper" style="display: flex; gap: 14px; justify-content: center; align-items: center; margin-top: 20px; flex-wrap: wrap;">
+          <a href="/login?role=community" class="btn btn-primary" style="padding: 12px 24px; font-size: 14px; text-decoration: none; font-weight: 700; border-radius: 12px; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);">
             <span>🌈</span> Community Login
           </a>
-          <a href="/login?role=ngo" class="btn btn-secondary" style="padding: 12px 20px; font-size: 14px; text-decoration: none; font-weight: 600; border-radius: 10px;">
+          <a href="/login?role=ngo" class="btn btn-secondary" style="padding: 12px 22px; font-size: 14px; text-decoration: none; font-weight: 600; border-radius: 12px;">
             <span>🏢</span> NGO Partner Login
-          </a>
-          <a href="/report/anonymous" class="btn btn-secondary" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(244, 63, 94, 0.35); color: #FB7185; border-radius: 10px;">
-            <span>🚨</span> Anonymous Report
-          </a>
-          <a href="/cases" class="btn btn-secondary" id="hero-btn-caseboard" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; border-radius: 10px;">
-            <span>📋</span> Case Board
-          </a>
-          <a href="#tab-videos" class="btn btn-secondary" id="hero-btn-videos" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(244, 63, 94, 0.45); color: #FB7185; border-radius: 10px; font-weight: 700; background: rgba(244, 63, 94, 0.08);">
-            <span>🎥</span> Video Interviews
-          </a>
-          <a href="#tab-cases" class="btn btn-secondary" id="hero-btn-triage" style="padding: 12px 18px; font-size: 13px; text-decoration: none; border-color: rgba(45, 212, 191, 0.4); color: #2DD4BF; border-radius: 10px;">
-            <span>🛡️</span> Case Triage Desk
           </a>
         </div>
       </div>
@@ -232,6 +220,10 @@
         <div class="welcome-strip-right">
           <span class="portal-status-pill">🟢 24/7 Voice Ready</span>
         </div>
+      </div>
+
+      <!-- Post-Login Role-Specific Action Strip (Community vs NGO) -->
+      <div id="auth-role-quick-actions" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: flex-start; padding: 12px 18px; background: rgba(24, 21, 63, 0.7); border: 1px solid rgba(165, 180, 252, 0.2); border-radius: 16px; backdrop-filter: blur(8px);">
       </div>
 
       <!-- Post-Login Community Network Welcome Banner (All Connected, All Equal) -->

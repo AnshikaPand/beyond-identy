@@ -443,6 +443,12 @@
   </main>
 
   <script>
+    // Session Guardian: Protect page from direct unauthenticated URL visits
+    const token = localStorage.getItem("bi_token") || localStorage.getItem("token") || sessionStorage.getItem("bi_token");
+    if (!token) {
+      window.location.href = "login.html?relogin=1";
+    }
+
     // Retrieve logged-in user from localStorage
     const userRaw = localStorage.getItem("bi_user");
     let user = null;
@@ -454,6 +460,7 @@
 
     const role = localStorage.getItem("bi_role") || (user && user.role) || "user";
     const userName = (user && user.name) ? user.name : "Friend";
+    const isNGO = role === "verifier" || role === "ngo" || role === "admin";
 
     // Set user display name & role badge
     const nameEl = document.getElementById("welcomeUserName");
@@ -461,7 +468,7 @@
 
     const roleBadge = document.getElementById("userRoleBadge");
     if (roleBadge) {
-      if (role === "verifier" || role === "ngo") {
+      if (isNGO) {
         roleBadge.textContent = "🏢 NGO Partner";
         roleBadge.style.color = "#047857";
         roleBadge.style.background = "rgba(16, 185, 129, 0.12)";
@@ -471,13 +478,166 @@
       }
     }
 
-    // Target dashboard depending on role
-    const targetDashboard = (role === "verifier" || role === "ngo") ? "ngo-dashboard.html" : "dashboard.html";
+    // Dynamic role-specific feature cards
+    const gridEl = document.querySelector(".features-grid");
+    if (gridEl) {
+      if (isNGO) {
+        gridEl.innerHTML = `
+          <!-- NGO Card 1: Case Triage Desk -->
+          <article class="feature-card card-report">
+            <div>
+              <div class="feature-header">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="feature-title">Case Triage Desk</h3>
+              </div>
+              <p class="feature-desc">Review, moderate, and escalate community discrimination incident reports with verified tracking.</p>
+            </div>
+            <a href="index.html#tab-cases" class="explore-btn">Open Triage Desk →</a>
+          </article>
 
-    // Update Explore button links to match target dashboard if available
+          <!-- NGO Card 2: Community Case Board -->
+          <article class="feature-card card-portal">
+            <div>
+              <div class="feature-header">
+                <div class="feature-icon">📋</div>
+                <h3 class="feature-title">Case Board</h3>
+              </div>
+              <p class="feature-desc">Inspect verified public cases, status updates, and transparent community resolution metrics.</p>
+            </div>
+            <a href="/cases" class="explore-btn">View Case Board →</a>
+          </article>
+
+          <!-- NGO Card 3: Video Interviews -->
+          <article class="feature-card card-videos">
+            <div>
+              <div class="feature-header">
+                <div class="feature-icon">🎥</div>
+                <h3 class="feature-title">Video Interviews</h3>
+              </div>
+              <p class="feature-desc">Watch authentic lived experiences, awareness video interviews, and rights advocacy podcasts.</p>
+            </div>
+            <a href="index.html#tab-videos" class="explore-btn">Watch Videos →</a>
+          </article>
+
+          <!-- NGO Card 4: AI Chatbot (Girl Voice) -->
+          <article class="feature-card card-chat">
+            <div>
+              <div class="feature-header">
+                <div class="feature-icon">🌸</div>
+                <h3 class="feature-title">Chatbot (Girl Voice)</h3>
+              </div>
+              <p class="feature-desc">Empathetic assistant with soothing female voice for 24/7 statutory rights and healthcare queries.</p>
+            </div>
+            <a href="index.html#tab-chat" class="explore-btn">Talk to Chatbot →</a>
+          </article>
+
+          <!-- NGO Card 5: NGO Directory & Scheme Vetting -->
+          <article class="feature-card card-schemes">
+            <div>
+              <div class="feature-header">
+                <div class="feature-icon">🤝</div>
+                <h3 class="feature-title">NGO Directory &amp; Vetting</h3>
+              </div>
+              <p class="feature-desc">Verify and manage welfare listings, shelters, inclusive jobs, and community outreach programs.</p>
+            </div>
+            <a href="index.html#tab-listings" class="explore-btn">Manage Directory →</a>
+          </article>
+
+          <!-- NGO Card 6: Operations Console -->
+          <article class="feature-card card-ngo">
+            <div>
+              <div class="feature-header">
+                <div class="feature-icon">🏛️</div>
+                <h3 class="feature-title">NGO Partner Console</h3>
+              </div>
+              <p class="feature-desc">Access dedicated partner controls, case follow-ups, legal aid referrals, and resolution workflows.</p>
+            </div>
+            <a href="ngo-dashboard.html" class="explore-btn">Partner Console →</a>
+          </article>
+        `;
+      } else {
+        gridEl.innerHTML = `
+          <!-- Community Card 1: Anonymous Report -->
+          <article class="feature-card card-report">
+            <div>
+              <div class="feature-header">
+                <div class="feature-icon">🚨</div>
+                <h3 class="feature-title">Anonymous Report</h3>
+              </div>
+              <p class="feature-desc">Workplace, housing ya hospital discrimination ki confidential &amp; anonymous reporting free legal aid ke saath.</p>
+            </div>
+            <a href="index.html#tab-report" class="explore-btn">Report Incident →</a>
+          </article>
+
+          <!-- Community Card 2: Case Board -->
+          <article class="feature-card card-portal">
+            <div>
+              <div class="feature-header">
+                <div class="feature-icon">📋</div>
+                <h3 class="feature-title">Case Board</h3>
+              </div>
+              <p class="feature-desc">Track public discrimination reports, resolution progress, and verified transparency updates across India.</p>
+            </div>
+            <a href="/cases" class="explore-btn">View Case Board →</a>
+          </article>
+
+          <!-- Community Card 3: Video Interviews -->
+          <article class="feature-card card-videos">
+            <div>
+              <div class="feature-header">
+                <div class="feature-icon">🎥</div>
+                <h3 class="feature-title">Video Interviews</h3>
+              </div>
+              <p class="feature-desc">Indian transgender role models aur community leaders ke real video interviews aur inspiring journeys dekhiye.</p>
+            </div>
+            <a href="index.html#tab-videos" class="explore-btn">Watch Stories →</a>
+          </article>
+
+          <!-- Community Card 4: AI Chatbot (Girl Voice) -->
+          <article class="feature-card card-chat">
+            <div>
+              <div class="feature-header">
+                <div class="feature-icon">🌸</div>
+                <h3 class="feature-title">Chatbot (Sweet Girl Voice)</h3>
+              </div>
+              <p class="feature-desc">24/7 statutory rights, healthcare triage aur helpline questions ke answers soft, sweet female voice mein suniye.</p>
+            </div>
+            <a href="index.html#tab-chat" class="explore-btn">Talk to Chatbot →</a>
+          </article>
+
+          <!-- Community Card 5: Government Schemes -->
+          <article class="feature-card card-schemes">
+            <div>
+              <div class="feature-header">
+                <div class="feature-icon">🏛️</div>
+                <h3 class="feature-title">Government Schemes</h3>
+              </div>
+              <p class="feature-desc">Central &amp; state transgender welfare schemes jaise SMILE, Garima Greh transit shelters, aur Ayushman Bharat ₹5 Lakh cover.</p>
+            </div>
+            <a href="index.html#tab-listings" class="explore-btn">Explore Schemes →</a>
+          </article>
+
+          <!-- Community Card 6: TG Certificate Guide -->
+          <article class="feature-card card-ngo">
+            <div>
+              <div class="feature-header">
+                <div class="feature-icon">🪪</div>
+                <h3 class="feature-title">TG Certificate Guide</h3>
+              </div>
+              <p class="feature-desc">National Portal for Transgender Persons par Certificate of Identity aur digital ID card banwane ka complete roadmap.</p>
+            </div>
+            <a href="index.html#tab-awareness" class="explore-btn">View ID Guide →</a>
+          </article>
+        `;
+      }
+    }
+
+    // Target dashboard depending on role
+    const targetDashboard = isNGO ? "ngo-dashboard.html" : "dashboard.html";
+
+    // Update Explore button links to preserve overview preference if checked
     document.querySelectorAll(".explore-btn").forEach(btn => {
       btn.addEventListener("click", () => {
-        // preserve overview preference
         const dontShow = document.getElementById("dontShowAgain");
         if (dontShow && dontShow.checked) {
           localStorage.setItem("bi_skip_overview", "true");

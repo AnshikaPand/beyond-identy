@@ -181,12 +181,23 @@ def detect_intent(query: str) -> str:
     if _matches_any(compliment_keywords, q):
         return "chitchat_compliment"
 
-    # H. Farewell / Goodbye
+    # H. Farewell / Goodbye / Good night
+    if any(re.search(p, q, re.IGNORECASE) for p in [r"\bgood\s*night\b", r"\bshubh\s*ratri\b"]):
+        return "good_night"
+
     farewell_keywords = [
-        "bye", "goodbye", "see you", "cya", "good night", "take care", "tata"
+        "bye", "goodbye", "see you", "cya", "take care", "tata"
     ]
     if _matches_any(farewell_keywords, q):
         return "chitchat_farewell"
+
+    # I. Transgender self-identification ("I am transgender", "I'm trans", etc.)
+    trans_self_patterns = [
+        r"\b(i am|i\'m|am i|i think i am|i think i\'m|mai|main)\s+(transgender|trans|trans\s*woman|trans\s*man|hijra|kinnar)\b",
+        r"\bi\s+(identify\s+as|am)\s+(a\s+)?(transgender|trans\s+person|trans\s+woman|trans\s+man)\b",
+    ]
+    if any(re.search(p, q, re.IGNORECASE) for p in trans_self_patterns):
+        return "user_is_transgender"
 
     # 4. Direct Option / Number Selection
     q_clean = re.sub(r"[^a-zA-Z0-9\s]", " ", q).strip()
@@ -569,6 +580,22 @@ def generate_curated_reply(
 
     elif intent == "chitchat_farewell":
         reply = "Goodbye! Take care, and feel free to reach out anytime."
+
+    elif intent == "good_night":
+        reply = "Good night and sweet dreams! Take gentle care of yourself. Beyond Identity is always here for you whenever you return."
+        suggested_prompts = []
+
+    elif intent == "user_is_transgender":
+        reply = (
+            "Thank you for sharing this with me. Who you are is completely valid, beautiful, and deeply respected. "
+            "Beyond Identity is your safe haven. Under Indian law (NALSA 2014 & TG Act 2019), you have the fundamental right "
+            "to self-perceived gender identity. How are you feeling about it today, and how can I best support you?"
+        )
+        suggested_prompts = [
+            "What are my legal rights in India?",
+            "How to get TG Certificate",
+            "Garima Greh Shelters",
+        ]
 
     elif intent == "basics_terminology":
         reply = (
